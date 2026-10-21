@@ -94,8 +94,9 @@ export function projetar(d: Dados, p: Plano): Projecao | null {
   };
 }
 
-export function dividir(p: Plano) {
-  return REFEICOES.map((r) => ({
-    ...r, kcal: p.kcal * r.pct, proteina: p.proteina * r.pct, carbo: p.carbo * r.pct, gordura: p.gordura * r.pct,
-  }));
+export function dividir(p: Plano, pcts?: Record<string, number>) {
+  return REFEICOES.map((r) => {
+    const pct = pcts?.[r.id] ?? r.pct;
+    return { id: r.id, nome: r.nome, pct, kcal: p.kcal * pct, proteina: p.proteina * pct, carbo: p.carbo * pct, gordura: p.gordura * pct };
+  });
 }

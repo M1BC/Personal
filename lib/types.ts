@@ -25,6 +25,7 @@ export interface Alimento {
   medida_g: number;
   de: string; // complemento da frase (ex.: "de frango grelhado")
   grupo: "proteina" | "carboidrato" | "gordura";
+  max_por_refeicao?: number; // máximo realista de medidas caseiras em uma refeição
 }
 
 export interface Refeicao {
