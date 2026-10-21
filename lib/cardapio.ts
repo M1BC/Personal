@@ -1,7 +1,8 @@
 import { ALIMENTOS } from "@/data/alimentos";
 import type { Alimento } from "./types";
 
-const A = Object.fromEntries(ALIMENTOS.map((a) => [a.id, a])) as Record<string, Alimento>;
+export const alimentoPorId = Object.fromEntries(ALIMENTOS.map((a) => [a.id, a])) as Record<string, Alimento>;
+const A = alimentoPorId;
 
 type Item = { id: string; papel: "proteina" | "carbo"; parte?: number };
 export interface Cardapio { itens: Item[]; extra: string; azeite?: boolean }
@@ -31,15 +32,15 @@ export const CARDAPIOS: Record<string, Cardapio[]> = {
   ],
 };
 
-const porMedida = (a: Alimento) => {
+export const porMedida = (a: Alimento) => {
   const f = a.medida_g / a.porcao_g;
   return { p: a.proteina_g * f, c: a.carboidratos_g * f, g: a.gorduras_g * f };
 };
 const limite = (a: Alimento) => a.max_por_refeicao ?? 4;
 // Alimentos muito proteicos (filé, bife, lata de atum) podem entrar em meias porções.
-const passo = (a: Alimento) => (porMedida(a).p >= 20 ? 0.5 : 1);
+export const passo = (a: Alimento) => (porMedida(a).p >= 20 ? 0.5 : 1);
 
-function frase(a: Alimento, q: number) {
+export function frase(a: Alimento, q: number) {
   const comp = a.de ? " " + a.de : "";
   if (q === 1) return `${a.medida_caseira}${comp}`;
   if (q === 0.5) return `1/2 ${a.medida_caseira.replace(/^1 /, "")}${comp}`;
@@ -94,5 +95,5 @@ export function montar(c: Cardapio, alvo: { proteina: number; carbo: number; gor
   }
   const proteina = linhas.reduce((s, [a, q]) => s + porMedida(a).p * q, 0);
   const carbo = linhas.reduce((s, [a, q]) => s + porMedida(a).c * q, 0);
-  return { partes: linhas.map(([a, q]) => frase(a, q)), extra: c.extra, proteina, carbo, gordura: g, kcal: proteina * 4 + carbo * 4 + g * 9 };
+  return { itens: linhas.map(([a, q]) => ({ id: a.id, q })), partes: linhas.map(([a, q]) => frase(a, q)), extra: c.extra, proteina, carbo, gordura: g, kcal: proteina * 4 + carbo * 4 + g * 9 };
 }

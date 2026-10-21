@@ -11,10 +11,13 @@ export interface Exercicio {
   equipamento: string;
 }
 
+export type CategoriaAlimento = "Carnes e Ovos" | "Carboidratos" | "Gorduras" | "Leguminosas" | "Frutas" | "Laticínios e Whey";
+
 // Macros referem-se à porcao_referencia (porcao_g gramas). medida_g = gramas da medida caseira.
 export interface Alimento {
   id: string;
   nome: string;
+  categoria: CategoriaAlimento;
   porcao_referencia: string;
   porcao_g: number;
   proteina_g: number;
