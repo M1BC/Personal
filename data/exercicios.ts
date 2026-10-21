@@ -14,12 +14,12 @@ export const GRUPOS: Record<GrupoMuscular, { nome: string; funcao: string; ligac
   panturrilhas: { nome: "Panturrilhas", funcao: "Levantam o calcanhar e empurram o corpo do chão ao andar, correr e saltar.", ligacao: "Formam a base da cadeia da perna: tornozelo, joelho e quadril trabalham em sequência. Panturrilha fraca sobrecarrega o joelho e o tendão." },
 };
 
-export const CATEGORIAS = ["Todos", "Peito", "Costas", "Pernas", "Ombros", "Braços", "Core"] as const;
+export const CATEGORIAS = ["Todos", "Peito", "Costas", "Quadríceps", "Posterior", "Ombros", "Bíceps", "Tríceps", "Panturrilha", "Core"] as const;
 export type Categoria = (typeof CATEGORIAS)[number];
 
 const CATEGORIA_DO_GRUPO: Record<GrupoMuscular, Exclude<Categoria, "Todos">> = {
-  peitoral: "Peito", dorsais: "Costas", quadriceps: "Pernas", gluteos: "Pernas", posteriores: "Pernas",
-  panturrilhas: "Pernas", ombros: "Ombros", biceps: "Braços", triceps: "Braços", core: "Core", lombar: "Core",
+  peitoral: "Peito", dorsais: "Costas", quadriceps: "Quadríceps", gluteos: "Posterior", posteriores: "Posterior",
+  panturrilhas: "Panturrilha", ombros: "Ombros", biceps: "Bíceps", triceps: "Tríceps", core: "Core", lombar: "Core",
 };
 export const categoriaDe = (g: GrupoMuscular) => CATEGORIA_DO_GRUPO[g];
 
@@ -70,4 +70,39 @@ export const EXERCICIOS: Exercicio[] = [
   // Core
   { id: "prancha", nome: "Prancha", grupo_primario: "core", grupos_secundarios: ["ombros", "gluteos", "lombar"], equipamento: "Peso do corpo",
     explicacao_anatomica: "O core resiste a que o tronco ceda, ligando ombros e quadril: abdômen e lombar seguram a coluna, os glúteos travam o quadril e os ombros sustentam o peso. É um exercício de estabilização, então qualquer parte que cede, como o quadril caído, joga a carga para a lombar." },
+  // Expansão: máquinas e pesos livres
+  { id: "peck-deck", nome: "Peck deck (crucifixo na máquina)", grupo_primario: "peitoral", grupos_secundarios: ["ombros"], equipamento: "Máquina peck deck",
+    explicacao_anatomica: "O encosto apoia o tronco, então o peitoral trabalha quase sozinho aproximando os braços à frente do corpo. O deltoide anterior ajuda no arco do movimento, e as escápulas, juntas e presas ao encosto pelas costas, evitam que o ombro vá para a frente. Se as escápulas soltam, o ombro assume a carga no lugar do peitoral." },
+  { id: "remada-unilateral", nome: "Remada unilateral com halter (serrote)", grupo_primario: "dorsais", grupos_secundarios: ["biceps", "core", "lombar"], equipamento: "Halter e banco",
+    explicacao_anatomica: "Com a mão e o joelho de apoio no banco, o core e a lombar seguram o tronco paralelo ao chão para que ele não gire. O dorsal puxa o halter em direção ao quadril, e o bíceps ajuda a dobrar o cotovelo. Se o tronco gira, o dorsal perde o alongamento e a lombar paga a conta." },
+  { id: "agachamento-hack", nome: "Agachamento hack", grupo_primario: "quadriceps", grupos_secundarios: ["gluteos", "posteriores"], equipamento: "Máquina hack",
+    explicacao_anatomica: "O encosto inclinado estabiliza as costas, e os pés mais à frente deixam o quadríceps fazer quase todo o trabalho de estender o joelho. Os glúteos entram no fim da subida, estendendo o quadril, e os posteriores freiam a descida. Se o quadril descola do encosto na parte baixa, a lombar sofre." },
+  { id: "agachamento-bulgaro", nome: "Agachamento búlgaro", grupo_primario: "quadriceps", grupos_secundarios: ["gluteos", "posteriores", "core"], equipamento: "Halteres e banco",
+    explicacao_anatomica: "Com o pé de trás apoiado no banco, o glúteo médio e o core da perna da frente impedem que a pelve caia ou gire. O quadríceps e o glúteo dessa perna fazem o empurrão, e os posteriores controlam a descida. Se a pelve balança, o joelho tende a entrar para dentro." },
+  { id: "stiff", nome: "Stiff (levantamento terra romeno)", grupo_primario: "posteriores", grupos_secundarios: ["gluteos", "lombar", "dorsais", "core"], equipamento: "Barra ou halteres",
+    explicacao_anatomica: "O quadril vai para trás com o joelho quase estendido, e os posteriores e glúteos freiam a descida e puxam o tronco de volta. A lombar mantém a coluna neutra, e os dorsais seguram a barra perto do corpo. Se os dorsais soltam, a barra se afasta e a lombar assume o trabalho." },
+  { id: "mesa-flexora", nome: "Mesa flexora", grupo_primario: "posteriores", grupos_secundarios: ["panturrilhas", "gluteos"], equipamento: "Mesa flexora",
+    explicacao_anatomica: "Deitado, o corpo apoiado deixa os posteriores dobrarem o joelho sem exigir equilíbrio. A panturrilha, que também cruza o joelho, ajuda no movimento, e o glúteo e o core seguram o quadril colado ao banco. Se o quadril sobe, a lombar entra no movimento e os posteriores perdem estímulo." },
+  { id: "cadeira-flexora", nome: "Cadeira flexora", grupo_primario: "posteriores", grupos_secundarios: ["panturrilhas"], equipamento: "Cadeira flexora",
+    explicacao_anatomica: "Sentado, com a coxa presa, os posteriores dobram o joelho e puxam o rolo para baixo. A panturrilha ajuda a dobrar o joelho, e o encosto estabiliza o tronco. Como o quadril fica flexionado, os posteriores trabalham alongados, o que muda o estímulo em relação à mesa flexora." },
+  { id: "face-pull", nome: "Face pull", grupo_primario: "ombros", grupos_secundarios: ["dorsais"], equipamento: "Polia alta com corda",
+    explicacao_anatomica: "O deltoide posterior e o manguito rotador puxam o braço para trás e giram o ombro para fora, enquanto o trapézio e os romboides aproximam as escápulas. Esses músculos das costas formam a base que mantém o ombro estável nos exercícios de empurrar. Se o tronco recua para ajudar, a carga sai do ombro." },
+  { id: "desenvolvimento-militar", nome: "Desenvolvimento militar com barra", grupo_primario: "ombros", grupos_secundarios: ["triceps", "core"], equipamento: "Barra, em pé",
+    explicacao_anatomica: "Em pé, o chão é a base: glúteos e core travam o tronco para que a barra suba reta sobre a cabeça. O deltoide empurra, o tríceps estende o cotovelo no fim, e o trapézio e o serrátil giram a escápula para cima. Se o core cede, a lombar se arqueia e o ombro empurra para trás." },
+  { id: "rosca-martelo", nome: "Rosca martelo", grupo_primario: "biceps", grupos_secundarios: ["ombros", "core"], equipamento: "Halteres",
+    explicacao_anatomica: "Com a pegada neutra, o bíceps e o braquial dobram o cotovelo, e o braquiorradial, no antebraço, ajuda a sustentar o peso. O deltoide anterior segura o braço junto ao corpo, e o core evita o balanço do tronco. Se o corpo balança, o braço perde tensão." },
+  { id: "rosca-scott", nome: "Rosca Scott", grupo_primario: "biceps", grupos_secundarios: ["ombros"], equipamento: "Banco Scott e barra W",
+    explicacao_anatomica: "O apoio do braço no banco impede o balanço, então o bíceps trabalha isolado, dobrando o cotovelo. O deltoide anterior só sustenta o braço apoiado. Como o braço fica fixo, controle a descida em vez de soltar o peso no fim do movimento." },
+  { id: "triceps-testa", nome: "Tríceps testa", grupo_primario: "triceps", grupos_secundarios: ["ombros", "dorsais"], equipamento: "Barra W e banco",
+    explicacao_anatomica: "Com os braços perpendiculares ao corpo, o tríceps estende o cotovelo, enquanto o deltoide e os dorsais seguram o braço no lugar. Se o cotovelo desliza para trás ou para a frente, o ombro entra no movimento e o tríceps perde trabalho." },
+  { id: "mergulho-paralelas", nome: "Mergulho nas paralelas", grupo_primario: "triceps", grupos_secundarios: ["peitoral", "ombros", "core"], equipamento: "Paralelas",
+    explicacao_anatomica: "O tríceps estende o cotovelo para empurrar o corpo para cima, com ajuda do peitoral e do deltoide anterior. O core mantém o corpo firme e a escápula estável; se ela solta, o ombro vai para a frente e sofre. Descer só até onde o ombro fica confortável protege a articulação." },
+  { id: "panturrilha-sentada", nome: "Panturrilha sentada", grupo_primario: "panturrilhas", grupos_secundarios: [], equipamento: "Máquina de panturrilha sentado",
+    explicacao_anatomica: "Com o joelho dobrado, o gastrocnêmio perde força e o sóleo, mais profundo, assume o trabalho. É o músculo que ajuda a manter o tornozelo estável ao correr e saltar. O tronco fica apoiado, então todo o esforço vai para o tornozelo." },
+  { id: "prancha-lateral", nome: "Prancha lateral", grupo_primario: "core", grupos_secundarios: ["ombros", "gluteos"], equipamento: "Peso do corpo",
+    explicacao_anatomica: "Os músculos laterais do tronco (oblíquos e quadrado lombar) impedem que o quadril caia, enquanto o glúteo médio mantém a pelve alinhada. O ombro de apoio sustenta o peso do corpo. Se o quadril cai, a carga vai para a lombar e para o ombro." },
+  { id: "abdominal-polia", nome: "Abdominal na polia", grupo_primario: "core", grupos_secundarios: [], equipamento: "Polia alta e corda",
+    explicacao_anatomica: "O reto abdominal flexiona o tronco, aproximando as costelas do quadril, enquanto os flexores do quadril e os glúteos mantêm a pelve estável. Se o quadril sobe e desce, o exercício vira um movimento de quadril e perde o abdômen. Puxe com o tronco, e não com os braços." },
+  { id: "elevacao-pernas", nome: "Elevação de pernas", grupo_primario: "core", grupos_secundarios: ["quadriceps", "lombar"], equipamento: "Barra fixa ou banco",
+    explicacao_anatomica: "O abdômen inclina a pelve para cima, e os flexores do quadril, incluindo parte do quadríceps, levantam as pernas. Se o core não trava a pelve, a lombar se arqueia e assume o trabalho. Mantenha a lombar colada e suba até onde o abdômen controla." },
 ];
