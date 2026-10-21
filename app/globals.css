@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Escuro: ferro e pretos de academia, com vermelho (músculo principal) e dourado (auxiliares). */
+:root,
+:root[data-tema="escuro"] {
+  --fundo: 12 12 13;
+  --superficie: 24 25 27;
+  --corpo: 52 54 58;
+  --linha: 44 46 49;
+  --tinta: 243 241 236;
+  --suave: 168 170 172;
+  --primario: 226 29 38;
+  --secundario: 240 180 0;
+  --sobre-secundario: 12 12 13;
+  color-scheme: dark;
+}
+:root[data-tema="claro"] {
+  --fundo: 238 238 236;
+  --superficie: 224 224 221;
+  --corpo: 196 197 194;
+  --linha: 200 201 198;
+  --tinta: 17 17 18;
+  --suave: 78 80 82;
+  --primario: 190 20 28;
+  --secundario: 143 100 0;
+  --sobre-secundario: 255 255 255;
+  color-scheme: light;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  scroll-padding-top: 5rem;
+}
+body { background: rgb(var(--fundo)); color: rgb(var(--tinta)); }
+button, a, [role="button"] { touch-action: manipulation; }
+button { -webkit-user-select: none; user-select: none; }
+input, select, textarea { font-size: 16px; }
+:focus-visible { outline: 2px solid rgb(var(--tinta)); outline-offset: 2px; }
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-[48px] items-center justify-center bg-tinta px-6 py-3 font-bold text-fundo
+      transition-transform duration-100 ease-out active:scale-[0.97] hover:bg-suave;
+  }
+}
+
+@keyframes folha { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes fundo { from { opacity: 0; } to { opacity: 1; } }
+@keyframes entra { from { opacity: 0; transform: translateY(6px); } to { transform: none; opacity: 1; } }
+.animar-folha { animation: folha 240ms cubic-bezier(0.23, 1, 0.32, 1); }
+.animar-fundo { animation: fundo 180ms ease-out; }
+.animar { animation: entra 220ms cubic-bezier(0.23, 1, 0.32, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .animar, .animar-folha, .animar-fundo { animation: none; }
+}
