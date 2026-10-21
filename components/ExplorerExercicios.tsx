@@ -50,7 +50,7 @@ export function ExplorerExercicios() {
           <Corpo primario={ex.grupo_primario} secundarios={ex.grupos_secundarios} onGrupo={setAberto} />
           <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-base text-suave">
             <span className="flex items-center gap-2"><span className="h-3 w-3 bg-primario" /> Músculo principal</span>
-            <span className="flex items-center gap-2"><span className="h-3 w-3 bg-secundario/50" /> Músculos que ajudam</span>
+            <span className="flex items-center gap-2"><span className="h-3 w-3 bg-secundario/50" /> Músculos Auxiliares</span>
           </p>
           <p className="mt-1 text-base text-suave">Toque em qualquer músculo do mapa para entender o que ele faz.</p>
         </div>
@@ -73,7 +73,7 @@ export function ExplorerExercicios() {
 
           {ex.grupos_secundarios.length > 0 && (
             <>
-              <p className="mt-5 text-lg font-semibold">Músculos que ajudam</p>
+              <p className="mt-5 text-lg font-semibold">Músculos Auxiliares</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {ex.grupos_secundarios.map((g) => (
                   <button

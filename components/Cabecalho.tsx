@@ -6,9 +6,9 @@ import { AlternarTema } from "./AlternarTema";
 
 const LINKS = [
   ["/anatomia", "Anatomia"],
-  ["/proteina", "Proteína"],
   ["/refeicoes", "Refeições"],
   ["/suplementos", "Suplementos"],
+  ["/treinos", "Treinos"],
 ] as const;
 
 export function Cabecalho() {
