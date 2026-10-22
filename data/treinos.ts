@@ -1,112 +1,134 @@
-// Fichas educacionais. Séries, repetições e descanso seguem as faixas do ACSM para adultos saudáveis:
-// 2 a 4 séries, 8 a 12 repetições para força, 2 a 3 min de descanso nos exercícios pesados.
+import type { GrupoMuscular } from "@/lib/types";
+import type { Categoria } from "./exercicios";
+
+export type Cat = Exclude<Categoria, "Todos">;
+export type Slot = Cat | "Salto";
+export type Freq = 2 | 3 | 4 | 5;
+export type Tipo = "fullA" | "fullB" | "upper" | "lower" | "peitoTriceps" | "costasBiceps" | "pernas" | "ombros" | "fullLeve";
+
+export const FREQUENCIAS: Freq[] = [2, 3, 4, 5];
+
 export const OBJETIVOS = [
-  { id: "saude", nome: "Saúde Geral", sub: "Corpo todo, com exercícios básicos" },
-  { id: "volei", nome: "Vôlei (Potência)", sub: "Salto, ataque e aterrissagem" },
-  { id: "futebol", nome: "Futebol (Força e Agilidade)", sub: "Pernas fortes e proteção contra lesões" },
-  { id: "fraco", nome: "Reabilitação/Ponto Fraco", sub: "Fortalecimento de uma região" },
+  { id: "saude", nome: "Saúde Geral", sub: "Multiarticulares, corpo todo" },
+  { id: "volei", nome: "Vôlei (Potência e Salto)", sub: "Pernas explosivas e aterrissagem" },
+  { id: "futebol", nome: "Futebol (Força e Agilidade)", sub: "Posterior, core e estabilidade" },
+  { id: "fraco", nome: "Fortalecer Ponto Fraco", sub: "Foco em um músculo" },
 ] as const;
 export type ObjetivoId = (typeof OBJETIVOS)[number]["id"];
 
-export const PONTOS_FRACOS = [
-  { id: "pernas", nome: "Pernas" },
-  { id: "costas", nome: "Costas" },
-  { id: "ombros", nome: "Ombros" },
-  { id: "core", nome: "Core" },
-] as const;
-export type PontoFracoId = (typeof PONTOS_FRACOS)[number]["id"];
+export const PONTOS_FRACOS: { id: GrupoMuscular; nome: string }[] = [
+  { id: "peitoral", nome: "Peito" }, { id: "dorsais", nome: "Costas" }, { id: "ombros", nome: "Ombros" },
+  { id: "biceps", nome: "Bíceps" }, { id: "triceps", nome: "Tríceps" }, { id: "quadriceps", nome: "Quadríceps" },
+  { id: "posteriores", nome: "Posterior da coxa" }, { id: "gluteos", nome: "Glúteos" }, { id: "panturrilhas", nome: "Panturrilha" },
+  { id: "core", nome: "Core" }, { id: "lombar", nome: "Lombar" },
+];
 
-export interface ItemTreino { id: string; series: string; descanso: string; porque: string }
-export interface Treino { titulo: string; resumo: string; nota?: string; itens: ItemTreino[] }
+export const MENSAGEM_POUCOS = "Ainda não temos exercícios suficientes para este grupo. Em breve adicionaremos mais!";
 
-const i = (id: string, series: string, descanso: string, porque: string): ItemTreino => ({ id, series, descanso, porque });
+export const PLIOMETRICOS = ["agachamento-salto", "box-jump"];
 
-export const TREINOS: Record<string, Treino> = {
+// Exercícios multiarticulares (vários músculos e articulações). Os demais são considerados isolados.
+export const MULTI = new Set([
+  "agachamento", "supino-reto", "supino-inclinado", "supino-halteres", "flexao", "puxada-frente", "remada-curvada",
+  "remada-sentada", "remada-maquina", "remada-unilateral", "remada-cavalinho", "barra-fixa", "leg-press", "agachamento-hack",
+  "afundo", "agachamento-bulgaro", "levantamento-terra", "stiff", "elevacao-pelvica", "desenvolvimento",
+  "desenvolvimento-militar", "supino-fechado", "mergulho-paralelas", "agachamento-salto", "box-jump",
+]);
+
+export const ISOMETRICOS: Record<string, string> = { prancha: "30 a 45 segundos", "prancha-lateral": "20 a 30 segundos por lado" };
+export const UNILATERAIS: Record<string, string> = {
+  afundo: " por perna", "agachamento-bulgaro": " por perna", "panturrilha-unilateral": " por perna", "remada-unilateral": " por lado",
+};
+
+export interface Presc { sets: number; reps: string; rest: string }
+export const PRESC = {
+  saude: { sets: 3, reps: "10 a 12", rest: "60 s" },
+  volei: { sets: 4, reps: "6 a 8", rest: "90 s" },
+  salto: { sets: 4, reps: "5", rest: "90 s" },
+  futebol: { sets: 3, reps: "8 a 10", rest: "90 s" },
+  foco: { sets: 3, reps: "10 a 15", rest: "60 s" },
+  manut: { sets: 2, reps: "8 a 10", rest: "90 s" },
+} satisfies Record<string, Presc>;
+
+type Modelo = "saude" | "volei" | "futebol";
+
+// Ordem de preferência por categoria (multiarticulares primeiro). O que não estiver na lista entra depois.
+export const ORDEM: Record<Modelo, Partial<Record<Cat, string[]>>> = {
   saude: {
-    titulo: "Saúde Geral",
-    resumo: "Cinco exercícios básicos que trabalham o corpo todo. Faça 2 a 3 vezes por semana.",
-    itens: [
-      i("agachamento", "3 séries × 8 a 12 repetições", "1 a 2 min", "Treina pernas e core de uma vez: é a base de levantar, sentar e subir escadas."),
-      i("supino-reto", "3 séries × 8 a 12 repetições", "1 a 2 min", "Fortalece peito, ombro e tríceps, usados em todo empurrar."),
-      i("remada-sentada", "3 séries × 8 a 12 repetições", "1 a 2 min", "Equilibra o empurrar com o puxar e protege a postura e os ombros."),
-      i("desenvolvimento", "2 a 3 séries × 8 a 12 repetições", "1 a 2 min", "Fortalece os ombros para levantar objetos acima da cabeça."),
-      i("prancha", "3 séries × 20 a 40 segundos", "1 min", "Ensina o core a estabilizar o tronco, o que protege a lombar."),
-    ],
+    Peito: ["supino-reto", "supino-inclinado", "supino-halteres", "flexao", "crucifixo", "peck-deck"],
+    Costas: ["remada-curvada", "puxada-frente", "remada-sentada", "barra-fixa", "remada-maquina", "remada-unilateral", "remada-cavalinho", "pulldown-braco-reto"],
+    Quadríceps: ["agachamento", "leg-press", "afundo", "agachamento-hack", "agachamento-bulgaro", "cadeira-extensora"],
+    Posterior: ["stiff", "levantamento-terra", "elevacao-pelvica", "mesa-flexora", "cadeira-flexora", "coice-polia"],
+    Ombros: ["desenvolvimento", "desenvolvimento-militar", "elevacao-lateral", "face-pull", "crucifixo-inverso", "elevacao-frontal"],
+    Bíceps: ["rosca-direta", "rosca-alternada", "rosca-martelo", "rosca-scott", "rosca-polia", "rosca-concentrada"],
+    Tríceps: ["supino-fechado", "mergulho-paralelas", "triceps-corda", "triceps-testa", "triceps-frances", "triceps-coice"],
+    Panturrilha: ["panturrilha-em-pe", "panturrilha-sentada", "panturrilha-leg-press", "panturrilha-unilateral", "panturrilha-burrinho", "panturrilha-smith"],
+    Core: ["prancha", "abdominal-polia", "prancha-lateral", "elevacao-pernas", "dead-bug", "abdominal-roda"],
   },
   volei: {
-    titulo: "Vôlei (Potência)",
-    resumo: "Força de pernas para o salto, panturrilhas e core para a aterrissagem, e ombros protegidos para o ataque.",
-    nota: "Potência de salto também pede saltos e pliometria, que não estão neste banco de exercícios: peça orientação ao educador físico.",
-    itens: [
-      i("agachamento", "4 séries × 5 a 6 repetições", "2 a 3 min", "A força de pernas é a base da altura do salto."),
-      i("leg-press", "3 séries × 8 a 10 repetições", "2 min", "Soma volume de perna sem carregar a coluna."),
-      i("panturrilha-em-pe", "3 a 4 séries × 8 a 12 repetições", "1 a 2 min", "A panturrilha participa da fase final do impulso e amortece a aterrissagem."),
-      i("prancha", "3 séries × 30 a 45 segundos", "1 min", "O core liga a força das pernas ao braço no ataque e dá estabilidade na aterrissagem."),
-      i("face-pull", "3 séries × 12 a 15 repetições", "1 min", "Protege o ombro, que sofre com a repetição de ataques e saques."),
-    ],
+    Quadríceps: ["agachamento", "leg-press", "agachamento-hack", "afundo", "agachamento-bulgaro", "cadeira-extensora"],
+    Posterior: ["elevacao-pelvica", "stiff", "levantamento-terra", "mesa-flexora", "cadeira-flexora", "coice-polia"],
+    Costas: ["puxada-frente", "remada-sentada", "remada-curvada", "barra-fixa"],
+    Ombros: ["face-pull", "desenvolvimento", "crucifixo-inverso", "elevacao-lateral"],
+    Core: ["prancha", "prancha-lateral", "elevacao-pernas", "dead-bug", "abdominal-roda", "abdominal-polia"],
   },
   futebol: {
-    titulo: "Futebol (Força e Agilidade)",
-    resumo: "Força de base nas pernas e no tronco, para acelerar, frear e mudar de direção com menos risco de lesão.",
-    nota: "Agilidade se treina em campo, com corridas e mudanças de direção. Esta ficha cobre a força de base.",
-    itens: [
-      i("agachamento", "4 séries × 5 a 6 repetições", "2 a 3 min", "Força de perna para acelerar e chutar, e para proteger o joelho."),
-      i("afundo", "3 séries × 8 a 10 repetições por perna", "1 a 2 min", "Treina uma perna de cada vez, como na corrida e no chute, e o equilíbrio da pelve."),
-      i("levantamento-terra", "3 séries × 5 a 6 repetições", "2 a 3 min", "Fortalece posteriores, glúteos e lombar, a cadeia que arranca e freia."),
-      i("mesa-flexora", "3 séries × 8 a 12 repetições", "1 a 2 min", "Posteriores fortes ajudam a proteger a coxa nos sprints."),
-      i("prancha-lateral", "3 séries × 20 a 30 segundos por lado", "1 min", "O core lateral e o glúteo médio estabilizam a pelve nas mudanças de direção."),
-    ],
-  },
-  "fraco-pernas": {
-    titulo: "Ponto fraco: pernas",
-    resumo: "Quadríceps, posteriores, glúteos e panturrilhas com boa frequência, para corrigir o desequilíbrio.",
-    itens: [
-      i("agachamento", "3 séries × 8 a 10 repetições", "2 min", "Base de força para a perna toda."),
-      i("leg-press", "3 séries × 10 a 12 repetições", "1 a 2 min", "Soma volume de quadríceps e glúteo com apoio nas costas."),
-      i("mesa-flexora", "3 séries × 10 a 12 repetições", "1 a 2 min", "Equilibra o quadríceps com os posteriores da coxa."),
-      i("elevacao-pelvica", "3 séries × 10 a 12 repetições", "1 a 2 min", "Isola o glúteo, que costuma ser o elo fraco."),
-      i("panturrilha-em-pe", "3 séries × 12 a 15 repetições", "1 min", "Fortalece a base da cadeia da perna."),
-    ],
-  },
-  "fraco-costas": {
-    titulo: "Ponto fraco: costas",
-    resumo: "Puxadas e remadas em vários ângulos, com exercícios que mantêm as escápulas estáveis.",
-    itens: [
-      i("puxada-frente", "3 séries × 8 a 12 repetições", "1 a 2 min", "Trabalha o dorsal, o principal músculo das costas."),
-      i("remada-sentada", "3 séries × 10 a 12 repetições", "1 a 2 min", "Fortalece dorsais e romboides com o tronco apoiado."),
-      i("remada-unilateral", "3 séries × 10 a 12 repetições por lado", "1 min", "Corrige diferenças entre os lados."),
-      i("face-pull", "3 séries × 12 a 15 repetições", "1 min", "Fortalece o que mantém o ombro estável."),
-      i("prancha", "3 séries × 30 a 40 segundos", "1 min", "O core sustenta o tronco e alivia a lombar."),
-    ],
-  },
-  "fraco-ombros": {
-    titulo: "Ponto fraco: ombros",
-    resumo: "Força e estabilidade para o ombro, com atenção aos músculos de trás e das costas.",
-    itens: [
-      i("desenvolvimento", "3 séries × 8 a 12 repetições", "1 a 2 min", "Força de empurrar acima da cabeça."),
-      i("elevacao-lateral", "3 séries × 12 a 15 repetições", "1 min", "Trabalha o deltoide lateral, que dá largura e estabilidade."),
-      i("face-pull", "3 séries × 12 a 15 repetições", "1 min", "Fortalece a parte de trás do ombro e o manguito."),
-      i("remada-sentada", "3 séries × 10 a 12 repetições", "1 a 2 min", "Costas fortes dão base estável ao ombro."),
-      i("prancha", "3 séries × 30 a 40 segundos", "1 min", "O ombro também estabiliza o tronco no apoio."),
-    ],
-  },
-  "fraco-core": {
-    titulo: "Ponto fraco: core",
-    resumo: "Exercícios que ensinam o tronco a resistir ao movimento, mais úteis do que muitos abdominais.",
-    itens: [
-      i("prancha", "3 séries × 30 a 45 segundos", "1 min", "Estabiliza o tronco contra a gravidade."),
-      i("prancha-lateral", "3 séries × 20 a 30 segundos por lado", "1 min", "Fortalece as laterais do tronco e o glúteo médio."),
-      i("abdominal-polia", "3 séries × 10 a 15 repetições", "1 min", "Trabalha o reto abdominal com carga ajustável."),
-      i("elevacao-pernas", "3 séries × 8 a 12 repetições", "1 a 2 min", "Exige que o abdômen trave a pelve enquanto as pernas se movem."),
-      i("agachamento", "3 séries × 8 a 10 repetições", "2 min", "Põe o core para trabalhar sob carga, como na vida real."),
-    ],
+    Posterior: ["stiff", "mesa-flexora", "levantamento-terra", "elevacao-pelvica", "cadeira-flexora", "coice-polia"],
+    Quadríceps: ["afundo", "agachamento-bulgaro", "agachamento", "leg-press", "agachamento-hack", "cadeira-extensora"],
+    Core: ["prancha-lateral", "prancha", "dead-bug", "elevacao-pernas", "abdominal-polia", "abdominal-roda"],
   },
 };
 
-export const treinoDe = (obj: ObjetivoId, ponto: PontoFracoId) => TREINOS[obj === "fraco" ? `fraco-${ponto}` : obj];
+// Quais categorias cada tipo de sessão treina (o mesmo grupo pode aparecer mais de uma vez).
+const BASE: Record<Tipo, Slot[]> = {
+  fullA: ["Quadríceps", "Peito", "Costas", "Posterior", "Ombros", "Core"],
+  fullB: ["Posterior", "Peito", "Costas", "Quadríceps", "Ombros", "Core"],
+  upper: ["Peito", "Costas", "Ombros", "Bíceps", "Tríceps"],
+  lower: ["Quadríceps", "Posterior", "Quadríceps", "Posterior", "Panturrilha", "Core"],
+  peitoTriceps: ["Peito", "Peito", "Peito", "Tríceps", "Tríceps"],
+  costasBiceps: ["Costas", "Costas", "Costas", "Bíceps", "Bíceps"],
+  pernas: ["Quadríceps", "Quadríceps", "Posterior", "Posterior", "Panturrilha"],
+  ombros: ["Ombros", "Ombros", "Ombros", "Core"],
+  fullLeve: ["Quadríceps", "Costas", "Peito", "Posterior", "Panturrilha"],
+};
+export const MODELOS: Record<Modelo, Record<Tipo, Slot[]>> = {
+  saude: BASE,
+  volei: {
+    ...BASE,
+    fullA: ["Quadríceps", "Salto", "Posterior", "Panturrilha", "Core", "Costas"],
+    fullB: ["Quadríceps", "Salto", "Posterior", "Panturrilha", "Core", "Ombros"],
+    upper: ["Costas", "Peito", "Ombros", "Ombros", "Costas"],
+    lower: ["Quadríceps", "Salto", "Posterior", "Panturrilha", "Core"],
+    pernas: ["Quadríceps", "Salto", "Quadríceps", "Posterior", "Panturrilha"],
+  },
+  futebol: {
+    ...BASE,
+    fullA: ["Posterior", "Posterior", "Quadríceps", "Core", "Core", "Costas"],
+    fullB: ["Posterior", "Posterior", "Quadríceps", "Core", "Core", "Peito"],
+    upper: ["Peito", "Costas", "Ombros", "Costas", "Bíceps"],
+    lower: ["Posterior", "Posterior", "Quadríceps", "Quadríceps", "Core", "Core"],
+    pernas: ["Posterior", "Posterior", "Quadríceps", "Quadríceps", "Panturrilha"],
+  },
+};
+
+export const TITULOS: Record<Tipo, string> = {
+  fullA: "Treino A · Corpo inteiro", fullB: "Treino B · Corpo inteiro", upper: "Superiores", lower: "Inferiores",
+  peitoTriceps: "Peito e Tríceps", costasBiceps: "Costas e Bíceps", pernas: "Pernas", ombros: "Ombros e Core", fullLeve: "Full Body leve",
+};
+
+// dias: 0 = segunda ... 4 = sexta. Garantem 48 a 72 h entre sessões que treinam o mesmo grupo.
+export const PLANOS: Record<Freq, { tipos: Tipo[]; dias: number[]; divisao: string; nome: string }> = {
+  2: { tipos: ["fullA", "fullB"], dias: [0, 3], nome: "Full Body A/B", divisao: "Full Body (Treino A e B): o corpo inteiro em todas as sessões, com pelo menos 48 horas de descanso entre elas." },
+  3: { tipos: ["fullA", "fullB", "fullA"], dias: [0, 2, 4], nome: "Full Body A/B", divisao: "Full Body (Treino A e B): o corpo inteiro em todas as sessões, com pelo menos 48 horas de descanso entre elas." },
+  4: { tipos: ["upper", "lower", "upper", "lower"], dias: [0, 1, 3, 4], nome: "Superiores/Inferiores", divisao: "Superiores e Inferiores: cada grupo é treinado 2 vezes por semana, com cerca de 72 horas entre as sessões." },
+  5: { tipos: ["peitoTriceps", "costasBiceps", "pernas", "ombros", "fullLeve"], dias: [0, 1, 2, 3, 4], nome: "Divisão por grupos", divisao: "Divisão por grupos: cada grupo tem o seu dia. O Full Body leve da sexta usa só 2 séries e carga moderada, sem exercícios principais de ombro (treinados na quinta)." },
+};
+export const NOMES_DIAS = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
 
 export const DICAS = [
-  "Treine 2 a 3 vezes por semana, com cerca de 48 horas de descanso entre treinos dos mesmos músculos.",
+  "O descanso de 48 a 72 horas entre sessões do mesmo grupo muscular segue as recomendações do ACSM.",
   "Escolha uma carga que deixe 1 a 3 repetições de reserva no fim de cada série, com técnica boa.",
   "Aqueça por 5 a 10 minutos antes. Se sentir dor (não o cansaço normal do músculo), pare.",
 ];
+export const NOTA_PLIOMETRIA =
+  "Saltos: comece com poucas repetições, aterrisse suave (joelhos alinhados aos pés), faça saltos no máximo em 2 sessões por semana, com 48 horas entre elas, e só com uma base de força e sem dor. Peça orientação ao educador físico.";
