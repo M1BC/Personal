@@ -4,7 +4,7 @@ import type { Config } from "tailwindcss";
 const v = (nome: string) => `rgb(var(--${nome}) / <alpha-value>)`;
 
 const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}", "./hooks/**/*.{ts,tsx}", "./data/**/*.{ts,tsx}"],
   future: { hoverOnlyWhenSupported: true },
   theme: {
     extend: {
