@@ -10,9 +10,9 @@ export const FREQUENCIAS: Freq[] = [2, 3, 4, 5];
 
 export const OBJETIVOS = [
   { id: "saude", nome: "Saúde Geral", sub: "Multiarticulares, corpo todo" },
-  { id: "volei", nome: "Vôlei (Potência e Salto)", sub: "Pernas explosivas e aterrissagem" },
-  { id: "futebol", nome: "Futebol (Força e Agilidade)", sub: "Posterior, core e estabilidade" },
-  { id: "fraco", nome: "Fortalecer Ponto Fraco", sub: "Foco em um músculo" },
+  { id: "volei", nome: "Vôlei (Potência e Salto)", sub: "Pliometria, impulsão e tornozelo" },
+  { id: "futebol", nome: "Futebol (Força e Agilidade)", sub: "Posterior, joelho e core" },
+  { id: "fraco", nome: "Fortalecer Ponto Fraco", sub: "100% focado em um músculo" },
 ] as const;
 export type ObjetivoId = (typeof OBJETIVOS)[number]["id"];
 
@@ -23,31 +23,57 @@ export const PONTOS_FRACOS: { id: GrupoMuscular; nome: string }[] = [
   { id: "core", nome: "Core" }, { id: "lombar", nome: "Lombar" },
 ];
 
-export const MENSAGEM_POUCOS = "Ainda não temos exercícios suficientes para este grupo. Em breve adicionaremos mais!";
+// ---------- Ponto Fraco: treino 100% focado em um músculo ----------
+export const MIN_FOCO = 4; // menos que isso: mensagem de "poucos exercícios"
+export const MAX_FOCO = 5;
+export const MAX_SESSOES_FOCO = 3; // o mesmo músculo não é treinado em dias seguidos (48 h entre sessões)
 
-export const PLIOMETRICOS = ["agachamento-salto", "box-jump"];
+export const mensagemPoucos = (n: number): string =>
+  n === 0
+    ? "Ainda não temos exercícios para este grupo. Em breve adicionaremos mais."
+    : `Temos apenas ${n} ${n === 1 ? "exercício" : "exercícios"} para este grupo no momento. Em breve adicionaremos mais.`;
 
-// Exercícios multiarticulares (vários músculos e articulações). Os demais são considerados isolados.
-export const MULTI = new Set([
-  "agachamento", "supino-reto", "supino-inclinado", "supino-halteres", "flexao", "puxada-frente", "remada-curvada",
-  "remada-sentada", "remada-maquina", "remada-unilateral", "remada-cavalinho", "barra-fixa", "leg-press", "agachamento-hack",
-  "afundo", "agachamento-bulgaro", "levantamento-terra", "stiff", "elevacao-pelvica", "desenvolvimento",
-  "desenvolvimento-militar", "supino-fechado", "mergulho-paralelas", "agachamento-salto", "box-jump",
-]);
+// Ordem dos exercícios por ângulos diferentes (os que não estiverem na lista entram depois).
+export const FOCO_ORDEM: Record<GrupoMuscular, string[]> = {
+  peitoral: ["supino-reto", "supino-inclinado", "crucifixo", "peck-deck", "flexao", "supino-halteres"],
+  dorsais: ["puxada-frente", "remada-curvada", "remada-sentada", "pulldown-braco-reto", "remada-unilateral", "remada-maquina", "barra-fixa", "remada-cavalinho"],
+  ombros: ["desenvolvimento-militar", "elevacao-lateral", "elevacao-frontal", "face-pull", "crucifixo-inverso", "desenvolvimento"],
+  biceps: ["rosca-direta", "rosca-martelo", "rosca-scott", "rosca-alternada", "rosca-polia", "rosca-concentrada"],
+  triceps: ["supino-fechado", "triceps-corda", "triceps-testa", "triceps-frances", "mergulho-paralelas", "triceps-coice"],
+  quadriceps: ["agachamento", "leg-press", "agachamento-bulgaro", "agachamento-hack", "afundo", "cadeira-extensora"],
+  posteriores: ["stiff", "mesa-flexora", "levantamento-terra", "cadeira-flexora"],
+  gluteos: ["elevacao-pelvica", "coice-polia"],
+  panturrilhas: ["panturrilha-em-pe", "panturrilha-sentada", "panturrilha-leg-press", "panturrilha-unilateral", "panturrilha-burrinho", "panturrilha-smith"],
+  core: ["prancha", "abdominal-polia", "prancha-lateral", "elevacao-pernas", "dead-bug", "abdominal-roda"],
+  lombar: [],
+};
+
+export const PLANO_FOCO: Record<Freq, { dias: number[]; divisao: string }> = {
+  2: { dias: [0, 3], divisao: "Duas sessões por semana (segunda e quinta), com pelo menos 48 horas de descanso entre elas." },
+  3: { dias: [0, 2, 4], divisao: "Três sessões por semana (segunda, quarta e sexta), com pelo menos 48 horas de descanso entre elas." },
+  4: { dias: [0, 2, 4], divisao: "Três sessões por semana (segunda, quarta e sexta), com pelo menos 48 horas de descanso entre elas." },
+  5: { dias: [0, 2, 4], divisao: "Três sessões por semana (segunda, quarta e sexta), com pelo menos 48 horas de descanso entre elas." },
+};
+export const NOTA_FOCO_FREQ =
+  "No Ponto Fraco, o músculo escolhido é treinado no máximo 3 vezes por semana, para ter pelo menos 48 horas de descanso entre as sessões.";
+
+// ---------- Pliometria ----------
+export const PLIOMETRICOS = ["agachamento-salto", "box-jump", "saltos-tornozelo"]; // a ordem define a rotação entre as sessões
 
 export const ISOMETRICOS: Record<string, string> = { prancha: "30 a 45 segundos", "prancha-lateral": "20 a 30 segundos por lado" };
 export const UNILATERAIS: Record<string, string> = {
   afundo: " por perna", "agachamento-bulgaro": " por perna", "panturrilha-unilateral": " por perna", "remada-unilateral": " por lado",
 };
+export const UNIDADE_ESPECIAL: Record<string, string> = { "saltos-tornozelo": "saltos" };
 
 export interface Presc { sets: number; reps: string; rest: string }
 export const PRESC = {
   saude: { sets: 3, reps: "10 a 12", rest: "60 s" },
-  volei: { sets: 4, reps: "6 a 8", rest: "90 s" },
-  salto: { sets: 4, reps: "5", rest: "90 s" },
+  volei: { sets: 3, reps: "6 a 8", rest: "90 s" },
+  salto: { sets: 3, reps: "5", rest: "90 s" },
+  pogo: { sets: 3, reps: "10 a 15", rest: "90 s" },
   futebol: { sets: 3, reps: "8 a 10", rest: "90 s" },
   foco: { sets: 3, reps: "10 a 15", rest: "60 s" },
-  manut: { sets: 2, reps: "8 a 10", rest: "90 s" },
 } satisfies Record<string, Presc>;
 
 type Modelo = "saude" | "volei" | "futebol";
@@ -68,6 +94,7 @@ export const ORDEM: Record<Modelo, Partial<Record<Cat, string[]>>> = {
   volei: {
     Quadríceps: ["agachamento", "leg-press", "agachamento-hack", "afundo", "agachamento-bulgaro", "cadeira-extensora"],
     Posterior: ["elevacao-pelvica", "stiff", "levantamento-terra", "mesa-flexora", "cadeira-flexora", "coice-polia"],
+    Panturrilha: ["panturrilha-em-pe", "panturrilha-unilateral", "panturrilha-burrinho", "panturrilha-sentada", "panturrilha-leg-press", "panturrilha-smith"],
     Costas: ["puxada-frente", "remada-sentada", "remada-curvada", "barra-fixa"],
     Ombros: ["face-pull", "desenvolvimento", "crucifixo-inverso", "elevacao-lateral"],
     Core: ["prancha", "prancha-lateral", "elevacao-pernas", "dead-bug", "abdominal-roda", "abdominal-polia"],
@@ -95,11 +122,11 @@ export const MODELOS: Record<Modelo, Record<Tipo, Slot[]>> = {
   saude: BASE,
   volei: {
     ...BASE,
-    fullA: ["Quadríceps", "Salto", "Posterior", "Panturrilha", "Core", "Costas"],
-    fullB: ["Quadríceps", "Salto", "Posterior", "Panturrilha", "Core", "Ombros"],
+    fullA: ["Quadríceps", "Salto", "Salto", "Panturrilha", "Core", "Costas"],
+    fullB: ["Quadríceps", "Salto", "Salto", "Panturrilha", "Core", "Ombros"],
     upper: ["Costas", "Peito", "Ombros", "Ombros", "Costas"],
-    lower: ["Quadríceps", "Salto", "Posterior", "Panturrilha", "Core"],
-    pernas: ["Quadríceps", "Salto", "Quadríceps", "Posterior", "Panturrilha"],
+    lower: ["Quadríceps", "Salto", "Salto", "Posterior", "Panturrilha", "Core"],
+    pernas: ["Quadríceps", "Salto", "Salto", "Salto", "Posterior", "Panturrilha"],
   },
   futebol: {
     ...BASE,
