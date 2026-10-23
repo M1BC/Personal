@@ -5,8 +5,17 @@ import {
 } from "@/data/treinos";
 import type { Exercicio, GrupoMuscular } from "./types";
 
-export interface ItemFicha { id: string; series: string; descanso: string; foco?: boolean }
-export interface DiaFicha { dia: string; titulo: string; leve?: boolean; itens: ItemFicha[] }
+export interface ItemFicha {
+  id: string;
+  series: string; // texto pronto, ex.: "4 × 6 a 8 repetições"
+  descanso: string;
+  sets: number;
+  repsAlvo: string; // ex.: "6 a 8" (ou segundos, nos isométricos)
+  unidade: "reps" | "segundos";
+  lado: string; // "", "por perna" ou "por lado"
+  foco?: boolean;
+}
+export interface DiaFicha { dia: string; diaIdx: number; titulo: string; leve?: boolean; itens: ItemFicha[] }
 export interface Ficha { titulo: string; divisao: string; justificativa: string; notas: string[]; dias: DiaFicha[] }
 export type Resultado = { ficha: Ficha } | { erro: string };
 
@@ -57,8 +66,11 @@ function distintos(slots: Slot[], n: number): Slot[] {
 
 function formatar(e: Exercicio, p: Presc, leve: boolean): ItemFicha {
   const sets = leve ? Math.min(2, p.sets) : p.sets;
-  const reps = ISOMETRICOS[e.id] ?? `${p.reps} repetições${UNILATERAIS[e.id] ?? ""}`;
-  return { id: e.id, series: `${sets} × ${reps}`, descanso: p.rest };
+  const iso = ISOMETRICOS[e.id];
+  const reps = iso ?? `${p.reps} repetições${UNILATERAIS[e.id] ?? ""}`;
+  const lado = iso ? (iso.includes("por lado") ? "por lado" : "") : (UNILATERAIS[e.id] ?? "").trim();
+  const repsAlvo = iso ? iso.replace(/ segundos( por lado)?/, "") : p.reps;
+  return { id: e.id, series: `${sets} × ${reps}`, descanso: p.rest, sets, repsAlvo, unidade: iso ? "segundos" : "reps", lado };
 }
 
 function justificativa(obj: ObjetivoId, grupo: GrupoMuscular) {
@@ -123,7 +135,7 @@ export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): 
       const base = PRESC[obj];
       itens = escolher(slots, variante, modelo).map((e) => formatar(e, PLIOMETRICOS.includes(e.id) ? PRESC.salto : base, leve));
     }
-    return { dia: NOMES_DIAS[dia], titulo: TITULOS[tipo], leve, itens };
+    return { dia: NOMES_DIAS[dia], diaIdx: dia, titulo: TITULOS[tipo], leve, itens };
   });
 
   const notas: string[] = [];
