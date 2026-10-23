@@ -1,7 +1,7 @@
 # Treino & Nutrição Consciente
 
 App educativo de treino e nutrição (Next.js 14, React 18, TypeScript e Tailwind CSS).
-Os registros do caderno de treinos ficam no `localStorage` do navegador, sem servidor nem banco de dados.
+Não há servidor nem banco de dados: o app roda inteiro no navegador. As preferências (tema, peso e distribuição de refeições) ficam no `localStorage`.
 
 ## Rodar no computador
 
@@ -27,10 +27,9 @@ npm start
 
 ## Estrutura
 
-- `app/`: páginas (Anatomia, Refeições, Suplementos, Treinos, Treino ativo, Histórico)
+- `app/`: páginas (Anatomia, Refeições, Suplementos, Treinos)
 - `components/`: componentes de tela
 - `data/`: bancos de dados (exercícios, alimentos, fichas de treino)
-- `lib/`: cálculos e utilitários (inclui `historico.ts`, o acesso ao `localStorage`)
-- `hooks/`: hooks do React (`useHistoricoTreinos`)
+- `lib/`: cálculos e utilitários (nutrição, cardápios, montagem das fichas de treino)
 
 Conteúdo educativo: não substitui médico, nutricionista ou educador físico.
