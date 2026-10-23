@@ -1,21 +1,13 @@
 import { EXERCICIOS, categoriaDe } from "@/data/exercicios";
 import {
-  DICAS, ISOMETRICOS, MENSAGEM_POUCOS, MODELOS, MULTI, NOMES_DIAS, NOTA_PLIOMETRIA, ORDEM, PLANOS, PLIOMETRICOS, PONTOS_FRACOS,
-  PRESC, TITULOS, UNILATERAIS, type Cat, type Freq, type ObjetivoId, type Presc, type Slot, type Tipo,
+  DICAS, FOCO_ORDEM, ISOMETRICOS, MAX_FOCO, MIN_FOCO, MODELOS, NOMES_DIAS, NOTA_FOCO_FREQ, NOTA_PLIOMETRIA, ORDEM, PLANOS,
+  PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS, PRESC, TITULOS, UNIDADE_ESPECIAL, UNILATERAIS, mensagemPoucos,
+  type Cat, type Freq, type ObjetivoId, type Presc, type Slot, type Tipo,
 } from "@/data/treinos";
 import type { Exercicio, GrupoMuscular } from "./types";
 
-export interface ItemFicha {
-  id: string;
-  series: string; // texto pronto, ex.: "4 × 6 a 8 repetições"
-  descanso: string;
-  sets: number;
-  repsAlvo: string; // ex.: "6 a 8" (ou segundos, nos isométricos)
-  unidade: "reps" | "segundos";
-  lado: string; // "", "por perna" ou "por lado"
-  foco?: boolean;
-}
-export interface DiaFicha { dia: string; diaIdx: number; titulo: string; leve?: boolean; itens: ItemFicha[] }
+export interface ItemFicha { id: string; series: string; descanso: string }
+export interface DiaFicha { dia: string; titulo: string; leve?: boolean; itens: ItemFicha[] }
 export interface Ficha { titulo: string; divisao: string; justificativa: string; notas: string[]; dias: DiaFicha[] }
 export type Resultado = { ficha: Ficha } | { erro: string };
 
@@ -50,60 +42,63 @@ function escolher(slots: Slot[], variante: number, modelo: Modelo): Exercicio[] 
   return saida;
 }
 
-// Primeiras n vagas, preferindo grupos diferentes; se faltar, repete.
-function distintos(slots: Slot[], n: number): Slot[] {
-  const saida: Slot[] = [];
-  for (const s of slots) {
-    if (!saida.includes(s)) saida.push(s);
-    if (saida.length === n) return saida;
-  }
-  for (const s of slots) {
-    if (saida.length >= n) break;
-    saida.push(s);
-  }
-  return saida;
-}
-
 function formatar(e: Exercicio, p: Presc, leve: boolean): ItemFicha {
   const sets = leve ? Math.min(2, p.sets) : p.sets;
-  const iso = ISOMETRICOS[e.id];
-  const reps = iso ?? `${p.reps} repetições${UNILATERAIS[e.id] ?? ""}`;
-  const lado = iso ? (iso.includes("por lado") ? "por lado" : "") : (UNILATERAIS[e.id] ?? "").trim();
-  const repsAlvo = iso ? iso.replace(/ segundos( por lado)?/, "") : p.reps;
-  return { id: e.id, series: `${sets} × ${reps}`, descanso: p.rest, sets, repsAlvo, unidade: iso ? "segundos" : "reps", lado };
+  const reps = ISOMETRICOS[e.id] ?? `${p.reps} ${UNIDADE_ESPECIAL[e.id] ?? "repetições"}${UNILATERAIS[e.id] ?? ""}`;
+  return { id: e.id, series: `${sets} × ${reps}`, descanso: p.rest };
 }
 
-function justificativa(obj: ObjetivoId, grupo: GrupoMuscular) {
-  const nome = PONTOS_FRACOS.find((p) => p.id === grupo)?.nome.toLowerCase() ?? "músculo escolhido";
+function justificativa(obj: Exclude<ObjetivoId, "fraco">): string {
   switch (obj) {
     case "saude":
       return "Para Saúde Geral, usamos exercícios multiarticulares (agachamento, supino, remada), que trabalham vários músculos de uma vez e ensinam o corpo a se mover em conjunto. Três séries de 10 a 12 repetições, com 60 segundos de descanso, desenvolvem força e resistência sem sobrecarregar as articulações.";
     case "volei":
-      return "Para o Vôlei, focamos em exercícios explosivos para melhorar seu salto: força de pernas com carga moderada e velocidade alta, saltos para treinar a potência, e panturrilhas e core para a aterrissagem. O descanso de 90 segundos é essencial para recuperar a força entre as séries.";
+      return "Para o Vôlei, o foco é a pliometria: exercícios explosivos que melhoram a impulsão e a rigidez do tornozelo, isto é, a capacidade do tornozelo e do tendão de Aquiles de funcionar como uma mola no salto e na aterrissagem. A força de pernas (agachamento) e a panturrilha em pé sustentam esse trabalho, com poucas repetições e velocidade alta. O descanso de 90 segundos é essencial para recuperar a força entre as séries.";
     case "futebol":
-      return "Para o Futebol, priorizamos a parte de trás da coxa (stiff, mesa flexora), o core e os exercícios de estabilidade, que ajudam a acelerar, frear e mudar de direção com menos risco de lesão. O descanso de 90 segundos mantém a qualidade de cada série.";
-    default:
-      return `Para fortalecer seu ponto fraco (${nome}), colocamos 2 exercícios focados nele em cada sessão em que ele é treinado, com 3 séries e descanso curto de 60 segundos, e 2 exercícios de manutenção para o resto do corpo. O músculo-foco não é treinado em dias seguidos, para ter tempo de se recuperar.`;
+      return "Para o Futebol, o foco é a prevenção de lesões e a força da parte de trás da coxa (stiff, mesa flexora), que ajuda a estabilizar e proteger o joelho nas freadas e nas mudanças de direção. O afundo treina uma perna de cada vez, como no jogo, e o core estável mantém o tronco firme na hora de mudar de direção. O descanso de 90 segundos mantém a qualidade de cada série.";
   }
 }
 
+// Ponto Fraco: 100% focado em um músculo, sem exercícios de manutenção para o resto do corpo.
+function montarFoco(freq: Freq, grupo: GrupoMuscular): Resultado {
+  const nome = PONTOS_FRACOS.find((p) => p.id === grupo)?.nome ?? "o músculo escolhido";
+  const doGrupo = EXERCICIOS.filter((e) => e.grupo_primario === grupo && !PLIOMETRICOS.includes(e.id));
+  if (doGrupo.length < MIN_FOCO) return { erro: mensagemPoucos(doGrupo.length) };
+
+  const ordem = FOCO_ORDEM[grupo];
+  const posicao = (e: Exercicio) => (ordem.includes(e.id) ? ordem.indexOf(e.id) : 100 + doGrupo.indexOf(e));
+  const lista = [...doGrupo].sort((a, b) => posicao(a) - posicao(b));
+  const n = Math.min(MAX_FOCO, lista.length);
+  const plano = PLANO_FOCO[freq];
+
+  const dias: DiaFicha[] = plano.dias.map((dia, i) => {
+    const inicio = lista.length > n ? i % lista.length : 0; // gira a lista quando há mais exercícios do que cabem
+    const escolhidos = Array.from({ length: n }, (_, k) => lista[(inicio + k) % lista.length]);
+    return { dia: NOMES_DIAS[dia], titulo: `${nome} · sessão ${i + 1}`, itens: escolhidos.map((e) => formatar(e, PRESC.foco, false)) };
+  });
+
+  const notas: string[] = [];
+  if (freq >= 4) notas.push(NOTA_FOCO_FREQ);
+  notas.push(...DICAS);
+  return {
+    ficha: {
+      titulo: `Foco em ${nome} · ${dias.length}x por semana`,
+      divisao: plano.divisao,
+      justificativa: `Este treino é focado em ${nome}. Como é um treino de fortalecimento específico, não se esqueça de manter o resto do corpo ativo em outros dias da semana. Cada exercício ataca o músculo por um ângulo diferente, em 3 séries de 10 a 15 repetições, com 60 segundos de descanso.`,
+      notas,
+      dias,
+    },
+  };
+}
+
 export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): Resultado {
+  if (obj === "fraco") return montarFoco(freq, grupo);
+
   const plano = PLANOS[freq];
-  const modelo: Modelo = obj === "fraco" ? "saude" : obj;
-  const catFoco = categoriaDe(grupo);
-
-  let foco: Exercicio[] = [];
-  if (obj === "fraco") {
-    const doGrupo = EXERCICIOS.filter((e) => e.grupo_primario === grupo && !PLIOMETRICOS.includes(e.id));
-    foco = [...doGrupo.filter((e) => !MULTI.has(e.id)), ...doGrupo.filter((e) => MULTI.has(e.id))]; // isolados primeiro
-    if (foco.length < 2) return { erro: MENSAGEM_POUCOS };
-  }
-  // Se houver pelo menos 2 isolados, o foco usa só eles (e gira entre eles, se houver mais de 2).
-  const isolados = foco.filter((e) => !MULTI.has(e.id));
-  const baseFoco = isolados.length >= 2 ? isolados : foco;
-
+  const modelo: Modelo = obj;
+  const base = PRESC[obj];
   const ocorrencias: Partial<Record<Tipo, number>> = {};
-  let saltos = 0, ultimoSalto = -9, ultimoFoco = -9, nFoco = 0;
+  let saltos = 0, ultimoSalto = -9;
 
   const dias: DiaFicha[] = plano.tipos.map((tipo, i) => {
     const dia = plano.dias[i];
@@ -119,23 +114,11 @@ export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): 
       else slots = slots.filter((s) => s !== "Salto");
     }
 
-    let itens: ItemFicha[];
-    if (obj === "fraco") {
-      const incluiFoco = slots.includes(catFoco) && dia - ultimoFoco >= 2;
-      if (incluiFoco) {
-        ultimoFoco = dia;
-        const par = [baseFoco[(nFoco * 2) % baseFoco.length], baseFoco[(nFoco * 2 + 1) % baseFoco.length]];
-        nFoco++;
-        const manut = escolher(distintos(slots.filter((s) => s !== catFoco), 2), variante, "saude");
-        itens = [...par.map((e) => ({ ...formatar(e, PRESC.foco, leve), foco: true })), ...manut.map((e) => formatar(e, PRESC.manut, leve))];
-      } else {
-        itens = escolher(distintos(slots, 3), variante, "saude").map((e) => formatar(e, PRESC.manut, leve));
-      }
-    } else {
-      const base = PRESC[obj];
-      itens = escolher(slots, variante, modelo).map((e) => formatar(e, PLIOMETRICOS.includes(e.id) ? PRESC.salto : base, leve));
-    }
-    return { dia: NOMES_DIAS[dia], diaIdx: dia, titulo: TITULOS[tipo], leve, itens };
+    const itens = escolher(slots, variante, modelo).map((e) => {
+      const p = e.id === "saltos-tornozelo" ? PRESC.pogo : PLIOMETRICOS.includes(e.id) ? PRESC.salto : base;
+      return formatar(e, p, leve);
+    });
+    return { dia: NOMES_DIAS[dia], titulo: TITULOS[tipo], leve, itens };
   });
 
   const notas: string[] = [];
@@ -145,12 +128,6 @@ export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): 
   notas.push(...DICAS);
 
   return {
-    ficha: {
-      titulo: `${plano.nome} · ${freq}x por semana`,
-      divisao: plano.divisao,
-      justificativa: justificativa(obj, grupo),
-      notas,
-      dias,
-    },
+    ficha: { titulo: `${plano.nome} · ${freq}x por semana`, divisao: plano.divisao, justificativa: justificativa(obj), notas, dias },
   };
 }
