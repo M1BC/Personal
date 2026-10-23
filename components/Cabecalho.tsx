@@ -9,6 +9,7 @@ const LINKS = [
   ["/refeicoes", "Refeições"],
   ["/suplementos", "Suplementos"],
   ["/treinos", "Treinos"],
+  ["/historico", "Histórico"],
 ] as const;
 
 export function Cabecalho() {

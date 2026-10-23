@@ -1,25 +1,55 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EXERCICIOS, GRUPOS } from "@/data/exercicios";
 import { FREQUENCIAS, OBJETIVOS, PONTOS_FRACOS, type Freq, type ObjetivoId } from "@/data/treinos";
+import { useHistoricoTreinos } from "@/hooks/useHistoricoTreinos";
+import { ultimoRascunho, urlAtivo, type Rascunho } from "@/lib/historico";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
 import { Modal } from "./Modal";
 
 const OPCAO = "min-h-[56px] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
 const CHIP = "min-h-[48px] border-2 border-tinta px-5 py-2 font-bold transition-transform duration-100 ease-out active:scale-[0.97]";
+const AVISO = "mb-6 max-w-[70ch] border-l-4 border-primario bg-superficie p-4 text-lg";
+const LINK = "font-bold underline underline-offset-4";
 
 export function Treinos() {
   const [freq, setFreq] = useState<Freq>(3);
   const [obj, setObj] = useState<ObjetivoId>("saude");
   const [grupo, setGrupo] = useState<GrupoMuscular>("ombros");
   const [aberto, setAberto] = useState<string | null>(null);
+  const [hoje, setHoje] = useState<number | null>(null); // 0 = segunda ... 6 = domingo (só depois de carregar)
+  const [emAndamento, setEmAndamento] = useState<Rascunho | null>(null);
+  const { treinouHoje } = useHistoricoTreinos();
   const fechar = useCallback(() => setAberto(null), []);
   const r = useMemo(() => montarFicha(freq, obj, grupo), [freq, obj, grupo]);
   const ex = aberto ? EXERCICIOS.find((e) => e.id === aberto) : null;
 
+  useEffect(() => {
+    setHoje((new Date().getDay() + 6) % 7);
+    setEmAndamento(ultimoRascunho());
+  }, []);
+
+  // Próxima sessão da ficha a partir de hoje (se hoje não tem treino, a seguinte; no fim de semana, a de segunda).
+  const dias = "erro" in r ? [] : r.ficha.dias;
+  const achado = hoje === null ? -1 : dias.findIndex((d) => d.diaIdx >= hoje);
+  const proximo = hoje === null || dias.length === 0 ? -1 : achado >= 0 ? achado : 0;
+
   return (
     <div>
+      {treinouHoje && (
+        <p role="status" className={AVISO}>
+          Você já treinou hoje. <Link href="/historico" className={LINK}>Ver histórico?</Link>
+        </p>
+      )}
+      {emAndamento && (
+        <p role="status" className={AVISO}>
+          Treino em andamento: {emAndamento.diaPlanejado} · {emAndamento.titulo}.{" "}
+          <Link href={urlAtivo(emAndamento.f, emAndamento.o, emAndamento.g, emAndamento.d)} className={LINK}>Continuar treino</Link>
+        </p>
+      )}
+
       <p className="text-lg font-semibold">1. Quantas vezes por semana você quer treinar?</p>
       <div role="group" aria-label="Frequência semanal" className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {FREQUENCIAS.map((f) => (
@@ -60,12 +90,22 @@ export function Treinos() {
             <h2 className="text-4xl font-extrabold leading-none tracking-tight">{r.ficha.titulo}</h2>
             <p className="mt-4 max-w-[70ch] text-xl">{r.ficha.justificativa}</p>
             <p className="mt-3 max-w-[70ch] text-base text-suave">{r.ficha.divisao}</p>
+            {proximo >= 0 && (
+              <Link href={urlAtivo(freq, obj, grupo, proximo)} className="btn mt-5">
+                {dias[proximo].diaIdx === hoje ? "Iniciar o treino de hoje" : `Iniciar o próximo treino (${dias[proximo].dia})`}
+              </Link>
+            )}
 
             <div className="mt-6 grid gap-6 lg:grid-cols-2">
               {r.ficha.dias.map((d, i) => (
                 <section key={i} className="bg-superficie p-6">
-                  <h3 className="text-2xl font-extrabold leading-tight">{d.dia}</h3>
-                  <p className="text-lg text-suave">{d.titulo}</p>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-2xl font-extrabold leading-tight">{d.dia}</h3>
+                      <p className="text-lg text-suave">{d.titulo}</p>
+                    </div>
+                    <Link href={urlAtivo(freq, obj, grupo, i)} className="btn">Iniciar treino</Link>
+                  </div>
                   <ol className="mt-3 divide-y divide-linha border-y border-linha">
                     {d.itens.map((it, n) => {
                       const e = EXERCICIOS.find((x) => x.id === it.id);
