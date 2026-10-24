@@ -55,6 +55,10 @@ input, select, textarea { font-size: 16px; }
 .animar-fundo { animation: fundo 180ms ease-out; }
 .animar { animation: entra 220ms cubic-bezier(0.23, 1, 0.32, 1); }
 
+/* Músculo principal do exercício escolhido: brilho vermelho suave. */
+@keyframes acende { from { opacity: 0.4; } to { opacity: 1; } }
+.musculo-ativo { filter: drop-shadow(0 0 4px rgb(var(--primario) / 0.65)); animation: acende 320ms ease-out; }
+
 @media (prefers-reduced-motion: reduce) {
-  .animar, .animar-folha, .animar-fundo { animation: none; }
+  .animar, .animar-folha, .animar-fundo, .musculo-ativo { animation: none; }
 }
