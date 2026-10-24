@@ -1,4 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+
+type CookieNovo = { name: string; value: string; options: CookieOptions };
 import { cookies } from "next/headers";
 
 // Cliente do Supabase para rotas do servidor (lê e grava a sessão nos cookies).
@@ -7,7 +9,7 @@ export function criarClienteServidor() {
   return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: {
       getAll: () => loja.getAll(),
-      setAll: (lista) => {
+      setAll: (lista: CookieNovo[]) => {
         try {
           lista.forEach(({ name, value, options }) => loja.set(name, value, options));
         } catch {
