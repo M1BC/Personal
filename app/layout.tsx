@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Cabecalho } from "@/components/Cabecalho";
 import { PerfilProvider } from "@/components/PerfilProvider";
+import { RegistrarSW } from "@/components/RegistrarSW";
 import { CAIXA } from "@/lib/layout";
 
 // Aplica o tema salvo antes da página aparecer, para não piscar. Padrão: escuro.
@@ -10,6 +11,10 @@ const SCRIPT_TEMA = `try{var t=localStorage.getItem("tema");document.documentEle
 export const metadata: Metadata = {
   title: "Treino & Nutrição Consciente",
   description: "Entenda o porquê de cada exercício e de cada grama de proteína.",
+  applicationName: "Treino & Nutrição",
+  appleWebApp: { capable: true, title: "Treino & Nutrição", statusBarStyle: "black-translucent" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -26,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
       </head>
       <body className="font-sans antialiased">
+        <RegistrarSW />
         <PerfilProvider>
           <Cabecalho />
           <main>{children}</main>
