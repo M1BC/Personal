@@ -1,14 +1,25 @@
 import { EXERCICIOS, categoriaDe } from "@/data/exercicios";
 import {
-  DICAS, FOCO_ORDEM, ISOMETRICOS, MAX_FOCO, MIN_FOCO, MODELOS, NOMES_DIAS, NOTA_FOCO_FREQ, NOTA_PLIOMETRIA, ORDEM, PLANOS,
-  PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS, PRESC, TITULOS, UNIDADE_ESPECIAL, UNILATERAIS, mensagemPoucos,
-  type Cat, type Freq, type ObjetivoId, type Presc, type Slot, type Tipo,
+  DICAS, FOCO_ORDEM, ISOMETRICOS, MAX_FOCO, MENSAGEM_VARIADA, MIN_FOCO, MODELOS, NOMES_DIAS, NOTA_CICLO_MEIO, NOTA_FOCO_FREQ,
+  NOTA_PLIOMETRIA, ORDEM, PLANOS, PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS, PRESC, PRESC_VARIADA, PRINCIPAIS, TITULOS,
+  UNIDADE_ESPECIAL, UNILATERAIS, mensagemPoucos,
+  type Cat, type Ciclo, type Freq, type ObjetivoId, type Presc, type Slot, type Tipo,
 } from "@/data/treinos";
 import type { Exercicio, GrupoMuscular } from "./types";
 
 export interface ItemFicha { id: string; series: string; descanso: string }
 export interface DiaFicha { dia: string; titulo: string; leve?: boolean; itens: ItemFicha[] }
-export interface Ficha { titulo: string; divisao: string; justificativa: string; notas: string[]; dias: DiaFicha[] }
+export interface Troca { dia: string; de: string; para: string }
+export interface Ficha {
+  titulo: string;
+  divisao: string;
+  justificativa: string;
+  notas: string[];
+  dias: DiaFicha[];
+  variada: boolean; // true na "Ficha Variada" (mais de 3 meses na mesma ficha)
+  trocas: Troca[]; // exercícios trocados na variação
+  avisoCiclo?: string; // mensagem exibida no topo da ficha
+}
 export type Resultado = { ficha: Ficha } | { erro: string };
 
 type Modelo = "saude" | "volei" | "futebol";
@@ -42,6 +53,36 @@ function escolher(slots: Slot[], variante: number, modelo: Modelo): Exercicio[] 
   return saida;
 }
 
+function posicao(modelo: Modelo, e: Exercicio): number {
+  const cat = categoriaDe(e.grupo_primario);
+  const ordem = ORDEM[modelo][cat] ?? ORDEM.saude[cat] ?? [];
+  const i = ordem.indexOf(e.id);
+  return i >= 0 ? i : 100 + EXERCICIOS.indexOf(e);
+}
+
+// Troca até 2 exercícios principais por variações do MESMO grupo muscular (nunca saltos nem isométricos).
+function variar(exercicios: Exercicio[], modelo: Modelo): { lista: Exercicio[]; trocas: { de: Exercicio; para: Exercicio }[] } {
+  const usados = new Set(exercicios.map((e) => e.id));
+  const lista = [...exercicios];
+  const trocas: { de: Exercicio; para: Exercicio }[] = [];
+  for (let i = 0; i < lista.length && trocas.length < 2; i++) {
+    const atual = lista[i];
+    if (!PRINCIPAIS.has(atual.id)) continue;
+    const alternativas = EXERCICIOS.filter(
+      (x) => x.grupo_primario === atual.grupo_primario && !PLIOMETRICOS.includes(x.id) && !usados.has(x.id)
+    ).sort((a, b) => Number(!PRINCIPAIS.has(a.id)) - Number(!PRINCIPAIS.has(b.id)) || posicao(modelo, a) - posicao(modelo, b));
+    const novo = alternativas[0];
+    if (!novo) continue;
+    usados.add(novo.id);
+    lista[i] = novo;
+    trocas.push({ de: atual, para: novo });
+  }
+  return { lista, trocas };
+}
+
+const avisoDoCiclo = (ciclo: Ciclo): string | undefined =>
+  ciclo === "longo" ? MENSAGEM_VARIADA : ciclo === "meio" ? NOTA_CICLO_MEIO : undefined;
+
 function formatar(e: Exercicio, p: Presc, leve: boolean): ItemFicha {
   const sets = leve ? Math.min(2, p.sets) : p.sets;
   const reps = ISOMETRICOS[e.id] ?? `${p.reps} ${UNIDADE_ESPECIAL[e.id] ?? "repetições"}${UNILATERAIS[e.id] ?? ""}`;
@@ -60,7 +101,7 @@ function justificativa(obj: Exclude<ObjetivoId, "fraco">): string {
 }
 
 // Ponto Fraco: 100% focado em um músculo, sem exercícios de manutenção para o resto do corpo.
-function montarFoco(freq: Freq, grupo: GrupoMuscular): Resultado {
+function montarFoco(freq: Freq, grupo: GrupoMuscular, ciclo: Ciclo): Resultado {
   const nome = PONTOS_FRACOS.find((p) => p.id === grupo)?.nome ?? "o músculo escolhido";
   const doGrupo = EXERCICIOS.filter((e) => e.grupo_primario === grupo && !PLIOMETRICOS.includes(e.id));
   if (doGrupo.length < MIN_FOCO) return { erro: mensagemPoucos(doGrupo.length) };
@@ -70,11 +111,19 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular): Resultado {
   const lista = [...doGrupo].sort((a, b) => posicao(a) - posicao(b));
   const n = Math.min(MAX_FOCO, lista.length);
   const plano = PLANO_FOCO[freq];
+  const variada = ciclo === "longo";
+  const presc = variada ? PRESC_VARIADA.foco : PRESC.foco;
+  const trocas: Troca[] = [];
 
   const dias: DiaFicha[] = plano.dias.map((dia, i) => {
     const inicio = lista.length > n ? i % lista.length : 0; // gira a lista quando há mais exercícios do que cabem
-    const escolhidos = Array.from({ length: n }, (_, k) => lista[(inicio + k) % lista.length]);
-    return { dia: NOMES_DIAS[dia], titulo: `${nome} · sessão ${i + 1}`, itens: escolhidos.map((e) => formatar(e, PRESC.foco, false)) };
+    let escolhidos = Array.from({ length: n }, (_, k) => lista[(inicio + k) % lista.length]);
+    if (variada) {
+      const v = variar(escolhidos, "saude");
+      escolhidos = v.lista;
+      trocas.push(...v.trocas.map((t) => ({ dia: `${NOMES_DIAS[dia]} (sessão ${i + 1})`, de: t.de.nome, para: t.para.nome })));
+    }
+    return { dia: NOMES_DIAS[dia], titulo: `${nome} · sessão ${i + 1}`, itens: escolhidos.map((e) => formatar(e, ISOMETRICOS[e.id] ? PRESC.foco : presc, false)) };
   });
 
   const notas: string[] = [];
@@ -82,21 +131,26 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular): Resultado {
   notas.push(...DICAS);
   return {
     ficha: {
-      titulo: `Foco em ${nome} · ${dias.length}x por semana`,
+      titulo: `Foco em ${nome} · ${dias.length}x por semana${variada ? " · Ficha variada" : ""}`,
       divisao: plano.divisao,
       justificativa: `Este treino é focado em ${nome}. Como é um treino de fortalecimento específico, não se esqueça de manter o resto do corpo ativo em outros dias da semana. Cada exercício ataca o músculo por um ângulo diferente, em 3 séries de 10 a 15 repetições, com 60 segundos de descanso.`,
       notas,
       dias,
+      variada,
+      trocas,
+      avisoCiclo: avisoDoCiclo(ciclo),
     },
   };
 }
 
-export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): Resultado {
-  if (obj === "fraco") return montarFoco(freq, grupo);
+export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular, ciclo: Ciclo = "novo"): Resultado {
+  if (obj === "fraco") return montarFoco(freq, grupo, ciclo);
 
   const plano = PLANOS[freq];
   const modelo: Modelo = obj;
-  const base = PRESC[obj];
+  const variada = ciclo === "longo";
+  const base = variada ? PRESC_VARIADA[obj] : PRESC[obj];
+  const trocas: Troca[] = [];
   const ocorrencias: Partial<Record<Tipo, number>> = {};
   let saltos = 0, ultimoSalto = -9;
 
@@ -114,8 +168,15 @@ export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): 
       else slots = slots.filter((s) => s !== "Salto");
     }
 
-    const itens = escolher(slots, variante, modelo).map((e) => {
-      const p = e.id === "saltos-tornozelo" ? PRESC.pogo : PLIOMETRICOS.includes(e.id) ? PRESC.salto : base;
+    let exercicios = escolher(slots, variante, modelo);
+    if (variada) {
+      const v = variar(exercicios, modelo);
+      exercicios = v.lista;
+      trocas.push(...v.trocas.map((t) => ({ dia: `${NOMES_DIAS[dia]} (${TITULOS[tipo]})`, de: t.de.nome, para: t.para.nome })));
+    }
+    const itens = exercicios.map((e) => {
+      // Saltos e exercícios isométricos mantêm a prescrição original, mesmo na ficha variada.
+      const p = e.id === "saltos-tornozelo" ? PRESC.pogo : PLIOMETRICOS.includes(e.id) ? PRESC.salto : ISOMETRICOS[e.id] ? PRESC[obj] : base;
       return formatar(e, p, leve);
     });
     return { dia: NOMES_DIAS[dia], titulo: TITULOS[tipo], leve, itens };
@@ -128,6 +189,15 @@ export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular): 
   notas.push(...DICAS);
 
   return {
-    ficha: { titulo: `${plano.nome} · ${freq}x por semana`, divisao: plano.divisao, justificativa: justificativa(obj), notas, dias },
+    ficha: {
+      titulo: `${plano.nome} · ${freq}x por semana${variada ? " · Ficha variada" : ""}`,
+      divisao: plano.divisao,
+      justificativa: justificativa(obj),
+      notas,
+      dias,
+      variada,
+      trocas,
+      avisoCiclo: avisoDoCiclo(ciclo),
+    },
   };
 }
