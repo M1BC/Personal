@@ -1,22 +1,58 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EXERCICIOS, GRUPOS } from "@/data/exercicios";
-import { FREQUENCIAS, OBJETIVOS, PONTOS_FRACOS, type Freq, type ObjetivoId } from "@/data/treinos";
+import { CICLOS, FREQUENCIAS, OBJETIVOS, PONTOS_FRACOS, type Ciclo, type Freq, type ObjetivoId } from "@/data/treinos";
+import { prepararAudio, tocarBipe } from "@/lib/som";
+import { segundosDoDescanso } from "@/lib/tempo";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
 import { Modal } from "./Modal";
+import { TimerDescanso } from "./TimerDescanso";
 
 const OPCAO = "min-h-[56px] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
 const CHIP = "min-h-[48px] border-2 border-tinta px-5 py-2 font-bold transition-transform duration-100 ease-out active:scale-[0.97]";
+const CHAVE_SOM = "treino:som";
 
 export function Treinos() {
   const [freq, setFreq] = useState<Freq>(3);
   const [obj, setObj] = useState<ObjetivoId>("saude");
   const [grupo, setGrupo] = useState<GrupoMuscular>("ombros");
+  const [ciclo, setCiclo] = useState<Ciclo>("novo");
   const [aberto, setAberto] = useState<string | null>(null);
+  const [som, setSom] = useState(true);
+  const [timerAtivo, setTimerAtivo] = useState<string | null>(null);
   const fechar = useCallback(() => setAberto(null), []);
-  const r = useMemo(() => montarFicha(freq, obj, grupo), [freq, obj, grupo]);
+  const r = useMemo(() => montarFicha(freq, obj, grupo, ciclo), [freq, obj, grupo, ciclo]);
   const ex = aberto ? EXERCICIOS.find((e) => e.id === aberto) : null;
+
+  // Lembra se o usuário silenciou o timer.
+  useEffect(() => {
+    try {
+      const salvo = localStorage.getItem(CHAVE_SOM);
+      if (salvo !== null) setSom(salvo === "1");
+    } catch {
+      // Sem armazenamento: o som fica ligado.
+    }
+  }, []);
+
+  // Ao trocar de ficha, nenhum timer fica em uso.
+  useEffect(() => {
+    setTimerAtivo(null);
+  }, [freq, obj, grupo, ciclo]);
+
+  const alternarSom = () => {
+    const novo = !som;
+    setSom(novo);
+    try {
+      localStorage.setItem(CHAVE_SOM, novo ? "1" : "0");
+    } catch {
+      // Sem armazenamento: vale só nesta sessão.
+    }
+    if (novo) {
+      prepararAudio(); // dentro do clique
+      tocarBipe(); // toca uma vez para você ouvir o volume
+    }
+  };
 
   return (
     <div>
@@ -57,16 +93,55 @@ export function Treinos() {
         </div>
       )}
 
-      <div key={`${freq}-${obj}-${grupo}`} className="animar mt-10" aria-live="polite">
+      <p className="mt-6 text-lg font-semibold">Há quanto tempo você está usando esta ficha?</p>
+      <div role="group" aria-label="Tempo de uso da ficha" className="mt-2 grid gap-2 sm:grid-cols-3">
+        {CICLOS.map((c) => (
+          <button key={c.id} aria-pressed={c.id === ciclo} onClick={() => setCiclo(c.id)} className={`${OPCAO} text-lg font-extrabold ${c.id === ciclo ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
+            {c.nome}
+          </button>
+        ))}
+      </div>
+
+      <div key={`${freq}-${obj}-${grupo}-${ciclo}`} className="animar mt-10" aria-live="polite">
         {"erro" in r ? (
           <p className="max-w-[62ch] border-l-4 border-primario bg-superficie p-6 text-xl">{r.erro}</p>
         ) : (
           <>
+            {r.ficha.avisoCiclo && (
+              <p className={`mb-6 max-w-[70ch] bg-superficie p-5 text-lg ${r.ficha.variada ? "border-l-4 border-primario font-semibold" : "border-l-4 border-linha"}`} role="note">
+                {r.ficha.avisoCiclo}
+              </p>
+            )}
             <h2 className="text-4xl font-extrabold leading-none tracking-tight">{r.ficha.titulo}</h2>
             <p className="mt-4 max-w-[70ch] text-xl">{r.ficha.justificativa}</p>
             <p className="mt-3 max-w-[70ch] text-base text-suave">{r.ficha.divisao}</p>
 
-            <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            {r.ficha.variada && (
+              <div className="mt-4 max-w-[70ch]">
+                <p className="text-lg font-semibold">O que mudou nesta ficha</p>
+                {r.ficha.trocas.length > 0 ? (
+                  <ul className="mt-1 list-disc space-y-1 pl-5 text-base">
+                    {r.ficha.trocas.map((t, i) => (
+                      <li key={i}>
+                        {t.dia}: {t.de} → <strong>{t.para}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-1 text-base text-suave">Neste caso não há troca de exercício possível: a variação está nas séries, repetições e descansos.</p>
+                )}
+                <p className="mt-2 text-base text-suave">As séries, repetições e descansos também foram alterados para dar um novo estímulo.</p>
+              </div>
+            )}
+
+            <button role="switch" aria-checked={som} onClick={alternarSom} className="mt-5 flex min-h-[48px] items-center gap-3 text-lg font-bold">
+              <span className={`relative h-7 w-12 transition-colors duration-150 ease-out ${som ? "bg-primario" : "bg-corpo"}`}>
+                <span className={`absolute top-1 h-5 w-5 bg-white transition-transform duration-150 ease-out ${som ? "translate-x-6" : "translate-x-1"}`} />
+              </span>
+              Som do timer de descanso: {som ? "ligado" : "desligado"}
+            </button>
+
+            <div className="mt-4 grid gap-6 lg:grid-cols-2">
               {r.ficha.dias.map((d, i) => (
                 <section key={i} className="bg-superficie p-6">
                   <h3 className="text-2xl font-extrabold leading-tight">{d.dia}</h3>
@@ -75,13 +150,21 @@ export function Treinos() {
                     {d.itens.map((it, n) => {
                       const e = EXERCICIOS.find((x) => x.id === it.id);
                       if (!e) return null;
+                      const idTimer = `${i}-${n}-${it.id}`;
                       return (
-                        <li key={`${it.id}-${n}`} className="flex items-start gap-3 py-3">
+                        <li key={idTimer} className="flex items-start gap-3 py-3">
                           <span className="w-6 text-2xl font-extrabold tabular-nums">{n + 1}</span>
                           <div className="min-w-0 flex-1">
                             <p className="text-lg font-bold leading-tight">{e.nome}</p>
                             <p className="text-base">{it.series}</p>
                             <p className="text-base text-suave">Descanso: {it.descanso}</p>
+                            <TimerDescanso
+                              id={idTimer}
+                              segundos={segundosDoDescanso(it.descanso)}
+                              ativo={timerAtivo === idTimer}
+                              som={som}
+                              onIniciar={setTimerAtivo}
+                            />
                           </div>
                           <button onClick={() => setAberto(it.id)} aria-label={`Entender ${e.nome}`} className="min-h-[48px] min-w-[48px] border-2 border-tinta text-xl font-bold active:scale-[0.95] hover:bg-tinta hover:text-fundo">
                             ?
