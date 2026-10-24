@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { alimentoPorId, CARDAPIOS, montar } from "@/lib/cardapio";
 import { adicionar, macrosDoPrato, trocar, type ItemPrato } from "@/lib/diario";
+import { carregarDados, salvarDado, type Chave } from "@/lib/nuvem";
 import { REFEICOES, calcularPlano, dividir, fmt, projetar, validar } from "@/lib/nutricao";
 import type { CategoriaAlimento } from "@/lib/types";
 import { BuscaAlimento } from "./BuscaAlimento";
@@ -54,30 +55,22 @@ export function Refeicoes() {
   const [busca, setBusca] = useState<{ ref: string; idx: number | null; cat?: CategoriaAlimento } | null>(null);
 
   useEffect(() => {
-    try {
-      const salvo = localStorage.getItem("distribuicao");
-      if (salvo) {
-        const d = JSON.parse(salvo);
-        setPersonalizar(!!d.ativa);
-        setPcts({ ...PADRAO, ...d.pcts });
+    carregarDados().then((salvo) => {
+      const dist = salvo.distribuicao as { ativa?: boolean; pcts?: Record<string, string> } | undefined;
+      if (dist) {
+        setPersonalizar(!!dist.ativa);
+        setPcts({ ...PADRAO, ...dist.pcts });
       }
-      const pratos = localStorage.getItem("pratos");
+      const pratos = salvo.pratos as Record<string, ItemPrato[]> | undefined;
       if (pratos) {
-        const d = JSON.parse(pratos) as Record<string, ItemPrato[]>;
-        setEditados(Object.fromEntries(Object.entries(d).map(([k, v]) => [k, (v ?? []).filter((i) => alimentoPorId[i.id] && i.q > 0)])));
+        setEditados(
+          Object.fromEntries(Object.entries(pratos).map(([k, v]) => [k, (v ?? []).filter((i) => alimentoPorId[i.id] && i.q > 0)]))
+        );
       }
-    } catch {
-      // Sem armazenamento: usa o padrão.
-    }
+    });
   }, []);
 
-  const guardar = (chave: string, valor: unknown) => {
-    try {
-      localStorage.setItem(chave, JSON.stringify(valor));
-    } catch {
-      // Sem armazenamento: vale só nesta sessão.
-    }
-  };
+  const guardar = (chave: Chave, valor: unknown) => salvarDado(chave, valor);
   const alternar = () => {
     setPersonalizar(!personalizar);
     guardar("distribuicao", { ativa: !personalizar, pcts });
