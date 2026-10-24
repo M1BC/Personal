@@ -76,6 +76,33 @@ export const PRESC = {
   foco: { sets: 3, reps: "10 a 15", rest: "60 s" },
 } satisfies Record<string, Presc>;
 
+// ---------- Ciclos de treino (variação) ----------
+export type Ciclo = "novo" | "meio" | "longo";
+export const CICLOS: { id: Ciclo; nome: string }[] = [
+  { id: "novo", nome: "Menos de 4 semanas" },
+  { id: "meio", nome: "De 1 a 3 meses" },
+  { id: "longo", nome: "Mais de 3 meses" },
+];
+export const MENSAGEM_VARIADA =
+  "Como você está há mais de 3 meses neste treino, geramos uma variação para quebrar a homeostase e continuar desafiando seus músculos. Use esta nova ficha pelas próximas 4 a 6 semanas.";
+export const NOTA_CICLO_MEIO =
+  "Você está no meio do ciclo: mantenha a ficha e tente aumentar a carga ou as repetições aos poucos antes de trocar.";
+
+// Novo estímulo: mais séries e menos repetições. Os saltos não mudam (qualidade e segurança).
+export const PRESC_VARIADA = {
+  saude: { sets: 4, reps: "8 a 10", rest: "90 s" },
+  volei: { sets: 4, reps: "4 a 6", rest: "120 s" },
+  futebol: { sets: 4, reps: "6 a 8", rest: "90 s" },
+  foco: { sets: 4, reps: "8 a 12", rest: "75 s" },
+} satisfies Record<string, Presc>;
+
+// Exercícios principais (multiarticulares): são os que a variação pode trocar por outro do mesmo grupo.
+export const PRINCIPAIS = new Set<string>([
+  "agachamento", "leg-press", "agachamento-hack", "afundo", "agachamento-bulgaro", "levantamento-terra", "stiff", "elevacao-pelvica",
+  "supino-reto", "supino-inclinado", "supino-halteres", "flexao", "puxada-frente", "remada-curvada", "remada-sentada", "remada-maquina",
+  "remada-unilateral", "remada-cavalinho", "barra-fixa", "desenvolvimento", "desenvolvimento-militar", "supino-fechado", "mergulho-paralelas",
+]);
+
 type Modelo = "saude" | "volei" | "futebol";
 
 // Ordem de preferência por categoria (multiarticulares primeiro). O que não estiver na lista entra depois.
