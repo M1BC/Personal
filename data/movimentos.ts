@@ -212,8 +212,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Desça reto, até o joelho de trás quase tocar o chão", volta: "Suba empurrando com a perna da frente" },
     trajeto: "quadril",
     dicas: ["Tronco reto, olhando para a frente.", "O joelho da frente acompanha a ponta do pé.", "Passo longo o bastante para os dois joelhos formarem 90°."],
-    inicio: { raiz: [98, 87], tronco: 0, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 141], dobraPernaL: -1, peL: 160 },
-    fim: { raiz: [98, 110], tronco: 0, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 141], dobraPernaL: -1, peL: 160 },
+    inicio: { raiz: [98, 87], tronco: 0, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 141], dobraPernaL: -1, peL: 160 },
+    fim: { raiz: [98, 110], tronco: 0, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 141], dobraPernaL: -1, peL: 160 },
   },
   "levantamento-terra": {
     ancora: "pe",
@@ -288,8 +288,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Desça reto, flexionando a perna da frente", volta: "Suba empurrando o chão com o calcanhar da frente" },
     trajeto: "quadril",
     dicas: ["O peito do pé de trás apoiado no banco.", "Quase todo o peso na perna da frente.", "Tronco firme, levemente inclinado à frente."],
-    inicio: { raiz: [104, 85], tronco: 8, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [62, 111], dobraPernaL: -1, peL: 270 },
-    fim: { raiz: [104, 111], tronco: 14, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [62, 111], dobraPernaL: -1, peL: 270 },
+    inicio: { raiz: [104, 85], tronco: 8, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [62, 111], dobraPernaL: -1, peL: 270 },
+    fim: { raiz: [104, 111], tronco: 14, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [62, 111], dobraPernaL: -1, peL: 270 },
   },
   stiff: {
     ancora: "pe",
