@@ -25,8 +25,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Empurre a barra para cima, sem travar os cotovelos", volta: "Desça controlando até encostar no peito" },
     trajeto: "mao",
     dicas: ["Pés firmes no chão e escápulas presas ao banco.", "A barra desce na linha do peito, não do pescoço.", "Cotovelos levemente abertos, em torno de 45° do corpo."],
-    inicio: { ...DEITADO, braco: 105, antebraco: -47, maoAlvo: [86, 87], dobraBraco: 1, escalaBraco: 0.66 },
-    fim: { ...DEITADO, braco: 8, antebraco: 0, maoAlvo: [80, 48], dobraBraco: 1, escalaBraco: 1 },
+    inicio: { ...DEITADO, braco: 105, antebraco: 0, maoAlvo: [92, 84], antebracoFixo: true },
+    fim: { ...DEITADO, braco: 8, antebraco: 0, maoAlvo: [80, 48], antebracoFixo: true },
   },
   "supino-inclinado": {
     ancora: "quadril",
@@ -36,8 +36,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Empurre os halteres para cima, aproximando-os no alto", volta: "Desça devagar até a linha do peito" },
     trajeto: "mao",
     dicas: ["Banco inclinado entre 30° e 45°.", "Os halteres descem ao lado da parte de cima do peito.", "Não deixe as costas descolarem do banco."],
-    inicio: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 140, antebraco: 35, maoAlvo: [94, 78], dobraBraco: 1, escalaBraco: 0.66 },
-    fim: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 35, antebraco: 35, maoAlvo: [84, 34], dobraBraco: 1, escalaBraco: 1 },
+    inicio: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 140, antebraco: 0, maoAlvo: [95, 79], antebracoFixo: true },
+    fim: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 35, antebraco: 0, maoAlvo: [84, 34], antebracoFixo: true },
   },
   crucifixo: {
     ancora: "quadril",
@@ -79,8 +79,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Empurre os halteres para cima, aproximando-os no alto", volta: "Desça controlando até a altura do peito" },
     trajeto: "mao",
     dicas: ["Os halteres descem um pouco mais que a barra: aproveite a amplitude.", "Punhos firmes, alinhados com os antebraços.", "Escápulas presas ao banco."],
-    inicio: { ...DEITADO, braco: 115, antebraco: -40, maoAlvo: [86, 90], dobraBraco: 1, escalaBraco: 0.66 },
-    fim: { ...DEITADO, braco: 5, antebraco: 0, maoAlvo: [80, 48], dobraBraco: 1, escalaBraco: 1 },
+    inicio: { ...DEITADO, braco: 115, antebraco: 0, maoAlvo: [90, 86], antebracoFixo: true },
+    fim: { ...DEITADO, braco: 5, antebraco: 0, maoAlvo: [80, 48], antebracoFixo: true },
   },
 
   // ---------------- Costas ----------------
@@ -593,8 +593,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Empurre a barra para cima com os cotovelos fechados", volta: "Desça a barra até a parte de baixo do peito" },
     trajeto: "mao",
     dicas: ["Mãos na largura dos ombros.", "Cotovelos rentes ao corpo.", "Barra desce na parte de baixo do peito."],
-    inicio: { ...DEITADO, braco: 112, antebraco: -30, maoAlvo: [90, 87], dobraBraco: 1, escalaBraco: 0.85 },
-    fim: { ...DEITADO, braco: 10, antebraco: 0, maoAlvo: [80, 48], dobraBraco: 1, escalaBraco: 1 },
+    inicio: { ...DEITADO, braco: 112, antebraco: 0, maoAlvo: [96, 85], antebracoFixo: true },
+    fim: { ...DEITADO, braco: 10, antebraco: 0, maoAlvo: [80, 48], antebracoFixo: true },
   },
 
   // ---------------- Core ----------------

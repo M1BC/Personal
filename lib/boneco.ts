@@ -24,6 +24,9 @@ export interface Pose {
   // Mão ou pé presos a um ponto: o cotovelo/joelho é calculado (dobra 1 ou -1 escolhe o lado da dobra).
   maoAlvo?: P;
   dobraBraco?: 1 | -1;
+  // Com a mão presa, mantém o antebraço no ângulo "antebraco" (ex.: vertical embaixo da barra no supino);
+  // o braço vai do ombro até o cotovelo e aparece mais curto quando abre para o lado.
+  antebracoFixo?: boolean;
   maoAlvoL?: P; // mão de longe presa (ex.: pegador do elíptico, que vai para o lado oposto)
   peAlvo?: P;
   dobraPerna?: 1 | -1;
@@ -132,7 +135,10 @@ export function articulacoes(p: Pose, ancora: Movimento["ancora"]): Articulacoes
       quadril = p.raiz;
     }
     ombro = soma(quadril, dir(p.tronco), TAM.tronco);
-    if (p.maoAlvo) {
+    if (p.maoAlvo && p.antebracoFixo) {
+      mao = p.maoAlvo;
+      cotovelo = soma(mao, dir(p.antebraco), -TAM.antebraco * ea);
+    } else if (p.maoAlvo) {
       mao = p.maoAlvo;
       cotovelo = ik(ombro, mao, TAM.braco * eb, TAM.antebraco * ea, p.dobraBraco ?? 1); // encurtado quando o braço abre para o lado
     } else {
@@ -200,6 +206,7 @@ export function interpolar(a: Pose, b: Pose, t: number): Pose {
     maoAlvo: misturaAlvo(a.maoAlvo, b.maoAlvo, t),
     maoAlvoL: misturaAlvo(a.maoAlvoL, b.maoAlvoL, t),
     dobraBraco: a.dobraBraco ?? b.dobraBraco,
+    antebracoFixo: a.antebracoFixo ?? b.antebracoFixo,
     peAlvo: misturaAlvo(a.peAlvo, b.peAlvo, t),
     dobraPerna: a.dobraPerna ?? b.dobraPerna,
     peAlvoL: misturaAlvo(a.peAlvoL, b.peAlvoL, t),
