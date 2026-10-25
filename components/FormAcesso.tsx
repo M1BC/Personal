@@ -24,6 +24,7 @@ const INPUT = "mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg";
 
 export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
   const cadastro = modo === "cadastrar";
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirma, setConfirma] = useState("");
@@ -34,6 +35,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
   async function enviar(e: FormEvent) {
     e.preventDefault();
     setErro("");
+    if (cadastro && !nome.trim()) return setErro("Digite seu nome.");
     if (cadastro && senha !== confirma) return setErro("As duas senhas não são iguais.");
     setEnviando(true);
     const supabase = criarCliente();
@@ -42,7 +44,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password: senha,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback`, data: { nome: nome.trim() } },
         });
         if (error) throw error;
         // Se o projeto exige confirmação por e-mail, não vem sessão: avisa e espera o link.
@@ -73,6 +75,19 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
 
   return (
     <form onSubmit={enviar} className="max-w-md" noValidate>
+      {cadastro && (
+        <>
+          <label htmlFor="nome" className="block text-lg font-semibold">Nome</label>
+          <input
+            id="nome"
+            autoComplete="name"
+            required
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            className={`${INPUT} mb-5`}
+          />
+        </>
+      )}
       <label htmlFor="email" className="block text-lg font-semibold">E-mail</label>
       <input
         id="email"

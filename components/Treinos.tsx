@@ -1,13 +1,12 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { EXERCICIOS, GRUPOS } from "@/data/exercicios";
 import { CICLOS, FREQUENCIAS, OBJETIVOS, PONTOS_FRACOS, type Ciclo, type Freq, type ObjetivoId } from "@/data/treinos";
 import { prepararAudio, tocarBipe } from "@/lib/som";
-import { segundosDoDescanso } from "@/lib/tempo";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
-import { Modal } from "./Modal";
-import { TimerDescanso } from "./TimerDescanso";
+import { DiasFicha } from "./DiasFicha";
+import { FichaDoTreinador } from "./FichaDoTreinador";
+import { ModalExercicio } from "./ModalExercicio";
 
 const OPCAO = "min-h-[56px] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
 const CHIP = "min-h-[48px] border-2 border-tinta px-5 py-2 font-bold transition-transform duration-100 ease-out active:scale-[0.97]";
@@ -23,7 +22,6 @@ export function Treinos() {
   const [timerAtivo, setTimerAtivo] = useState<string | null>(null);
   const fechar = useCallback(() => setAberto(null), []);
   const r = useMemo(() => montarFicha(freq, obj, grupo, ciclo), [freq, obj, grupo, ciclo]);
-  const ex = aberto ? EXERCICIOS.find((e) => e.id === aberto) : null;
 
   // Lembra se o usuário silenciou o timer.
   useEffect(() => {
@@ -56,6 +54,8 @@ export function Treinos() {
 
   return (
     <div>
+      <FichaDoTreinador som={som} timerAtivo={timerAtivo} onIniciarTimer={setTimerAtivo} onExplicar={setAberto} />
+
       <p className="text-lg font-semibold">1. Quantas vezes por semana você quer treinar?</p>
       <div role="group" aria-label="Frequência semanal" className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {FREQUENCIAS.map((f) => (
@@ -141,41 +141,14 @@ export function Treinos() {
               Som do timer de descanso: {som ? "ligado" : "desligado"}
             </button>
 
-            <div className="mt-4 grid gap-6 lg:grid-cols-2">
-              {r.ficha.dias.map((d, i) => (
-                <section key={i} className="bg-superficie p-6">
-                  <h3 className="text-2xl font-extrabold leading-tight">{d.dia}</h3>
-                  <p className="text-lg text-suave">{d.titulo}</p>
-                  <ol className="mt-3 divide-y divide-linha border-y border-linha">
-                    {d.itens.map((it, n) => {
-                      const e = EXERCICIOS.find((x) => x.id === it.id);
-                      if (!e) return null;
-                      const idTimer = `${i}-${n}-${it.id}`;
-                      return (
-                        <li key={idTimer} className="flex items-start gap-3 py-3">
-                          <span className="w-6 text-2xl font-extrabold tabular-nums">{n + 1}</span>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-lg font-bold leading-tight">{e.nome}</p>
-                            <p className="text-base">{it.series}</p>
-                            <p className="text-base text-suave">Descanso: {it.descanso}</p>
-                            <TimerDescanso
-                              id={idTimer}
-                              segundos={segundosDoDescanso(it.descanso)}
-                              ativo={timerAtivo === idTimer}
-                              som={som}
-                              onIniciar={setTimerAtivo}
-                            />
-                          </div>
-                          <button onClick={() => setAberto(it.id)} aria-label={`Entender ${e.nome}`} className="min-h-[48px] min-w-[48px] border-2 border-tinta text-xl font-bold active:scale-[0.95] hover:bg-tinta hover:text-fundo">
-                            ?
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </section>
-              ))}
-            </div>
+            <DiasFicha
+              dias={r.ficha.dias}
+              prefixo="auto"
+              som={som}
+              timerAtivo={timerAtivo}
+              onIniciarTimer={setTimerAtivo}
+              onExplicar={setAberto}
+            />
 
             <ul className="mt-6 max-w-[70ch] list-disc space-y-1 pl-5 text-base text-suave">
               {r.ficha.notas.map((n) => <li key={n}>{n}</li>)}
@@ -188,24 +161,7 @@ export function Treinos() {
         Recomendações educacionais. Consulte um educador físico para a execução correta.
       </p>
 
-      <Modal aberto={!!ex} titulo={ex?.nome ?? ""} onFechar={fechar}>
-        {ex && (
-          <>
-            <p className="mt-4 text-lg font-semibold">Equipamento</p>
-            <p className="text-lg text-suave">{ex.equipamento}</p>
-            <p className="mt-4 text-lg font-semibold">Músculo principal</p>
-            <p className="text-lg text-suave">{GRUPOS[ex.grupo_primario].nome}</p>
-            {ex.grupos_secundarios.length > 0 && (
-              <>
-                <p className="mt-4 text-lg font-semibold">Músculos Auxiliares</p>
-                <p className="text-lg text-suave">{ex.grupos_secundarios.map((g) => GRUPOS[g].nome).join(", ")}</p>
-              </>
-            )}
-            <p className="mt-4 text-lg font-semibold">Como o corpo trabalha junto</p>
-            <p className="text-lg text-suave">{ex.explicacao_anatomica}</p>
-          </>
-        )}
-      </Modal>
+      <ModalExercicio id={aberto} onFechar={fechar} />
     </div>
   );
 }

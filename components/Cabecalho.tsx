@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ehEquipe, meuPerfil } from "@/lib/equipe";
 import { CAIXA } from "@/lib/layout";
 import { sair } from "@/lib/nuvem";
 import { AlternarTema } from "./AlternarTema";
@@ -16,6 +18,11 @@ export function Cabecalho() {
   const caminho = usePathname();
   // Nas telas de login e cadastro não há menu: as páginas do app exigem estar logado.
   const acesso = caminho === "/login" || caminho === "/cadastro";
+  const [equipe, setEquipe] = useState(false);
+  useEffect(() => {
+    if (!acesso) meuPerfil().then((p) => setEquipe(ehEquipe(p?.papel)));
+  }, [acesso]);
+  const links: readonly (readonly [string, string])[] = equipe ? [...LINKS, ["/painel", "Painel"]] : LINKS;
   return (
     <header className="sticky top-0 z-10 border-b border-linha bg-fundo pt-[env(safe-area-inset-top,0px)]">
       <div className={`${CAIXA} flex flex-wrap items-center gap-x-6`}>
@@ -28,8 +35,8 @@ export function Cabecalho() {
           aria-label="Principal"
           className="order-3 flex w-full gap-4 overflow-x-auto md:order-none md:ml-auto md:w-auto md:gap-6 md:overflow-visible"
         >
-          {LINKS.map(([href, nome]) => {
-            const ativo = caminho === href;
+          {links.map(([href, nome]) => {
+            const ativo = href === "/painel" ? caminho.startsWith("/painel") : caminho === href;
             return (
               <Link
                 key={href}
