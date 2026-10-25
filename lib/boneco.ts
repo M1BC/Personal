@@ -27,6 +27,8 @@ export interface Pose {
   // Com a mão presa, mantém o antebraço no ângulo "antebraco" (ex.: vertical embaixo da barra no supino);
   // o braço vai do ombro até o cotovelo e aparece mais curto quando abre para o lado.
   antebracoFixo?: boolean;
+  // Braços esticados com as mãos correndo numa linha vertical nesta posição x (barra no levantamento terra e no stiff).
+  maoNaVertical?: number;
   maoAlvoL?: P; // mão de longe presa (ex.: pegador do elíptico, que vai para o lado oposto)
   peAlvo?: P;
   dobraPerna?: 1 | -1;
@@ -38,7 +40,7 @@ export interface Pose {
 }
 
 export type Acessorio =
-  | { tipo: "barra" } // anilha vista de lado, nas mãos
+  | { tipo: "barra"; raio?: number } // anilha vista de lado, nas mãos ("raio" maior = anilha grande, apoiada no chão)
   | { tipo: "barraW" } // barra mais leve, nas mãos
   | { tipo: "halter" } // um halter em cada mão
   | { tipo: "halterPerto" } // só na mão de perto (exercícios unilaterais)
@@ -78,6 +80,8 @@ export interface Movimento {
   dicas: string[];
   // Cardio: movimento contínuo em ciclo (sem ida e volta). "inicio" é a postura base; t vira a fase do ciclo.
   ciclo?: Ciclo;
+  // Postura no meio do caminho (opcional): o movimento passa por ela numa curva suave (ex.: barra subindo reta).
+  meio?: Pose;
 }
 
 export type Ciclo =
@@ -135,7 +139,12 @@ export function articulacoes(p: Pose, ancora: Movimento["ancora"]): Articulacoes
       quadril = p.raiz;
     }
     ombro = soma(quadril, dir(p.tronco), TAM.tronco);
-    if (p.maoAlvo && p.antebracoFixo) {
+    if (p.maoNaVertical !== undefined) {
+      const L = (TAM.braco * eb + TAM.antebraco * ea) * 0.995;
+      const dx = Math.max(-L, Math.min(L, p.maoNaVertical - ombro[0]));
+      mao = [ombro[0] + dx, ombro[1] + Math.sqrt(L * L - dx * dx)];
+      cotovelo = misturaP(ombro, mao, (TAM.braco * eb) / (TAM.braco * eb + TAM.antebraco * ea));
+    } else if (p.maoAlvo && p.antebracoFixo) {
       mao = p.maoAlvo;
       cotovelo = soma(mao, dir(p.antebraco), -TAM.antebraco * ea);
     } else if (p.maoAlvo) {
@@ -207,6 +216,7 @@ export function interpolar(a: Pose, b: Pose, t: number): Pose {
     maoAlvoL: misturaAlvo(a.maoAlvoL, b.maoAlvoL, t),
     dobraBraco: a.dobraBraco ?? b.dobraBraco,
     antebracoFixo: a.antebracoFixo ?? b.antebracoFixo,
+    maoNaVertical: misturaOpc(a.maoNaVertical, b.maoNaVertical, b.maoNaVertical ?? 0, a.maoNaVertical ?? 0, t),
     peAlvo: misturaAlvo(a.peAlvo, b.peAlvo, t),
     dobraPerna: a.dobraPerna ?? b.dobraPerna,
     peAlvoL: misturaAlvo(a.peAlvoL, b.peAlvoL, t),
@@ -219,7 +229,12 @@ export function interpolar(a: Pose, b: Pose, t: number): Pose {
 // Pose num ponto do movimento (0 = início, 1 = fim), com o arco do salto quando houver.
 export function poseEm(m: Movimento, t: number): Pose {
   if (m.ciclo) return poseDoCiclo(m.inicio, m.ciclo, t);
-  const p = interpolar(m.inicio, m.fim, t);
+  let p: Pose;
+  if (m.meio) {
+    // Curva de Bézier que passa pela postura do meio em t = 0,5.
+    const controle = interpolar(interpolar(m.inicio, m.fim, 0.5), m.meio, 2);
+    p = interpolar(interpolar(m.inicio, controle, t), interpolar(controle, m.fim, t), t);
+  } else p = interpolar(m.inicio, m.fim, t);
   if (!m.arco) return p;
   const sobe = m.arco * Math.sin(Math.PI * t);
   return { ...p, raiz: [p.raiz[0], p.raiz[1] - sobe], peAlvo: p.peAlvo && [p.peAlvo[0], p.peAlvo[1] - sobe], maoAlvo: p.maoAlvo && [p.maoAlvo[0], p.maoAlvo[1] - sobe] };
@@ -467,11 +482,11 @@ export function enquadrar(m: Movimento): { x: number; y: number; w: number; h: n
     x0 = Math.min(x0, q[0] - r); y0 = Math.min(y0, q[1] - r);
     x1 = Math.max(x1, q[0] + r); y1 = Math.max(y1, q[1] + r);
   };
-  const barra = m.acessorios.some((a) => a.tipo === "barra");
+  const barra = m.acessorios.reduce((r, a) => (a.tipo === "barra" ? Math.max(r, (a.raio ?? 10) + 2) : r), 0);
   for (let k = 0; k <= 12; k++) {
     const j = articulacoes(poseEm(m, k / 12), m.ancora);
     incluir(j.cabeca, TAM.cabeca + 1);
-    incluir(j.mao, barra ? 12 : 7); incluir(j.maoL, 7);
+    incluir(j.mao, barra || 7); incluir(j.maoL, 7);
     incluir(j.ombro, 11); incluir(j.quadril, 10); incluir(j.joelho, 6); incluir(j.joelhoL, 6);
     incluir(j.ponta, 4); incluir(j.pontaL, 4); incluir(j.tornozelo, 5); incluir(j.tornozeloL, 5);
     incluir(j.cotovelo, 6); incluir(j.cotoveloL, 6);
@@ -681,7 +696,7 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
 
   // Equipamentos nas mãos e nas costas, por último.
   for (const a of m.acessorios) {
-    if (a.tipo === "barra") f.push(...anilha(j.mao));
+    if (a.tipo === "barra") f.push(...anilha(j.mao, a.raio));
     if (a.tipo === "barraCostas") f.push(...anilha(costas(j)));
     if (a.tipo === "barraW") f.push({ tipo: "circulo", x: j.mao[0], y: j.mao[1], r: 7, tom: "equip" }, { tipo: "circulo", x: j.mao[0], y: j.mao[1], r: 2, tom: "longe" });
     if (a.tipo === "halter" || a.tipo === "halterPerto") f.push({ tipo: "circulo", x: j.mao[0], y: j.mao[1], r: 6.5, tom: "equip" }, { tipo: "circulo", x: j.mao[0], y: j.mao[1], r: 2.5, tom: "longe" });

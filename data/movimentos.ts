@@ -26,7 +26,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     trajeto: "mao",
     dicas: ["Pés firmes no chão e escápulas presas ao banco.", "A barra desce na linha do peito, não do pescoço.", "Cotovelos levemente abertos, em torno de 45° do corpo."],
     inicio: { ...DEITADO, braco: 105, antebraco: 0, maoAlvo: [92, 84], antebracoFixo: true },
-    fim: { ...DEITADO, braco: 8, antebraco: 0, maoAlvo: [80, 48], antebracoFixo: true },
+    fim: { ...DEITADO, braco: 8, antebraco: 17, maoAlvo: [92, 50.1], antebracoFixo: true },
   },
   "supino-inclinado": {
     ancora: "quadril",
@@ -37,7 +37,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     trajeto: "mao",
     dicas: ["Banco inclinado entre 30° e 45°.", "Os halteres descem ao lado da parte de cima do peito.", "Não deixe as costas descolarem do banco."],
     inicio: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 140, antebraco: 0, maoAlvo: [95, 79], antebracoFixo: true },
-    fim: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 35, antebraco: 0, maoAlvo: [84, 34], antebracoFixo: true },
+    fim: { raiz: [120, 108], tronco: -55, coxa: 95, canela: 180, braco: 35, antebraco: 15.7, maoAlvo: [95, 35.8], antebracoFixo: true },
   },
   crucifixo: {
     ancora: "quadril",
@@ -80,7 +80,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     trajeto: "mao",
     dicas: ["Os halteres descem um pouco mais que a barra: aproveite a amplitude.", "Punhos firmes, alinhados com os antebraços.", "Escápulas presas ao banco."],
     inicio: { ...DEITADO, braco: 115, antebraco: 0, maoAlvo: [90, 86], antebracoFixo: true },
-    fim: { ...DEITADO, braco: 5, antebraco: 0, maoAlvo: [80, 48], antebracoFixo: true },
+    fim: { ...DEITADO, braco: 5, antebraco: 14.5, maoAlvo: [90, 49.5], antebracoFixo: true },
   },
 
   // ---------------- Costas ----------------
@@ -102,8 +102,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Puxe a barra até a barriga, levando os cotovelos para trás", volta: "Estenda os braços devagar, sem arredondar as costas" },
     trajeto: "mao",
     dicas: ["Tronco inclinado e firme: só os braços se movem.", "Joelhos levemente dobrados.", "Junte as escápulas no fim da puxada."],
-    inicio: { raiz: PE, tronco: 62, braco: 178, antebraco: 178, coxa: 158, canela: 195 },
-    fim: { raiz: PE, tronco: 62, braco: 245, antebraco: 168, coxa: 158, canela: 195 },
+    inicio: { raiz: PE, tronco: 62, braco: 178, antebraco: 178, coxa: 158, canela: 195, maoAlvo: [140, 106.5], dobraBraco: 1 },
+    fim: { raiz: PE, tronco: 62, braco: 245, antebraco: 168, coxa: 158, canela: 195, maoAlvo: [129, 79], dobraBraco: 1 },
   },
   "remada-sentada": {
     ancora: "quadril",
@@ -157,8 +157,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Puxe a barra até o peito, cotovelos para trás", volta: "Desça devagar, mantendo as costas retas" },
     trajeto: "mao",
     dicas: ["Tronco inclinado em torno de 45°.", "Quadril parado durante a puxada.", "Peito aberto, sem arredondar a coluna."],
-    inicio: { raiz: PE, tronco: 50, braco: 180, antebraco: 180, coxa: 160, canela: 195 },
-    fim: { raiz: PE, tronco: 50, braco: 240, antebraco: 160, coxa: 160, canela: 195 },
+    inicio: { raiz: PE, tronco: 50, braco: 180, antebraco: 180, coxa: 160, canela: 195, maoAlvo: [136, 98], dobraBraco: 1 },
+    fim: { raiz: PE, tronco: 50, braco: 240, antebraco: 160, coxa: 160, canela: 195, maoAlvo: [130, 70], dobraBraco: 1 },
   },
   "pulldown-braco-reto": {
     ancora: "pe",
@@ -192,7 +192,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     trajeto: "costas",
     dicas: ["Joelhos apontam na mesma direção dos pés.", "Calcanhar sempre no chão.", "Peito aberto e coluna neutra durante todo o movimento."],
     inicio: { raiz: PE, tronco: 6, braco: 205, antebraco: 330, coxa: 180, canela: 180, pe: 90 },
-    fim: { raiz: PE, tronco: 42, braco: 235, antebraco: 345, coxa: 100, canela: 205, pe: 90 },
+    fim: { raiz: PE, tronco: 25, braco: 224, antebraco: 349, coxa: 94, canela: 218, pe: 90 },
+    meio: { raiz: PE, tronco: 30, braco: 229, antebraco: 354, coxa: 140, canela: 185, pe: 90 },
   },
   "leg-press": {
     ancora: "quadril",
@@ -217,13 +218,14 @@ export const MOVIMENTOS: Record<string, Movimento> = {
   },
   "levantamento-terra": {
     ancora: "pe",
-    acessorios: [{ tipo: "barra" }],
+    acessorios: [{ tipo: "barra", raio: 17 }],
     esforco: "ida",
     fases: { ida: "Suba empurrando o chão, com a barra raspando nas pernas", volta: "Desça levando o quadril para trás, costas retas" },
     trajeto: "mao",
     dicas: ["Barra sobre o meio do pé, junto às canelas.", "Coluna neutra do começo ao fim.", "Quadril e ombros sobem juntos."],
-    inicio: { raiz: PE, tronco: 55, ...BRACOS_SOLTOS, coxa: 95, canela: 200 },
-    fim: { raiz: PE, tronco: 0, ...BRACOS_SOLTOS, coxa: 180, canela: 180 },
+    inicio: { raiz: PE, tronco: 68, ...BRACOS_SOLTOS, coxa: 107, canela: 188, maoNaVertical: 112, pe: 90 },
+    fim: { raiz: PE, tronco: 0, ...BRACOS_SOLTOS, coxa: 180, canela: 180, maoNaVertical: 112, pe: 90 },
+    meio: { raiz: PE, tronco: 54, ...BRACOS_SOLTOS, coxa: 128, canela: 178, maoNaVertical: 112, pe: 90 },
   },
   "cadeira-extensora": {
     ancora: "quadril",
@@ -293,13 +295,13 @@ export const MOVIMENTOS: Record<string, Movimento> = {
   },
   stiff: {
     ancora: "pe",
-    acessorios: [{ tipo: "barra" }],
+    acessorios: [{ tipo: "barra", raio: 17 }],
     esforco: "volta",
     fases: { ida: "Leve o quadril para trás, descendo a barra rente às pernas", volta: "Suba empurrando o quadril para a frente" },
     trajeto: "mao",
     dicas: ["Joelhos levemente dobrados e parados.", "Coluna reta: o movimento é no quadril.", "Desça só até sentir alongar atrás da coxa."],
-    inicio: { raiz: PE, tronco: 4, ...BRACOS_SOLTOS, coxa: 175, canela: 183 },
-    fim: { raiz: PE, tronco: 76, ...BRACOS_SOLTOS, coxa: 158, canela: 190 },
+    inicio: { raiz: PE, tronco: 4, ...BRACOS_SOLTOS, coxa: 175, canela: 183, maoNaVertical: 112, pe: 90 },
+    fim: { raiz: PE, tronco: 84, ...BRACOS_SOLTOS, coxa: 151, canela: 181, maoNaVertical: 112, pe: 90 },
   },
   "coice-polia": {
     ancora: "quadril",
@@ -442,8 +444,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Empurre a barra acima da cabeça, em linha reta", volta: "Desça a barra devagar até a frente dos ombros" },
     trajeto: "mao",
     dicas: ["Glúteos e abdômen contraídos.", "A cabeça recua para a barra passar e volta no alto.", "Não arqueie a lombar."],
-    inicio: { raiz: PE, ...EM_PE, tronco: 0, braco: 160, antebraco: 10, maoAlvo: [114, 30], dobraBraco: 1 },
-    fim: { raiz: PE, ...EM_PE, tronco: 0, braco: 0, antebraco: 0, maoAlvo: [103, -15], dobraBraco: 1 },
+    inicio: { raiz: PE, ...EM_PE, tronco: 0, braco: 160, antebraco: -6, maoAlvo: [110, 28], antebracoFixo: true },
+    fim: { raiz: PE, ...EM_PE, tronco: 0, braco: 0, antebraco: 2.4, maoAlvo: [106, -16.9], antebracoFixo: true },
   },
   "elevacao-frontal": {
     ancora: "pe",
@@ -594,7 +596,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     trajeto: "mao",
     dicas: ["Mãos na largura dos ombros.", "Cotovelos rentes ao corpo.", "Barra desce na parte de baixo do peito."],
     inicio: { ...DEITADO, braco: 112, antebraco: 0, maoAlvo: [96, 85], antebracoFixo: true },
-    fim: { ...DEITADO, braco: 10, antebraco: 0, maoAlvo: [80, 48], antebracoFixo: true },
+    fim: { ...DEITADO, braco: 10, antebraco: 22, maoAlvo: [96, 51.5], antebracoFixo: true },
   },
 
   // ---------------- Core ----------------
@@ -680,9 +682,10 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     esforco: "volta",
     fases: { ida: "Quadril para trás, tronco desce com a coluna reta", volta: "Suba empurrando o quadril à frente" },
     trajeto: "costas",
-    dicas: ["Joelhos levemente dobrados e parados.", "Desça só até sentir alongar atrás da coxa, sem arredondar a lombar.", "Carga leve: é um exercício de técnica e controle."],
-    inicio: { raiz: PE, tronco: 2, braco: 201, antebraco: 326, coxa: 178, canela: 180, pe: 90 },
-    fim: { raiz: PE, tronco: 72, braco: 271, antebraco: 396, coxa: 160, canela: 176, pe: 90 },
+    dicas: ["Joelhos levemente dobrados e parados.", "Quadril vai para trás e o tronco desce até uns 45°, sem arredondar a lombar.", "Carga leve: é um exercício de técnica e controle."],
+    inicio: { raiz: PE, tronco: 14, braco: 213, antebraco: 338, coxa: 177, canela: 180, pe: 90 },
+    fim: { raiz: PE, tronco: 45, braco: 244, antebraco: 369, coxa: 154, canela: 176, pe: 90 },
+    meio: { raiz: PE, tronco: 28.5, braco: 227.5, antebraco: 352.5, coxa: 166.5, canela: 178, pe: 90 },
   },
   perdigueiro: {
     ancora: "quadril",
