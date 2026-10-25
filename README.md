@@ -38,12 +38,16 @@ Os arquivos de `supabase/` já foram aplicados no projeto, na ordem dos números
 
 - `01_dados_usuario.sql`: perfil, refeições e distribuição de cada usuário.
 - `02_perfis_fichas.sql`: papéis (aluno, treinador, admin) e fichas montadas pelo treinador.
+- `03_unidades_gerente.sql`: filiais da rede, papel de gerente e acesso por unidade.
 
-## Papéis
+## Papéis e unidades
+
+A academia é uma rede com várias unidades (filiais). No cadastro, o aluno escolhe a unidade onde treina.
 
 - **Aluno:** toda conta nova. Vê a ficha do treinador no topo de Treinos e pode gerar a ficha automática.
-- **Treinador:** acessa o Painel, vê todos os alunos e monta ou edita a ficha de cada um.
-- **Administrador:** tudo do treinador, mais a tela Equipe, onde define o papel de cada conta. A conta do dono do app já nasce como administrador.
+- **Treinador:** acessa o Painel e monta ou edita a ficha dos alunos da própria unidade.
+- **Gerente:** tudo do treinador, mais a tela Equipe da própria unidade: transforma alunos em treinadores e transfere pessoas para outra unidade.
+- **Administrador:** vê todas as unidades, cadastra unidades (Painel → Unidades) e define o papel e a unidade de qualquer pessoa. A conta do dono do app já nasce como administrador.
 
 ## Estrutura
 

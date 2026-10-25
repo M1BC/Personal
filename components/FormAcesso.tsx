@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { listarUnidades, nomeUnidade, type Unidade } from "@/lib/equipe";
 import { criarCliente } from "@/lib/supabase/client";
 
 const ERROS: [RegExp, string][] = [
@@ -25,6 +26,8 @@ const INPUT = "mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg";
 export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
   const cadastro = modo === "cadastrar";
   const [nome, setNome] = useState("");
+  const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [unidade, setUnidade] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirma, setConfirma] = useState("");
@@ -32,10 +35,15 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
   const [aviso, setAviso] = useState("");
   const [enviando, setEnviando] = useState(false);
 
+  useEffect(() => {
+    if (cadastro) listarUnidades().then(setUnidades).catch(() => setUnidades([]));
+  }, [cadastro]);
+
   async function enviar(e: FormEvent) {
     e.preventDefault();
     setErro("");
     if (cadastro && !nome.trim()) return setErro("Digite seu nome.");
+    if (cadastro && unidades.length > 0 && !unidade) return setErro("Escolha a unidade onde você treina.");
     if (cadastro && senha !== confirma) return setErro("As duas senhas não são iguais.");
     setEnviando(true);
     const supabase = criarCliente();
@@ -44,7 +52,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password: senha,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback`, data: { nome: nome.trim() } },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback`, data: { nome: nome.trim(), unidade_id: unidade || null } },
         });
         if (error) throw error;
         // Se o projeto exige confirmação por e-mail, não vem sessão: avisa e espera o link.
@@ -86,6 +94,15 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
             onChange={(e) => setNome(e.target.value)}
             className={`${INPUT} mb-5`}
           />
+          {unidades.length > 0 && (
+            <>
+              <label htmlFor="unidade" className="block text-lg font-semibold">Unidade onde você treina</label>
+              <select id="unidade" required value={unidade} onChange={(e) => setUnidade(e.target.value)} className={`${INPUT} mb-5`}>
+                <option value="" disabled>Escolha a unidade</option>
+                {unidades.map((u) => <option key={u.id} value={u.id}>{nomeUnidade(u)}</option>)}
+              </select>
+            </>
+          )}
         </>
       )}
       <label htmlFor="email" className="block text-lg font-semibold">E-mail</label>

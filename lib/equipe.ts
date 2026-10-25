@@ -2,15 +2,17 @@
 import type { Dia } from "@/components/DiasFicha";
 import { criarCliente } from "./supabase/client";
 
-export type Papel = "aluno" | "treinador" | "admin";
-export interface Perfil { id: string; nome: string; email: string; papel: Papel; criado_em: string }
+export type Papel = "aluno" | "treinador" | "gerente" | "admin";
+export interface Perfil { id: string; nome: string; email: string; papel: Papel; unidade_id: string | null; criado_em: string }
+export interface Unidade { id: string; nome: string; cidade: string; ativa: boolean }
 
 // Ficha montada pelo treinador (guardada em fichas.conteudo).
 export interface FichaTreinador { titulo: string; observacoes: string; dias: Dia[] }
 export interface RegistroFicha { aluno_id: string; conteudo: FichaTreinador; treinador_id: string | null; atualizado_em: string }
 
-export const ehEquipe = (p?: Papel | null) => p === "treinador" || p === "admin";
-export const NOME_PAPEL: Record<Papel, string> = { aluno: "Aluno", treinador: "Treinador", admin: "Administrador" };
+export const ehEquipe = (p?: Papel | null) => p === "treinador" || p === "gerente" || p === "admin";
+export const NOME_PAPEL: Record<Papel, string> = { aluno: "Aluno", treinador: "Treinador", gerente: "Gerente", admin: "Administrador" };
+export const nomeUnidade = (u?: Pick<Unidade, "nome" | "cidade"> | null) => (u ? (u.cidade ? `${u.nome} · ${u.cidade}` : u.nome) : "Sem unidade");
 export const nomeOuEmail = (p: Pick<Perfil, "nome" | "email">) => p.nome.trim() || p.email;
 
 export const FICHA_VAZIA: FichaTreinador = { titulo: "", observacoes: "", dias: [] };
@@ -79,4 +81,27 @@ export async function mudarMeuNome(nome: string) {
   const { error } = await criarCliente().from("perfis").update({ nome }).eq("id", eu.id);
   if (error) throw error;
   meuCache = Promise.resolve({ ...eu, nome });
+}
+
+// Unidades (filiais). Visitantes veem só as ativas; o admin vê todas.
+export async function listarUnidades(): Promise<Unidade[]> {
+  const { data, error } = await criarCliente().from("unidades").select("id, nome, cidade, ativa").order("nome");
+  if (error) throw error;
+  return (data ?? []) as Unidade[];
+}
+
+export async function criarUnidade(nome: string, cidade: string) {
+  const { error } = await criarCliente().from("unidades").insert({ nome: nome.trim(), cidade: cidade.trim() });
+  if (error) throw error;
+}
+
+export async function editarUnidade(id: string, dados: Partial<Pick<Unidade, "nome" | "cidade" | "ativa">>) {
+  const { error } = await criarCliente().from("unidades").update(dados).eq("id", id);
+  if (error) throw error;
+}
+
+// Troca a unidade de alguém (o banco confere se quem pede pode fazer isso).
+export async function transferir(pessoa: string, unidade: string | null) {
+  const { error } = await criarCliente().rpc("transferir_pessoa", { pessoa, nova_unidade: unidade });
+  if (error) throw error;
 }

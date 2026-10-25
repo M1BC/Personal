@@ -4,7 +4,7 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-// Só treinadores e administradores entram no painel. As regras do banco também bloqueiam os dados.
+// Só treinadores, gerentes e administradores entram no painel. As regras do banco também bloqueiam os dados.
 export default async function LayoutPainel({ children }: { children: ReactNode }) {
   const supabase = criarClienteServidor();
   const {
@@ -12,6 +12,6 @@ export default async function LayoutPainel({ children }: { children: ReactNode }
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?voltar=/painel");
   const { data } = await supabase.from("perfis").select("papel").eq("id", user.id).maybeSingle();
-  if (data?.papel !== "treinador" && data?.papel !== "admin") redirect("/treinos");
+  if (!["treinador", "gerente", "admin"].includes(data?.papel ?? "")) redirect("/treinos");
   return <>{children}</>;
 }
