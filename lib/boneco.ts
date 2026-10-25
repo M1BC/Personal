@@ -41,13 +41,20 @@ export type Acessorio =
   | { tipo: "barraCostas" } // barra apoiada nas costas
   | { tipo: "barraQuadril" } // barra sobre o quadril
   | { tipo: "pesoCintura" } // carga presa na cintura
-  | { tipo: "cabo"; de: P } // cabo da polia até a mão
-  | { tipo: "caboPe"; de: P } // cabo da polia até o tornozelo
-  | { tipo: "corda"; de: P } // polia com corda, até a mão
-  | { tipo: "rolo"; onde: "tornozelo" | "canelaFrente" | "canelaTras" | "coxa" } // almofada da máquina
-  | { tipo: "plataforma" } // placa sob os pés (leg press)
+  // Cabo da polia até a mão (ou tornozelo). "torre" = x da pilha de pesos, que sobe conforme o cabo é puxado.
+  | { tipo: "cabo"; de: P; torre?: number }
+  | { tipo: "caboPe"; de: P; torre?: number }
+  | { tipo: "corda"; de: P; torre?: number }
+  // Almofada da máquina; com "eixo", desenha o braço da alavanca girando em torno dele.
+  | { tipo: "rolo"; onde: "tornozelo" | "canelaFrente" | "canelaTras" | "coxa"; eixo?: P; torre?: number }
+  | { tipo: "plataforma" } // placa sob os pés, fixa
+  // Carrinho do leg press: corre no trilho (de → ate) com a placa sempre perpendicular a ele.
+  // "faixa" = trecho da placa medido para fora do trilho; "contato" = o que empurra a placa.
+  | { tipo: "treno"; trilho: [P, P]; faixa: [number, number]; contato: "pe" | "ponta" }
+  | { tipo: "encostoHack" } // encosto e ombreiras do hack, presos às costas
   | { tipo: "roda" }
-  | { tipo: "pegador" }; // pegador de máquina nas mãos
+  // Pegador nas mãos; "eixo" = alavanca girando num pivô; "suspenso" = braço do voador, pendurado de uma viga nesta altura.
+  | { tipo: "pegador"; eixo?: P; suspenso?: number; torre?: number };
 
 export interface Movimento {
   ancora: "quadril" | "pe" | "mao";
@@ -252,7 +259,29 @@ export const cena = {
   ],
   // Coluna da polia, do chão até a altura da roldana.
   coluna: (x: number, topo: number): Forma => ({ tipo: "retangulo", x: x + 3, y: topo - 6, w: 6, h: CHAO + 8 - topo, tom: "equip", rx: 1 }),
+  // Torre de polia vista de lado: dois montantes, tampa e base. A pilha de pesos (que se move) vem do acessório.
+  torre: (x: number, topo: number): Forma[] => [
+    { tipo: "retangulo", x, y: topo, w: 3, h: CHAO + 2 - topo, tom: "equip" },
+    { tipo: "retangulo", x: x + LARGURA_TORRE - 3, y: topo, w: 3, h: CHAO + 2 - topo, tom: "equip" },
+    { tipo: "retangulo", x: x - 1, y: topo - 3, w: LARGURA_TORRE + 2, h: 4, tom: "equip", rx: 1 },
+    { tipo: "retangulo", x: x - 3, y: CHAO - 1, w: LARGURA_TORRE + 6, h: 3, tom: "equip" },
+    { tipo: "linha", x1: x + LARGURA_TORRE / 2, y1: topo, x2: x + LARGURA_TORRE / 2, y2: CHAO - 1, largura: 0.8, tom: "longe" },
+  ],
 };
+const LARGURA_TORRE = 18;
+
+// Pilha de pesos: placas de baixo ficam paradas, as de cima sobem com o pino quando o cabo é puxado.
+function pilha(x: number, sobe: number): Forma[] {
+  const f: Forma[] = [];
+  const placas = 9, presas = 5, h = 3.4, vao = 0.9;
+  for (let i = 0; i < placas; i++) {
+    const y = CHAO - 1 - (i + 1) * (h + vao) + vao - (i >= placas - presas ? sobe : 0);
+    f.push({ tipo: "retangulo", x: x + 3.5, y, w: LARGURA_TORRE - 7, h, tom: "equip", rx: 0.6 });
+  }
+  const topoPilha = CHAO - 1 - placas * (h + vao) + vao - sobe;
+  f.push({ tipo: "linha", x1: x + LARGURA_TORRE / 2, y1: topoPilha, x2: x + LARGURA_TORRE / 2, y2: topoPilha - 10, largura: 1.6, tom: "equip" });
+  return f;
+}
 
 // Onde cada grupo muscular fica no corpo: segmento, lado (+1 frente, -1 costas) e trecho do segmento.
 type Seg = "tronco" | "braco" | "coxa" | "canela";
@@ -363,14 +392,61 @@ export function enquadrar(m: Movimento): { x: number; y: number; w: number; h: n
     incluir(j.ponta, 4); incluir(j.pontaL, 4); incluir(j.tornozelo, 5); incluir(j.tornozeloL, 5);
     incluir(j.cotovelo, 6); incluir(j.cotoveloL, 6);
     if (m.acessorios.some((a) => a.tipo === "barraCostas")) incluir(costas(j), 12);
+    for (const a of m.acessorios)
+      if (a.tipo === "treno") {
+        const { pt, up } = geometriaTreno(a, j);
+        incluir(pt(up + 17, a.faixa[0] + 5), 2); incluir(pt(up, a.faixa[0]), 3); incluir(pt(up + 17, -2), 2);
+      }
   }
-  for (const a of m.acessorios) if ("de" in a) incluir(a.de, 6);
+  for (const a of m.acessorios) {
+    if ("de" in a) incluir(a.de, 6);
+    if (a.tipo === "pegador" && a.suspenso !== undefined) incluir([a.torre ?? 100, a.suspenso - 4], 0);
+    if ("torre" in a && a.torre !== undefined) { incluir([a.torre - 2, CHAO], 0); incluir([a.torre + LARGURA_TORRE + 2, CHAO], 0); }
+  }
   const baixo = m.semChao ? y1 : Math.max(y1, CHAO + 4);
   const folga = 9;
   let w = x1 - x0 + folga * 2, h = baixo - y0 + folga * 2;
   if (w / h < PROPORCAO) w = h * PROPORCAO; else h = w / PROPORCAO;
   const cx = (x0 + x1) / 2;
   return { x: cx - w / 2, y: baixo + folga - h, w, h };
+}
+
+const dist = (a: P, b: P) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+// Braço de alavanca: barra do eixo até a peça, com o pino do eixo.
+function alavanca(eixo: P, ate: P): Forma[] {
+  return [cena.linha(eixo, ate, 3.2), { tipo: "circulo", x: eixo[0], y: eixo[1], r: 3, tom: "equip" }, { tipo: "circulo", x: eixo[0], y: eixo[1], r: 1.2, tom: "longe" }];
+}
+
+// Carrinho do leg press. u = distância ao longo do trilho; v = distância para fora dele (lado do corpo é negativo).
+function geometriaTreno(a: Extract<Acessorio, { tipo: "treno" }>, j: Articulacoes) {
+  const [A, B] = a.trilho;
+  const L = dist(A, B) || 1;
+  const r: P = [(B[0] - A[0]) / L, (B[1] - A[1]) / L];
+  const n: P = [-r[1], r[0]]; // perpendicular ao trilho; v < 0 fica do lado do corpo
+  const u = (q: P) => (q[0] - A[0]) * r[0] + (q[1] - A[1]) * r[1];
+  const pt = (uu: number, vv: number): P => [A[0] + r[0] * uu + n[0] * vv, A[1] + r[1] * uu + n[1] * vv];
+  // Sola do pé (calcanhar e ponta), um pouco para fora do pé.
+  const [calc, dedos] = trecho(j.tornozelo, j.ponta, -0.35, 1.05, 4.5);
+  const up = (a.contato === "ponta" ? u(dedos) : Math.max(u(calc), u(dedos))) + 2.5;
+  return { pt, up };
+}
+function treno(a: Extract<Acessorio, { tipo: "treno" }>, j: Articulacoes): Forma[] {
+  const { pt, up } = geometriaTreno(a, j);
+  const [v0, v1] = a.faixa;
+  const vm = (v0 + v1) / 2;
+  return [
+    { tipo: "poligono", tom: "equip", pts: [pt(up + 2, v0 + 5), pt(up + 17, v0 + 5), pt(up + 17, -2), pt(up + 2, -2)] },
+    ...anilha(pt(up + 11, vm + 2), 8),
+    cena.linha(pt(up, v0), pt(up, v1), 5),
+  ];
+}
+
+function centroRolo(a: Extract<Acessorio, { tipo: "rolo" }>, j: Articulacoes): P {
+  if (a.onde === "tornozelo") return trecho(j.joelho, j.tornozelo, 0.9, 0.9, -7)[0];
+  if (a.onde === "canelaFrente") return trecho(j.joelho, j.tornozelo, 0.85, 0.85, -7)[0];
+  if (a.onde === "canelaTras") return trecho(j.joelho, j.tornozelo, 0.85, 0.85, 7)[0];
+  return trecho(j.quadril, j.joelho, 0.85, 0.85, -9)[0]; // em cima da coxa
 }
 
 const anilha = (c: P, r = 10): Forma[] => [
@@ -400,7 +476,39 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
     f.push({ tipo: "caminho", pts: caminho, tom: "trajeto", tracejado: true });
   }
 
-  // Cabos (atrás do corpo) e o halter da mão de longe.
+  // Partes da máquina que se movem, atrás do corpo.
+  for (const a of m.acessorios) {
+    if ((a.tipo === "cabo" || a.tipo === "corda" || a.tipo === "caboPe") && a.torre !== undefined) {
+      const de = a.de, torre = a.torre, peloPe = a.tipo === "caboPe";
+      const ponta = (jj: Articulacoes) => (peloPe ? jj.tornozelo : jj.mao);
+      const compr = (tt: number) => dist(de, ponta(articulacoes(poseEm(m, tt), m.ancora)));
+      const repouso = Math.min(compr(0), compr(1));
+      f.push(...pilha(torre, Math.max(0, Math.min(60, dist(de, ponta(j)) - repouso))));
+    }
+    if ((a.tipo === "rolo" || a.tipo === "pegador") && a.torre !== undefined) {
+      // Máquina de alavanca: a pilha sobe conforme a peça se afasta da posição de descanso.
+      const rolo = a.tipo === "rolo" ? a : null, torre = a.torre;
+      const peca = (jj: Articulacoes) => (rolo ? centroRolo(rolo, jj) : jj.mao);
+      const descanso = peca(articulacoes(poseEm(m, m.esforco === "volta" ? 1 : 0), m.ancora));
+      f.push(...pilha(torre, Math.min(45, 0.6 * dist(peca(j), descanso))));
+    }
+    if (a.tipo === "treno") f.push(...treno(a, j));
+    if (a.tipo === "plataforma") {
+      const [p1, p2] = trecho(j.tornozelo, j.ponta, -0.9, 1.6, 4.5);
+      f.push({ tipo: "linha", x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], largura: 5, tom: "equip" });
+    }
+    if (a.tipo === "pegador" && a.eixo) f.push(...alavanca(a.eixo, j.mao));
+    if (a.tipo === "pegador" && a.suspenso !== undefined) {
+      // Braço do voador: gira num eixo acima do ombro; de lado aparece a viga e a almofada ao longo do antebraço.
+      f.push(cena.linha([j.ombro[0], a.suspenso], [j.mao[0], a.suspenso], 4), cena.linha([j.mao[0], a.suspenso], j.mao, 3));
+      f.push(...capsula(j.cotovelo, j.mao, 10, 9, "equip"));
+    }
+    if (a.tipo === "encostoHack") {
+      const [b1, b2] = trecho(j.quadril, j.ombro, -0.05, 1.02, -13);
+      f.push(...capsula(b1, b2, 7, 7, "equip"));
+    }
+  }
+  // Cabos e o halter da mão de longe.
   for (const a of m.acessorios) {
     if (a.tipo === "cabo" || a.tipo === "corda") f.push(cena.linha(a.de, j.mao, 1.4));
     if (a.tipo === "caboPe") f.push(cena.linha(a.de, j.tornozelo, 1.4));
@@ -434,16 +542,14 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
     if (a.tipo === "barraQuadril") f.push(...anilha(trecho(j.quadril, j.joelho, 0, 0, -4)[0])); // por cima do quadril
     if (a.tipo === "pesoCintura") f.push({ tipo: "retangulo", x: j.quadril[0] - 6, y: j.quadril[1] + 8, w: 12, h: 12, tom: "equip", rx: 2 });
     if (a.tipo === "rolo") {
-      const c =
-        a.onde === "tornozelo" ? trecho(j.joelho, j.tornozelo, 0.9, 0.9, -7)[0]
-        : a.onde === "canelaFrente" ? trecho(j.joelho, j.tornozelo, 0.85, 0.85, -7)[0]
-        : a.onde === "canelaTras" ? trecho(j.joelho, j.tornozelo, 0.85, 0.85, 7)[0]
-        : trecho(j.quadril, j.joelho, 0.85, 0.85, -9)[0]; // em cima da coxa
+      const c = centroRolo(a, j);
+      if (a.eixo) f.push(...alavanca(a.eixo, c));
       f.push({ tipo: "circulo", x: c[0], y: c[1], r: 5, tom: "equip" });
     }
-    if (a.tipo === "plataforma") {
-      const [p1, p2] = trecho(j.tornozelo, j.ponta, -0.9, 1.6, 4.5);
-      f.push({ tipo: "linha", x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], largura: 5, tom: "equip" });
+    if (a.tipo === "encostoHack") {
+      // Ombreira apoiada em cima do ombro.
+      const o = trecho(j.quadril, j.ombro, 1.08, 1.08, 1)[0];
+      f.push({ tipo: "circulo", x: o[0], y: o[1], r: 5, tom: "equip" });
     }
   }
 
