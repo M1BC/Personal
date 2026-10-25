@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 type CookieNovo = { name: string; value: string; options: CookieOptions };
-import { cookies } from "next/headers";
 
 // Cliente do Supabase para rotas do servidor (lê e grava a sessão nos cookies).
 export function criarClienteServidor() {

@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 type CookieNovo = { name: string; value: string; options: CookieOptions };
-import { NextResponse, type NextRequest } from "next/server";
 
 // Páginas abertas sem login. Todo o resto exige estar logado.
 const PUBLICAS = ["/login", "/cadastro", "/auth"];
