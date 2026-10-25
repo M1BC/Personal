@@ -3,7 +3,7 @@ import { criarCliente } from "./supabase/client";
 
 // Dados do usuário que antes ficavam só no navegador (localStorage) e agora vão para o Supabase.
 // O navegador continua guardando uma cópia, para a tela abrir na hora e funcionar sem internet.
-export const CHAVES = ["perfil", "distribuicao", "pratos"] as const;
+export const CHAVES = ["perfil", "distribuicao", "pratos", "meuTreino"] as const;
 export type Chave = (typeof CHAVES)[number];
 type Dados = Partial<Record<Chave, unknown>>;
 

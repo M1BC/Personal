@@ -298,7 +298,7 @@ export function Refeicoes() {
             ))}
           </div>
           <p className="mt-6 max-w-[70ch] text-base text-suave">
-            Quantidades em medidas caseiras aproximadas (as colheres e conchas variam de pessoa para pessoa). Verduras e legumes
+            Quantidades em medidas caseiras aproximadas, com o peso em gramas ao lado para quem usa balança (as colheres e conchas variam de pessoa para pessoa). Verduras e legumes
             entram como complemento, sem entrar na conta. Valores nutricionais da tabela TACO (Unicamp), com algumas exceções
             indicadas no banco de alimentos.
           </p>

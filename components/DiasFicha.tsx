@@ -34,15 +34,17 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
                   <div className="min-w-0 flex-1">
                     <p className="text-lg font-bold leading-tight">{e.nome}</p>
                     <p className="text-base">{it.series}</p>
-                    <p className="text-base text-suave">Descanso: {it.descanso}</p>
+                    {!e.cardio && <p className="text-base text-suave">Descanso: {it.descanso}</p>}
                     {it.obs && <p className="mt-1 border-l-2 border-secundario pl-2 text-base">{it.obs}</p>}
-                    <TimerDescanso
-                      id={idTimer}
-                      segundos={segundosDoDescanso(it.descanso)}
-                      ativo={timerAtivo === idTimer}
-                      som={som}
-                      onIniciar={onIniciarTimer}
-                    />
+                    {!e.cardio && (
+                      <TimerDescanso
+                        id={idTimer}
+                        segundos={segundosDoDescanso(it.descanso)}
+                        ativo={timerAtivo === idTimer}
+                        som={som}
+                        onIniciar={onIniciarTimer}
+                      />
+                    )}
                   </div>
                   <button
                     onClick={() => onExplicar(it.id)}

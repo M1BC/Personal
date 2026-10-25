@@ -4,16 +4,17 @@ import type { Alimento } from "./types";
 export const alimentoPorId = Object.fromEntries(ALIMENTOS.map((a) => [a.id, a])) as Record<string, Alimento>;
 const A = alimentoPorId;
 
-type Item = { id: string; papel: "proteina" | "carbo"; parte?: number };
+// "fixo" = entra sempre na mesma quantidade (ex.: a xícara de café), e os outros alimentos se ajustam ao redor.
+type Item = { id: string; papel: "proteina" | "carbo" | "fixo"; parte?: number; q?: number };
 export interface Cardapio { itens: Item[]; extra: string; azeite?: boolean }
 
 // 3 opções por refeição: misturam carnes grelhadas e opções simples. Cada prato divide os carboidratos
 // entre 2 ou 3 acompanhamentos, para que as quantidades caibam em um prato de verdade.
 export const CARDAPIOS: Record<string, Cardapio[]> = {
   cafe: [
-    { itens: [{ id: "ovo-mexido", papel: "proteina" }, { id: "pao-frances", papel: "carbo", parte: 0.6 }, { id: "banana", papel: "carbo", parte: 0.4 }], extra: "café" },
-    { itens: [{ id: "iogurte-natural", papel: "proteina", parte: 0.5 }, { id: "queijo-minas", papel: "proteina", parte: 0.5 }, { id: "aveia", papel: "carbo", parte: 0.3 }, { id: "banana", papel: "carbo", parte: 0.4 }, { id: "pao-integral", papel: "carbo", parte: 0.3 }], extra: "" },
-    { itens: [{ id: "ovo-cozido", papel: "proteina", parte: 0.5 }, { id: "queijo-minas", papel: "proteina", parte: 0.5 }, { id: "pao-integral", papel: "carbo", parte: 0.6 }, { id: "banana", papel: "carbo", parte: 0.4 }], extra: "café" },
+    { itens: [{ id: "cafe-com-leite", papel: "fixo", q: 1 }, { id: "ovo-mexido", papel: "proteina" }, { id: "pao-frances", papel: "carbo", parte: 0.6 }, { id: "banana", papel: "carbo", parte: 0.4 }], extra: "" },
+    { itens: [{ id: "cafe-com-leite", papel: "fixo", q: 1 }, { id: "queijo-minas", papel: "proteina", parte: 0.5 }, { id: "ovo-cozido", papel: "proteina", parte: 0.5 }, { id: "pao-frances", papel: "carbo", parte: 0.7 }, { id: "banana", papel: "carbo", parte: 0.3 }], extra: "" },
+    { itens: [{ id: "cafe-preto", papel: "fixo", q: 1 }, { id: "iogurte-natural", papel: "proteina", parte: 0.5 }, { id: "queijo-minas", papel: "proteina", parte: 0.5 }, { id: "aveia", papel: "carbo", parte: 0.3 }, { id: "banana", papel: "carbo", parte: 0.4 }, { id: "pao-integral", papel: "carbo", parte: 0.3 }], extra: "" },
   ],
   almoco: [
     { itens: [{ id: "frango-grelhado", papel: "proteina" }, { id: "arroz-branco", papel: "carbo", parte: 0.45 }, { id: "feijao-carioca", papel: "carbo", parte: 0.25 }, { id: "batata-inglesa", papel: "carbo", parte: 0.3 }], extra: "salada" },
@@ -40,12 +41,20 @@ const limite = (a: Alimento) => a.max_por_refeicao ?? 4;
 // Alimentos muito proteicos (filé, bife, lata de atum) podem entrar em meias porções.
 export const passo = (a: Alimento) => (porMedida(a).p >= 20 ? 0.5 : 1);
 
+// Peso (ou volume) da porção, arredondado como se lê numa balança de cozinha.
+export function peso(a: Alimento, q: number) {
+  const g = a.medida_g * q;
+  const r = g >= 20 ? Math.round(g / 5) * 5 : Math.round(g);
+  return `${r} ${a.liquido ? "ml" : "g"}`;
+}
+
 export function frase(a: Alimento, q: number) {
   const comp = a.de ? " " + a.de : "";
-  if (q === 1) return `${a.medida_caseira}${comp}`;
-  if (q === 0.5) return `1/2 ${a.medida_caseira.replace(/^1 /, "")}${comp}`;
+  const p = ` (≈ ${peso(a, q)})`;
+  if (q === 1) return `${a.medida_caseira}${comp}${p}`;
+  if (q === 0.5) return `1/2 ${a.medida_caseira.replace(/^1 /, "")}${comp}${p}`;
   const n = Number.isInteger(q) ? String(q) : String(q).replace(".", ",");
-  return `${n} ${a.medida_plural}${comp}`;
+  return `${n} ${a.medida_plural}${comp}${p}`;
 }
 
 // Escala as quantidades (em medidas caseiras) para chegar perto dos macros da refeição, sem passar do limite
@@ -54,6 +63,9 @@ export function frase(a: Alimento, q: number) {
 export function montar(c: Cardapio, alvo: { proteina: number; carbo: number; gordura: number }) {
   const prot = c.itens.filter((i) => i.papel === "proteina");
   const carb = c.itens.filter((i) => i.papel === "carbo");
+  const fixos = c.itens.filter((i) => i.papel === "fixo");
+  const pFixo = fixos.reduce((s, i) => s + porMedida(A[i.id]).p * (i.q ?? 1), 0);
+  const cFixo = fixos.reduce((s, i) => s + porMedida(A[i.id]).c * (i.q ?? 1), 0);
   const qp = prot.map(() => 1);
   const qc = carb.map(() => 1);
 
@@ -61,10 +73,10 @@ export function montar(c: Cardapio, alvo: { proteina: number; carbo: number; gor
     const pDosCarbos = carb.reduce((s, i, k) => s + porMedida(A[i.id]).p * qc[k], 0);
     prot.forEach((i, k) => {
       const a = A[i.id], st = passo(a);
-      const quer = (Math.max(0, alvo.proteina - pDosCarbos) * (i.parte ?? 1 / prot.length)) / porMedida(a).p;
+      const quer = (Math.max(0, alvo.proteina - pDosCarbos - pFixo) * (i.parte ?? 1 / prot.length)) / porMedida(a).p;
       qp[k] = Math.min(limite(a), Math.max(st, Math.round(quer / st) * st));
     });
-    const cDasProteinas = prot.reduce((s, i, k) => s + porMedida(A[i.id]).c * qp[k], 0);
+    const cDasProteinas = prot.reduce((s, i, k) => s + porMedida(A[i.id]).c * qp[k], 0) + cFixo;
     const falta = Math.max(0, alvo.carbo - cDasProteinas);
     carb.forEach((i, k) => {
       const a = A[i.id];
@@ -84,6 +96,7 @@ export function montar(c: Cardapio, alvo: { proteina: number; carbo: number; gor
   }
 
   const linhas: [Alimento, number][] = [
+    ...fixos.map((i) => [A[i.id], i.q ?? 1] as [Alimento, number]),
     ...prot.map((i, k) => [A[i.id], qp[k]] as [Alimento, number]),
     ...carb.map((i, k) => [A[i.id], qc[k]] as [Alimento, number]),
   ];

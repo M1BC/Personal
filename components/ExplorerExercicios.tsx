@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
-import { CATEGORIAS, EXERCICIOS, GRUPOS, categoriaDe, type Categoria } from "@/data/exercicios";
+import { CATEGORIAS, EXERCICIOS, GRUPOS, categoriaDoExercicio, type Categoria } from "@/data/exercicios";
 import { combina } from "@/lib/busca";
 import type { GrupoMuscular } from "@/lib/types";
 import { Boneco, temAnimacao } from "./Boneco";
@@ -9,7 +9,7 @@ import { ModalGrupo } from "./ModalGrupo";
 
 type Grupo = Exclude<Categoria, "Todos">;
 const GRUPOS_CARD = CATEGORIAS.filter((c): c is Grupo => c !== "Todos");
-const contar = (g: Grupo) => EXERCICIOS.filter((e) => categoriaDe(e.grupo_primario) === g).length;
+const contar = (g: Grupo) => EXERCICIOS.filter((e) => categoriaDoExercicio(e) === g).length;
 
 export function ExplorerExercicios() {
   const [grupo, setGrupo] = useState<Grupo>("Peito");
@@ -22,13 +22,13 @@ export function ExplorerExercicios() {
   const buscando = busca.trim() !== "";
   const lista = buscando
     ? EXERCICIOS.filter((e) => combina(`${e.nome} ${e.equipamento} ${GRUPOS[e.grupo_primario].nome}`, busca))
-    : EXERCICIOS.filter((e) => categoriaDe(e.grupo_primario) === grupo);
+    : EXERCICIOS.filter((e) => categoriaDoExercicio(e) === grupo);
   const ex = EXERCICIOS.find((e) => e.id === id) ?? lista[0];
 
   function escolherGrupo(g: Grupo) {
     setGrupo(g);
     setBusca("");
-    const primeiro = EXERCICIOS.find((e) => categoriaDe(e.grupo_primario) === g);
+    const primeiro = EXERCICIOS.find((e) => categoriaDoExercicio(e) === g);
     if (primeiro) setId(primeiro.id);
   }
 
@@ -44,7 +44,7 @@ export function ExplorerExercicios() {
     <div>
       {/* 1. Grupo muscular */}
       <p className="text-lg font-semibold">Escolha o grupo muscular</p>
-      <div role="group" aria-label="Grupo muscular" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5 xl:grid-cols-9">
+      <div role="group" aria-label="Grupo muscular" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-10">
         {GRUPOS_CARD.map((g) => {
           const ativo = !buscando && g === grupo;
           return (
@@ -94,7 +94,7 @@ export function ExplorerExercicios() {
                     <span className="min-w-0">
                       <span className="block font-bold leading-tight">{e.nome}</span>
                       <span className={`block text-sm ${ativo ? "opacity-80" : "text-suave"}`}>
-                        {buscando ? `${GRUPOS[e.grupo_primario].nome} · ` : ""}
+                        {buscando ? `${e.cardio ? "Cardio" : GRUPOS[e.grupo_primario].nome} · ` : ""}
                         {e.equipamento}
                       </span>
                     </span>
@@ -170,7 +170,7 @@ export function ExplorerExercicios() {
         onFechar={fechar}
         onEscolher={(novo) => {
           const e = EXERCICIOS.find((x) => x.id === novo);
-          if (e) setGrupo(categoriaDe(e.grupo_primario));
+          if (e) setGrupo(categoriaDoExercicio(e));
           setBusca("");
           setId(novo);
           fechar();

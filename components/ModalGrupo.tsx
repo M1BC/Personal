@@ -12,7 +12,7 @@ type Props = {
 export function ModalGrupo({ grupo, onFechar, onEscolher }: Props) {
   const info = grupo ? GRUPOS[grupo] : null;
   const usados = grupo
-    ? EXERCICIOS.filter((e) => e.grupo_primario === grupo || e.grupos_secundarios.includes(grupo))
+    ? EXERCICIOS.filter((e) => !e.cardio && (e.grupo_primario === grupo || e.grupos_secundarios.includes(grupo)))
     : [];
 
   return (

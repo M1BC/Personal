@@ -9,6 +9,7 @@ export interface Exercicio {
   grupos_secundarios: GrupoMuscular[];
   explicacao_anatomica: string;
   equipamento: string;
+  cardio?: boolean; // exercício cardiorrespiratório (esteira, bicicleta, elíptico): prescrito em minutos
 }
 
 export type CategoriaAlimento = "Carnes e Ovos" | "Carboidratos" | "Gorduras" | "Leguminosas" | "Frutas" | "Laticínios e Whey";
@@ -29,6 +30,7 @@ export interface Alimento {
   de: string; // complemento da frase (ex.: "de frango grelhado")
   grupo: "proteina" | "carboidrato" | "gordura";
   max_por_refeicao?: number; // máximo realista de medidas caseiras em uma refeição
+  liquido?: boolean; // medida em ml em vez de gramas
 }
 
 export interface Refeicao {

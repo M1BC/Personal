@@ -3,6 +3,7 @@ import type { Alimento, CategoriaAlimento } from "@/lib/types";
 // Valores por porcao_referencia, em geral por 100 g, da TACO (Unicamp), conferidos em outubro/2026.
 // Exceções: batata inglesa, batata-doce, macarrão e inhame vêm da tabela do IBGE (POF); ovo mexido é o ovo cru
 // (TACO) com cerca de 3 g de óleo; whey é um valor aproximado de rótulo (varia por marca); azeite é gordura pura.
+// Café com leite: 100 ml de leite integral (TACO) + 100 ml de café coado (TACO, infusão 10%), sem açúcar.
 // As medidas caseiras são aproximadas e variam de pessoa para pessoa. max_por_refeicao = quantidade realista
 // dessa medida em uma única refeição.
 export const CATEGORIAS_ALIMENTO: CategoriaAlimento[] = ["Carnes e Ovos", "Carboidratos", "Gorduras", "Leguminosas", "Frutas", "Laticínios e Whey"];
@@ -55,5 +56,7 @@ export const ALIMENTOS: Alimento[] = [
   { id: "ricota", nome: "Ricota", categoria: "Laticínios e Whey", porcao_referencia: "100 g", porcao_g: 100, proteina_g: 12.6, carboidratos_g: 3.8, gorduras_g: 8.1, medida_caseira: "1 fatia média", medida_plural: "fatias médias", medida_g: 40, max_por_refeicao: 2, de: "de ricota", grupo: "proteina" },
   { id: "requeijao", nome: "Requeijão cremoso", categoria: "Laticínios e Whey", porcao_referencia: "100 g", porcao_g: 100, proteina_g: 9.6, carboidratos_g: 2.4, gorduras_g: 23.4, medida_caseira: "1 colher de sopa cheia", medida_plural: "colheres de sopa cheias", medida_g: 30, max_por_refeicao: 2, de: "de requeijão cremoso", grupo: "proteina" },
   { id: "iogurte-natural", nome: "Iogurte natural", categoria: "Laticínios e Whey", porcao_referencia: "100 g", porcao_g: 100, proteina_g: 4.1, carboidratos_g: 1.9, gorduras_g: 3, medida_caseira: "1 pote", medida_plural: "potes", medida_g: 170, max_por_refeicao: 2, de: "de iogurte natural", grupo: "proteina" },
+  { id: "cafe-com-leite", nome: "Café com leite (sem açúcar)", categoria: "Laticínios e Whey", porcao_referencia: "1 xícara (100 ml de leite integral + 100 ml de café)", porcao_g: 200, proteina_g: 3.1, carboidratos_g: 5.8, gorduras_g: 3.3, medida_caseira: "1 xícara de café com leite sem açúcar", medida_plural: "xícaras de café com leite sem açúcar", medida_g: 200, max_por_refeicao: 2, de: "", grupo: "proteina", liquido: true },
+  { id: "cafe-preto", nome: "Café coado (sem açúcar)", categoria: "Laticínios e Whey", porcao_referencia: "100 ml", porcao_g: 100, proteina_g: 0.7, carboidratos_g: 1.5, gorduras_g: 0.1, medida_caseira: "1 xícara de café coado sem açúcar", medida_plural: "xícaras de café coado sem açúcar", medida_g: 150, max_por_refeicao: 2, de: "", grupo: "proteina", liquido: true },
   { id: "whey", nome: "Whey protein", categoria: "Laticínios e Whey", porcao_referencia: "30 g", porcao_g: 30, proteina_g: 23, carboidratos_g: 3, gorduras_g: 1.5, medida_caseira: "1 scoop", medida_plural: "scoops", medida_g: 30, max_por_refeicao: 1, de: "de whey protein", grupo: "proteina" },
 ];

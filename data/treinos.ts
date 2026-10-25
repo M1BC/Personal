@@ -10,11 +10,128 @@ export const FREQUENCIAS: Freq[] = [2, 3, 4, 5];
 
 export const OBJETIVOS = [
   { id: "saude", nome: "Saúde Geral", sub: "Multiarticulares, corpo todo" },
+  { id: "hipertrofia", nome: "Hipertrofia", sub: "Ganho de massa muscular" },
   { id: "volei", nome: "Vôlei (Potência e Salto)", sub: "Pliometria, impulsão e tornozelo" },
   { id: "futebol", nome: "Futebol (Força e Agilidade)", sub: "Posterior, joelho e core" },
-  { id: "fraco", nome: "Fortalecer Ponto Fraco", sub: "100% focado em um músculo" },
+  { id: "fraco", nome: "Fortalecer Ponto Fraco", sub: "O músculo e os que dão apoio a ele" },
+  { id: "criar", nome: "Criar meu treino", sub: "Monte os dias e os exercícios" },
 ] as const;
-export type ObjetivoId = (typeof OBJETIVOS)[number]["id"];
+export type ObjetivoTela = (typeof OBJETIVOS)[number]["id"];
+export type ObjetivoId = Exclude<ObjetivoTela, "criar">; // objetivos que geram ficha automática
+
+// ---------- Hipertrofia ----------
+export type Nivel = "iniciante" | "intermediario" | "avancado";
+export const NIVEIS: { id: Nivel; nome: string; sub: string }[] = [
+  { id: "iniciante", nome: "Iniciante", sub: "Menos de 6 meses treinando" },
+  { id: "intermediario", nome: "Intermediário", sub: "De 6 meses a 2 anos" },
+  { id: "avancado", nome: "Avançado", sub: "Mais de 2 anos, com constância" },
+];
+
+// Grupos de exercícios equivalentes, em ordem de preferência. Cada vaga da sessão sorteia um deles
+// (a 2ª sessão igual pega o próximo da lista, para variar o ângulo).
+export const POOL = {
+  peitoComposto: ["supino-reto", "supino-halteres", "supino-inclinado"],
+  peitoInclinado: ["supino-inclinado", "supino-halteres", "flexao"],
+  peitoIsolado: ["crucifixo", "peck-deck"],
+  costasVertical: ["puxada-frente", "barra-fixa", "pulldown-braco-reto"],
+  costasHorizontal: ["remada-curvada", "remada-sentada", "remada-maquina", "remada-cavalinho", "remada-unilateral"],
+  ombroPress: ["desenvolvimento", "desenvolvimento-militar"],
+  ombroLateral: ["elevacao-lateral"],
+  ombroPosterior: ["face-pull", "crucifixo-inverso"],
+  biceps: ["rosca-direta", "rosca-alternada", "rosca-martelo", "rosca-scott", "rosca-polia", "rosca-concentrada"],
+  triceps: ["triceps-corda", "triceps-testa", "triceps-frances", "supino-fechado", "mergulho-paralelas", "triceps-coice"],
+  quadComposto: ["agachamento", "leg-press", "agachamento-hack", "agachamento-bulgaro", "afundo"],
+  quadIsolado: ["cadeira-extensora"],
+  posteriorQuadril: ["stiff", "levantamento-terra", "bom-dia"],
+  posteriorJoelho: ["mesa-flexora", "cadeira-flexora"],
+  gluteo: ["elevacao-pelvica", "coice-polia"],
+  panturrilha: ["panturrilha-em-pe", "panturrilha-sentada", "panturrilha-leg-press", "panturrilha-smith"],
+  core: ["abdominal-polia", "elevacao-pernas", "abdominal-roda", "prancha"],
+} satisfies Record<string, string[]>;
+export type Pool = keyof typeof POOL;
+
+export type SessaoHiper = "fullA" | "fullB" | "fullC" | "superior" | "inferior" | "empurrar" | "puxar" | "pernas";
+export const SESSOES_HIPER: Record<SessaoHiper, { titulo: string; vagas: Pool[] }> = {
+  fullA: { titulo: "Treino A · Corpo inteiro", vagas: ["quadComposto", "peitoComposto", "costasVertical", "posteriorQuadril", "ombroLateral", "triceps"] },
+  fullB: { titulo: "Treino B · Corpo inteiro", vagas: ["quadComposto", "costasHorizontal", "peitoInclinado", "posteriorJoelho", "ombroPress", "biceps"] },
+  fullC: { titulo: "Treino C · Corpo inteiro", vagas: ["gluteo", "peitoComposto", "costasVertical", "quadIsolado", "ombroPosterior", "core"] },
+  superior: { titulo: "Superiores", vagas: ["peitoComposto", "costasVertical", "peitoInclinado", "costasHorizontal", "ombroLateral", "biceps", "triceps"] },
+  inferior: { titulo: "Inferiores", vagas: ["quadComposto", "posteriorQuadril", "quadComposto", "posteriorJoelho", "gluteo", "panturrilha", "core"] },
+  empurrar: { titulo: "Empurrar · Peito, ombros e tríceps", vagas: ["peitoComposto", "ombroPress", "peitoInclinado", "peitoIsolado", "ombroLateral", "triceps", "triceps"] },
+  puxar: { titulo: "Puxar · Costas e bíceps", vagas: ["costasVertical", "costasHorizontal", "costasHorizontal", "ombroPosterior", "biceps", "biceps"] },
+  pernas: { titulo: "Pernas · Quadríceps, posterior e glúteos", vagas: ["quadComposto", "posteriorQuadril", "quadIsolado", "posteriorJoelho", "gluteo", "panturrilha", "core"] },
+};
+
+// Cada músculo é treinado pelo menos 2 vezes por semana, com 48 h entre sessões que o repetem.
+type PlanoHiper = { sessoes: SessaoHiper[]; dias: number[]; nome: string; divisao: string };
+const FULL_AB = (dias: number[]): PlanoHiper => ({ sessoes: dias.length === 2 ? ["fullA", "fullB"] : ["fullA", "fullB", "fullA"], dias, nome: "Full Body A/B", divisao: "Corpo inteiro em todas as sessões, alternando A e B, com 48 horas ou mais entre elas. Cada músculo é treinado 2 a 3 vezes por semana." });
+const FULL_ABC: PlanoHiper = { sessoes: ["fullA", "fullB", "fullC"], dias: [0, 2, 4], nome: "Full Body A/B/C", divisao: "Três treinos de corpo inteiro diferentes (A, B e C), com 48 horas entre eles. Cada músculo é treinado 3 vezes por semana, por ângulos diferentes." };
+const UL: PlanoHiper = { sessoes: ["superior", "inferior", "superior", "inferior"], dias: [0, 1, 3, 4], nome: "Superiores/Inferiores", divisao: "Superiores e Inferiores, duas vezes cada por semana, com cerca de 72 horas entre sessões do mesmo grupo." };
+export const PLANOS_HIPER: Record<Nivel, Record<Freq, PlanoHiper>> = {
+  iniciante: {
+    2: FULL_AB([0, 3]), 3: FULL_AB([0, 2, 4]), 4: UL,
+    5: { sessoes: ["superior", "inferior", "fullA", "superior", "inferior"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Full Body", divisao: "Superiores e Inferiores duas vezes por semana, com um corpo inteiro leve na quarta. Para quem está começando, 3 a 4 treinos por semana já dão ótimo resultado: a 5ª sessão é opcional." },
+  },
+  intermediario: {
+    2: FULL_AB([0, 3]), 3: FULL_ABC, 4: UL,
+    5: { sessoes: ["superior", "inferior", "empurrar", "puxar", "pernas"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Empurrar/Puxar/Pernas", divisao: "Começa a semana com Superiores e Inferiores e termina com Empurrar, Puxar e Pernas. Cada músculo é treinado 2 vezes por semana, com pelo menos 48 horas entre as sessões." },
+  },
+  avancado: {
+    2: FULL_AB([0, 3]), 3: FULL_ABC, 4: UL,
+    5: { sessoes: ["superior", "inferior", "empurrar", "puxar", "pernas"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Empurrar/Puxar/Pernas", divisao: "Começa a semana com Superiores e Inferiores e termina com Empurrar, Puxar e Pernas. Cada músculo é treinado 2 vezes por semana, com pelo menos 48 horas entre as sessões." },
+  },
+};
+
+// Multiarticulares (pesados) e isolados (mais leves, mais repetições) têm prescrições diferentes.
+export const PRESC_HIPER: Record<Nivel, { composto: Presc; isolado: Presc }> = {
+  iniciante: { composto: { sets: 3, reps: "10 a 12", rest: "90 s" }, isolado: { sets: 3, reps: "12 a 15", rest: "60 s" } },
+  intermediario: { composto: { sets: 4, reps: "8 a 10", rest: "120 s" }, isolado: { sets: 3, reps: "10 a 12", rest: "75 s" } },
+  avancado: { composto: { sets: 4, reps: "6 a 8", rest: "150 s" }, isolado: { sets: 4, reps: "10 a 15", rest: "75 s" } },
+};
+export const PRESC_HIPER_VARIADA: Record<Nivel, { composto: Presc; isolado: Presc }> = {
+  iniciante: { composto: { sets: 3, reps: "8 a 10", rest: "120 s" }, isolado: { sets: 3, reps: "10 a 12", rest: "75 s" } },
+  intermediario: { composto: { sets: 4, reps: "6 a 8", rest: "150 s" }, isolado: { sets: 3, reps: "12 a 15", rest: "60 s" } },
+  avancado: { composto: { sets: 5, reps: "5 a 7", rest: "180 s" }, isolado: { sets: 4, reps: "12 a 15", rest: "60 s" } },
+};
+export const RESERVA_HIPER: Record<Nivel, string> = {
+  iniciante: "Termine cada série com 2 a 3 repetições de reserva: o foco agora é aprender a técnica e aumentar a carga aos poucos.",
+  intermediario: "Termine as séries com 1 a 2 repetições de reserva. Quando fizer o topo da faixa de repetições em todas as séries, aumente a carga.",
+  avancado: "Leve a última série de cada exercício até 0 a 1 repetição de reserva. Os multiarticulares pesados pedem descanso de 2 a 3 minutos.",
+};
+
+// ---------- Cardio nas fichas ----------
+export const CARDIO = {
+  saude: { id: "esteira-caminhada", series: "20 a 30 min · ritmo moderado (dá para conversar)", onde: "fim" },
+  hipertrofia: { id: "eliptico", series: "8 a 10 min · aquecimento leve", onde: "inicio" },
+  hipertrofiaLeve: { id: "esteira-caminhada", series: "15 a 20 min · caminhada inclinada leve", onde: "fim" },
+  volei: { id: "bicicleta", series: "8 a 10 min · aquecimento leve", onde: "inicio" },
+  futebol: { id: "esteira-corrida", series: "Intervalado · 6 a 8 tiros de 30 s forte + 90 s caminhando (cerca de 15 min)", onde: "fim" },
+  fraco: { id: "bicicleta", series: "5 a 8 min · aquecimento leve", onde: "inicio" },
+} as const;
+export const NOTA_CARDIO: Record<ObjetivoId, string> = {
+  saude: "Cardio: a OMS e o ACSM recomendam 150 minutos por semana de atividade moderada. Complete o que faltar com caminhadas nos outros dias.",
+  hipertrofia: "Cardio leve (bike, elíptico ou caminhada inclinada) 2 a 3 vezes por semana ajuda o coração e a recuperação sem atrapalhar o ganho de massa. Evite cardio intenso logo antes do treino de pernas.",
+  volei: "O treino de quadra já trabalha o condicionamento. Aqui o cardio é só um aquecimento leve antes da força e dos saltos.",
+  futebol: "O intervalado imita o jogo: arrancadas curtas e recuperação. Faça depois da força, nunca antes dos saltos ou do treino de pernas pesado.",
+  fraco: "Aqueça 5 a 8 minutos antes: músculo aquecido rende mais e se protege melhor.",
+};
+
+// ---------- Ponto Fraco: músculos de apoio ----------
+// Cada ponto fraco tem dois grupos de apoio. As sessões giram entre os exercícios de cada lista.
+export const APOIOS: Record<GrupoMuscular, { nomes: string; porque: string; a: string[]; b: string[] }> = {
+  peitoral: { nomes: "costas (escápulas) e tríceps", porque: "O peitoral empurra junto com o tríceps, e quem segura o ombro no lugar durante o empurrão são os músculos das costas que prendem a escápula. Fortalecer esses apoios evita que o ombro vire o ponto de lesão.", a: ["face-pull", "remada-sentada", "crucifixo-inverso", "remada-maquina"], b: ["triceps-corda", "triceps-testa", "triceps-frances"] },
+  dorsais: { nomes: "bíceps e lombar/core", porque: "O bíceps ajuda em toda puxada, e a lombar e o core seguram o tronco firme nas remadas. Se eles cansam antes, as costas perdem a base e a coluna sobrecarrega.", a: ["rosca-martelo", "rosca-direta", "rosca-alternada"], b: ["perdigueiro", "prancha", "hiperextensao-lombar"] },
+  ombros: { nomes: "costas (escápulas) e core", porque: "O ombro é a articulação mais móvel do corpo e depende de escápulas firmes, presas pelos músculos das costas. O core dá a base para empurrar acima da cabeça sem arquear a lombar.", a: ["remada-sentada", "remada-maquina", "puxada-frente"], b: ["prancha", "prancha-lateral", "perdigueiro"] },
+  biceps: { nomes: "costas e tríceps", porque: "O bíceps trabalha junto das costas em toda puxada, e o tríceps, do outro lado do braço, equilibra o cotovelo. Músculos equilibrados em volta da articulação protegem o tendão do bíceps.", a: ["remada-sentada", "puxada-frente", "remada-unilateral"], b: ["triceps-corda", "triceps-frances", "triceps-coice"] },
+  triceps: { nomes: "peito e ombros (estabilizadores)", porque: "O tríceps termina os empurrões que o peitoral começa, e o ombro precisa estar estável para o cotovelo trabalhar sem dor. Por isso o peito e os estabilizadores do ombro entram como apoio.", a: ["supino-halteres", "flexao", "supino-reto"], b: ["face-pull", "crucifixo-inverso"] },
+  quadriceps: { nomes: "glúteos e posteriores da coxa", porque: "O joelho fica entre o quadríceps, na frente, e os posteriores, atrás. Glúteos e posteriores fortes dividem a carga e mantêm o joelho alinhado, a principal proteção contra dor e lesão no joelho.", a: ["elevacao-pelvica", "coice-polia"], b: ["mesa-flexora", "stiff", "cadeira-flexora"] },
+  posteriores: { nomes: "glúteos e lombar/core", porque: "Os posteriores estendem o quadril junto com os glúteos, e a lombar segura a coluna enquanto eles trabalham. Glúteo fraco faz o posterior trabalhar dobrado, a causa mais comum de estiramento.", a: ["elevacao-pelvica", "coice-polia"], b: ["perdigueiro", "hiperextensao-lombar", "prancha"] },
+  gluteos: { nomes: "posteriores da coxa e core lateral", porque: "Os glúteos estendem o quadril com os posteriores, e o glúteo médio trabalha com o core lateral para segurar a pelve. Esse conjunto protege o joelho e a lombar.", a: ["mesa-flexora", "cadeira-flexora", "stiff"], b: ["prancha-lateral", "perdigueiro", "prancha"] },
+  panturrilhas: { nomes: "pernas em apoio unilateral e core lateral", porque: "A panturrilha é a base da perna inteira. Exercícios em uma perna treinam o joelho e o quadril a ficarem alinhados em cima do tornozelo, e o core lateral segura a pelve, tirando sobrecarga do tendão de Aquiles.", a: ["agachamento-bulgaro", "afundo"], b: ["prancha-lateral", "perdigueiro"] },
+  core: { nomes: "lombar e glúteos", porque: "O core forma um cinto com a lombar em volta da coluna, e os glúteos firmam a pelve, onde esse cinto se apoia. Treinar os três juntos é o que protege a coluna de verdade.", a: ["perdigueiro", "hiperextensao-lombar", "bom-dia"], b: ["elevacao-pelvica", "coice-polia"] },
+  lombar: { nomes: "core e glúteos", porque: "A lombar não trabalha sozinha: o abdômen segura a frente da coluna e os glúteos estendem o quadril. Quando eles estão fortes, a lombar deixa de compensar, que é o que costuma causar a dor.", a: ["prancha", "dead-bug", "prancha-lateral"], b: ["elevacao-pelvica", "stiff"] },
+};
+export const FOCO_POR_SESSAO = 3;
 
 export const PONTOS_FRACOS: { id: GrupoMuscular; nome: string }[] = [
   { id: "peitoral", nome: "Peito" }, { id: "dorsais", nome: "Costas" }, { id: "ombros", nome: "Ombros" },
@@ -24,8 +141,8 @@ export const PONTOS_FRACOS: { id: GrupoMuscular; nome: string }[] = [
 ];
 
 // ---------- Ponto Fraco: treino 100% focado em um músculo ----------
-export const MIN_FOCO = 4; // menos que isso: mensagem de "poucos exercícios"
-export const MAX_FOCO = 5;
+export const MIN_FOCO = 3; // menos que isso: mensagem de "poucos exercícios"
+export const MAX_FOCO = 3;
 export const MAX_SESSOES_FOCO = 3; // o mesmo músculo não é treinado em dias seguidos (48 h entre sessões)
 
 export const mensagemPoucos = (n: number): string =>
@@ -42,10 +159,10 @@ export const FOCO_ORDEM: Record<GrupoMuscular, string[]> = {
   triceps: ["supino-fechado", "triceps-corda", "triceps-testa", "triceps-frances", "mergulho-paralelas", "triceps-coice"],
   quadriceps: ["agachamento", "leg-press", "agachamento-bulgaro", "agachamento-hack", "afundo", "cadeira-extensora"],
   posteriores: ["stiff", "mesa-flexora", "levantamento-terra", "cadeira-flexora"],
-  gluteos: ["elevacao-pelvica", "coice-polia"],
+  gluteos: ["elevacao-pelvica", "agachamento-bulgaro", "coice-polia", "afundo"],
   panturrilhas: ["panturrilha-em-pe", "panturrilha-sentada", "panturrilha-leg-press", "panturrilha-unilateral", "panturrilha-burrinho", "panturrilha-smith"],
   core: ["prancha", "abdominal-polia", "prancha-lateral", "elevacao-pernas", "dead-bug", "abdominal-roda"],
-  lombar: [],
+  lombar: ["hiperextensao-lombar", "perdigueiro", "bom-dia"],
 };
 
 export const PLANO_FOCO: Record<Freq, { dias: number[]; divisao: string }> = {
@@ -62,12 +179,14 @@ export const PLIOMETRICOS = ["agachamento-salto", "box-jump", "saltos-tornozelo"
 
 export const ISOMETRICOS: Record<string, string> = { prancha: "30 a 45 segundos", "prancha-lateral": "20 a 30 segundos por lado" };
 export const UNILATERAIS: Record<string, string> = {
+  perdigueiro: " por lado, segurando 2 s", "coice-polia": " por perna",
   afundo: " por perna", "agachamento-bulgaro": " por perna", "panturrilha-unilateral": " por perna", "remada-unilateral": " por lado",
 };
 export const UNIDADE_ESPECIAL: Record<string, string> = { "saltos-tornozelo": "saltos" };
 
 export interface Presc { sets: number; reps: string; rest: string }
 export const PRESC = {
+  apoio: { sets: 3, reps: "12 a 15", rest: "60 s" },
   saude: { sets: 3, reps: "10 a 12", rest: "60 s" },
   volei: { sets: 3, reps: "6 a 8", rest: "90 s" },
   salto: { sets: 3, reps: "5", rest: "90 s" },

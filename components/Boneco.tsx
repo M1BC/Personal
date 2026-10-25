@@ -146,7 +146,9 @@ export function Boneco({ exercicioId, nome, primario, secundarios }: Props) {
           </li>
         ))}
       </ul>
-      {mov.esforco !== "isometrico" && (
+      {mov.ciclo ? (
+        <p className="mt-3 text-sm text-suave">A linha tracejada mostra o caminho que o pé faz a cada passada ou giro.</p>
+      ) : mov.esforco !== "isometrico" && (
         <p className="mt-3 text-sm text-suave">
           A silhueta apagada ao fundo mostra a posição de destino{mov.trajeto !== "nenhum" ? ", e a linha tracejada mostra o caminho do movimento" : ""}.
         </p>

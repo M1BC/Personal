@@ -1,11 +1,12 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CICLOS, FREQUENCIAS, OBJETIVOS, PONTOS_FRACOS, type Ciclo, type Freq, type ObjetivoId } from "@/data/treinos";
+import { CICLOS, FREQUENCIAS, NIVEIS, OBJETIVOS, PONTOS_FRACOS, type Ciclo, type Freq, type Nivel, type ObjetivoTela } from "@/data/treinos";
 import { prepararAudio, tocarBipe } from "@/lib/som";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
 import { DiasFicha } from "./DiasFicha";
 import { FichaDoTreinador } from "./FichaDoTreinador";
+import { MeuTreino } from "./MeuTreino";
 import { ModalExercicio } from "./ModalExercicio";
 
 const OPCAO = "min-h-[56px] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
@@ -14,14 +15,15 @@ const CHAVE_SOM = "treino:som";
 
 export function Treinos() {
   const [freq, setFreq] = useState<Freq>(3);
-  const [obj, setObj] = useState<ObjetivoId>("saude");
+  const [obj, setObj] = useState<ObjetivoTela>("saude");
+  const [nivel, setNivel] = useState<Nivel>("iniciante");
   const [grupo, setGrupo] = useState<GrupoMuscular>("ombros");
   const [ciclo, setCiclo] = useState<Ciclo>("novo");
   const [aberto, setAberto] = useState<string | null>(null);
   const [som, setSom] = useState(true);
   const [timerAtivo, setTimerAtivo] = useState<string | null>(null);
   const fechar = useCallback(() => setAberto(null), []);
-  const r = useMemo(() => montarFicha(freq, obj, grupo, ciclo), [freq, obj, grupo, ciclo]);
+  const r = useMemo(() => (obj === "criar" ? null : montarFicha(freq, obj, grupo, ciclo, nivel)), [freq, obj, grupo, ciclo, nivel]);
 
   // Lembra se o usuário silenciou o timer.
   useEffect(() => {
@@ -36,7 +38,7 @@ export function Treinos() {
   // Ao trocar de ficha, nenhum timer fica em uso.
   useEffect(() => {
     setTimerAtivo(null);
-  }, [freq, obj, grupo, ciclo]);
+  }, [freq, obj, grupo, ciclo, nivel]);
 
   const alternarSom = () => {
     const novo = !som;
@@ -71,7 +73,7 @@ export function Treinos() {
       )}
 
       <p className="mt-6 text-lg font-semibold">2. Qual é o seu objetivo?</p>
-      <div role="group" aria-label="Objetivo" className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <div role="group" aria-label="Objetivo" className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {OBJETIVOS.map((o) => (
           <button key={o.id} aria-pressed={o.id === obj} onClick={() => setObj(o.id)} className={`${OPCAO} ${o.id === obj ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
             <span className="block text-lg font-extrabold">{o.nome}</span>
@@ -80,9 +82,24 @@ export function Treinos() {
         ))}
       </div>
 
+      {obj === "hipertrofia" && (
+        <div className="animar mt-6">
+          <p className="text-lg font-semibold">3. Qual é o seu nível?</p>
+          <div role="group" aria-label="Nível de experiência" className="mt-2 grid gap-2 sm:grid-cols-3">
+            {NIVEIS.map((n) => (
+              <button key={n.id} aria-pressed={n.id === nivel} onClick={() => setNivel(n.id)} className={`${OPCAO} ${n.id === nivel ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
+                <span className="block text-lg font-extrabold">{n.nome}</span>
+                <span className="block text-base opacity-80">{n.sub}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {obj === "fraco" && (
         <div className="animar mt-6">
           <p className="text-lg font-semibold">3. Qual músculo você quer fortalecer?</p>
+          <p className="text-base text-suave">A ficha treina esse músculo e também os músculos que dão apoio a ele.</p>
           <div role="group" aria-label="Ponto fraco" className="mt-2 flex flex-wrap gap-2">
             {PONTOS_FRACOS.map((p) => (
               <button key={p.id} aria-pressed={p.id === grupo} onClick={() => setGrupo(p.id)} className={`${CHIP} ${p.id === grupo ? "bg-tinta text-fundo" : "hover:bg-superficie"}`}>
@@ -93,16 +110,25 @@ export function Treinos() {
         </div>
       )}
 
-      <p className="mt-6 text-lg font-semibold">Há quanto tempo você está usando esta ficha?</p>
-      <div role="group" aria-label="Tempo de uso da ficha" className="mt-2 grid gap-2 sm:grid-cols-3">
-        {CICLOS.map((c) => (
-          <button key={c.id} aria-pressed={c.id === ciclo} onClick={() => setCiclo(c.id)} className={`${OPCAO} text-lg font-extrabold ${c.id === ciclo ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
-            {c.nome}
-          </button>
-        ))}
-      </div>
+      {obj !== "criar" && (
+        <>
+          <p className="mt-6 text-lg font-semibold">Há quanto tempo você está usando esta ficha?</p>
+          <div role="group" aria-label="Tempo de uso da ficha" className="mt-2 grid gap-2 sm:grid-cols-3">
+            {CICLOS.map((c) => (
+              <button key={c.id} aria-pressed={c.id === ciclo} onClick={() => setCiclo(c.id)} className={`${OPCAO} text-lg font-extrabold ${c.id === ciclo ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
+                {c.nome}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
-      <div key={`${freq}-${obj}-${grupo}-${ciclo}`} className="animar mt-10" aria-live="polite">
+      {obj === "criar" && (
+        <MeuTreino freq={freq} som={som} timerAtivo={timerAtivo} onIniciarTimer={setTimerAtivo} onExplicar={setAberto} />
+      )}
+
+      {r && (
+      <div key={`${freq}-${obj}-${grupo}-${ciclo}-${nivel}`} className="animar mt-10" aria-live="polite">
         {"erro" in r ? (
           <p className="max-w-[62ch] border-l-4 border-primario bg-superficie p-6 text-xl">{r.erro}</p>
         ) : (
@@ -156,6 +182,7 @@ export function Treinos() {
           </>
         )}
       </div>
+      )}
 
       <p className="mt-8 max-w-[70ch] border-l-4 border-primario bg-superficie p-4 text-lg font-semibold" role="note">
         Recomendações educacionais. Consulte um educador físico para a execução correta.

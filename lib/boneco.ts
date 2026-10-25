@@ -24,6 +24,7 @@ export interface Pose {
   // Mão ou pé presos a um ponto: o cotovelo/joelho é calculado (dobra 1 ou -1 escolhe o lado da dobra).
   maoAlvo?: P;
   dobraBraco?: 1 | -1;
+  maoAlvoL?: P; // mão de longe presa (ex.: pegador do elíptico, que vai para o lado oposto)
   peAlvo?: P;
   dobraPerna?: 1 | -1;
   peAlvoL?: P;
@@ -53,6 +54,10 @@ export type Acessorio =
   | { tipo: "treno"; trilho: [P, P]; faixa: [number, number]; contato: "pe" | "ponta" }
   | { tipo: "encostoHack" } // encosto e ombreiras do hack, presos às costas
   | { tipo: "roda" }
+  // Cardio: esteira (lona que corre para trás), pedivela da bicicleta e pedais/pegadores do elíptico.
+  | { tipo: "esteira"; x0: number; x1: number; lona: number; console: number; corrimao: number; velocidade: number }
+  | { tipo: "pedivela"; centro: P }
+  | { tipo: "eliptico"; volante: P; raio: number; pivo: P }
   // Pegador nas mãos; "eixo" = alavanca girando num pivô; "suspenso" = braço do voador, pendurado de uma viga nesta altura.
   | { tipo: "pegador"; eixo?: P; suspenso?: number; torre?: number };
 
@@ -68,7 +73,17 @@ export interface Movimento {
   fases: { ida: string; volta: string };
   trajeto: "mao" | "costas" | "quadril" | "pe" | "ombro" | "nenhum";
   dicas: string[];
+  // Cardio: movimento contínuo em ciclo (sem ida e volta). "inicio" é a postura base; t vira a fase do ciclo.
+  ciclo?: Ciclo;
 }
+
+export type Ciclo =
+  // Passada na esteira. Pé de perto toca a lona na frente em t = 0; o de longe meio ciclo depois.
+  | { tipo: "marcha"; periodo: number; frente: number; tras: number; lona: number; apoio: number; altura: number; balanco: number; braco: number; cotovelo: number; sobe: number }
+  // Pedalada: tornozelos giram num círculo em volta do centro do pedivela.
+  | { tipo: "pedal"; periodo: number; centro: P; raio: number }
+  // Elíptico: pés numa elipse, mãos indo e voltando ao contrário dos pés.
+  | { tipo: "eliptico"; periodo: number; centro: P; a: number; b: number; mao: P; curso: number };
 
 const TAM = { tronco: 46, pescoco: 7, cabeca: 8.5, braco: 25, antebraco: 23, coxa: 35, canela: 34, pe: 11 };
 export const CHAO = 150;
@@ -119,7 +134,7 @@ export function articulacoes(p: Pose, ancora: Movimento["ancora"]): Articulacoes
     ombro = soma(quadril, dir(p.tronco), TAM.tronco);
     if (p.maoAlvo) {
       mao = p.maoAlvo;
-      cotovelo = ik(ombro, mao, TAM.braco, TAM.antebraco, p.dobraBraco ?? 1);
+      cotovelo = ik(ombro, mao, TAM.braco * eb, TAM.antebraco * ea, p.dobraBraco ?? 1); // encurtado quando o braço abre para o lado
     } else {
       cotovelo = soma(ombro, dir(p.braco), TAM.braco * eb);
       mao = soma(cotovelo, dir(p.antebraco), TAM.antebraco * ea);
@@ -143,7 +158,10 @@ export function articulacoes(p: Pose, ancora: Movimento["ancora"]): Articulacoes
 
   // Braço de longe: sem ângulos próprios, acompanha o de perto.
   let cotoveloL = cotovelo, maoL = mao;
-  if (p.bracoL !== undefined || p.antebracoL !== undefined) {
+  if (p.maoAlvoL) {
+    maoL = p.maoAlvoL;
+    cotoveloL = ik(ombro, maoL, TAM.braco * eb, TAM.antebraco * ea, p.dobraBraco ?? 1);
+  } else if (p.bracoL !== undefined || p.antebracoL !== undefined) {
     cotoveloL = soma(ombro, dir(p.bracoL ?? angulo(ombro, cotovelo)), TAM.braco * eb);
     maoL = soma(cotoveloL, dir(p.antebracoL ?? angulo(cotovelo, mao)), TAM.antebraco * ea);
   }
@@ -180,6 +198,7 @@ export function interpolar(a: Pose, b: Pose, t: number): Pose {
     escalaBraco: misturaOpc(a.escalaBraco, b.escalaBraco, 1, 1, t),
     escalaAntebraco: misturaOpc(a.escalaAntebraco, b.escalaAntebraco, 1, 1, t),
     maoAlvo: misturaAlvo(a.maoAlvo, b.maoAlvo, t),
+    maoAlvoL: misturaAlvo(a.maoAlvoL, b.maoAlvoL, t),
     dobraBraco: a.dobraBraco ?? b.dobraBraco,
     peAlvo: misturaAlvo(a.peAlvo, b.peAlvo, t),
     dobraPerna: a.dobraPerna ?? b.dobraPerna,
@@ -192,10 +211,67 @@ export function interpolar(a: Pose, b: Pose, t: number): Pose {
 
 // Pose num ponto do movimento (0 = início, 1 = fim), com o arco do salto quando houver.
 export function poseEm(m: Movimento, t: number): Pose {
+  if (m.ciclo) return poseDoCiclo(m.inicio, m.ciclo, t);
   const p = interpolar(m.inicio, m.fim, t);
   if (!m.arco) return p;
   const sobe = m.arco * Math.sin(Math.PI * t);
   return { ...p, raiz: [p.raiz[0], p.raiz[1] - sobe], peAlvo: p.peAlvo && [p.peAlvo[0], p.peAlvo[1] - sobe], maoAlvo: p.maoAlvo && [p.maoAlvo[0], p.maoAlvo[1] - sobe] };
+}
+
+const volta = (x: number) => ((x % 1) + 1) % 1;
+const rampa = (x: number) => x * x * (3 - 2 * x);
+
+// Pé na passada: na lona (apoio) ele corre de frente para trás junto com a esteira; no ar (balanço) volta
+// para a frente, subindo. Devolve a posição do tornozelo (relativa ao quadril em x) e o ângulo do pé.
+function passada(c: Extract<Ciclo, { tipo: "marcha" }>, fase: number): { x: number; y: number; pe?: number } {
+  const f = volta(fase);
+  const chao = c.lona - 4;
+  if (f < c.apoio) {
+    const u = f / c.apoio;
+    // Calcanhar toca com a ponta para cima, o pé assenta e sai empurrando com a ponta.
+    const pe = u < 0.15 ? 78 + 12 * (u / 0.15) : u < 0.7 ? 90 : 90 + 38 * ((u - 0.7) / 0.3);
+    return { x: c.frente + (c.tras - c.frente) * u, y: chao, pe };
+  }
+  const u = (f - c.apoio) / (1 - c.apoio);
+  // Sobe mais no começo do balanço (o calcanhar vai para trás) e desce estendendo a perna, sem trancos.
+  const sobe = 4 * u * (1 - u) * (1 + 0.5 * (1 - 2 * u));
+  // No ar, o pé acompanha a canela (sem ângulo fixo), como acontece de verdade.
+  return { x: c.tras + (c.frente - c.tras) * rampa(u), y: chao - c.altura * sobe };
+}
+
+function poseDoCiclo(base: Pose, c: Ciclo, t: number): Pose {
+  const ang = 2 * Math.PI * t;
+  if (c.tipo === "marcha") {
+    const perto = passada(c, t), longe = passada(c, t + 0.5);
+    // O quadril sobe no meio do apoio de cada pé (duas vezes por ciclo).
+    const q: P = [base.raiz[0], base.raiz[1] - c.sobe * Math.cos(4 * Math.PI * (t - c.apoio / 2))];
+    const braco = 180 + c.braco * Math.cos(ang); // braço de perto vai para trás quando a perna de perto está na frente
+    const bracoL = 180 - c.braco * Math.cos(ang);
+    return {
+      ...base, raiz: q,
+      tronco: base.tronco + c.balanco * Math.sin(4 * Math.PI * t),
+      peAlvo: [q[0] + perto.x, perto.y], dobraPerna: -1, pe: perto.pe,
+      peAlvoL: [q[0] + longe.x, longe.y], dobraPernaL: -1, peL: longe.pe,
+      braco, antebraco: braco - c.cotovelo, bracoL, antebracoL: bracoL - c.cotovelo,
+    };
+  }
+  if (c.tipo === "pedal") {
+    const p = (a: number): P => [c.centro[0] + c.raio * Math.cos(a), c.centro[1] + c.raio * Math.sin(a)];
+    return {
+      ...base,
+      peAlvo: p(ang), dobraPerna: -1, pe: 96 + 14 * Math.sin(ang),
+      peAlvoL: p(ang + Math.PI), dobraPernaL: -1, peL: 96 + 14 * Math.sin(ang + Math.PI),
+    };
+  }
+  const e = (a: number): P => [c.centro[0] + c.a * Math.cos(a), c.centro[1] + c.b * Math.sin(a)];
+  const m = (a: number): P => [c.mao[0] - c.curso * Math.cos(a), c.mao[1] + 2 * Math.sin(a)];
+  return {
+    ...base,
+    // Pé à frente com a ponta um pouco para cima; atrás, o calcanhar sobe um pouco.
+    peAlvo: e(ang), dobraPerna: -1, pe: 90 - 6 * Math.cos(ang),
+    peAlvoL: e(ang + Math.PI), dobraPernaL: -1, peL: 90 + 6 * Math.cos(ang),
+    maoAlvo: m(ang), maoAlvoL: m(ang + Math.PI),
+  };
 }
 
 // Ritmo de treino: a fase de força é mais rápida, a descida é controlada, com pausa curta nas pontas.
@@ -203,9 +279,10 @@ const TEMPO = { forca: 1.1, controle: 1.9, pausa: 0.35, isometrico: 2.4 };
 // Aceleração e frenagem suaves (sem trancos no começo e no fim de cada fase).
 const suave = (x: number) => x * x * x * (x * (x * 6 - 15) + 10);
 
-export interface Estado { t: number; fase: "ida" | "volta"; emEsforco: boolean; legenda: string; destino: "inicio" | "fim"; rotulo: string }
+export interface Estado { t: number; fase: "ida" | "volta"; emEsforco: boolean; legenda: string; destino?: "inicio" | "fim"; rotulo: string }
 
 export function estado(segundos: number, m: Movimento): Estado {
+  if (m.ciclo) return { t: volta(segundos / m.ciclo.periodo), fase: "ida", emEsforco: true, legenda: m.fases.ida, rotulo: "Ritmo" };
   if (m.esforco === "isometrico") {
     // Segurar: entra na posição, sustenta, sai. O esforço é a sustentação.
     const total = TEMPO.controle + TEMPO.isometrico + TEMPO.forca + TEMPO.pausa;
@@ -401,6 +478,8 @@ export function enquadrar(m: Movimento): { x: number; y: number; w: number; h: n
   for (const a of m.acessorios) {
     if ("de" in a) incluir(a.de, 6);
     if (a.tipo === "pegador" && a.suspenso !== undefined) incluir([a.torre ?? 100, a.suspenso - 4], 0);
+    if (a.tipo === "esteira") { incluir([a.x0, a.lona], 2); incluir([a.x1, a.lona], 2); incluir([a.x1 - 28, a.console - 8], 0); }
+    if (a.tipo === "eliptico") { incluir(a.volante, a.raio + 2); incluir(a.pivo, 4); }
     if ("torre" in a && a.torre !== undefined) { incluir([a.torre - 2, CHAO], 0); incluir([a.torre + LARGURA_TORRE + 2, CHAO], 0); }
   }
   const baixo = m.semChao ? y1 : Math.max(y1, CHAO + 4);
@@ -412,6 +491,25 @@ export function enquadrar(m: Movimento): { x: number; y: number; w: number; h: n
 }
 
 const dist = (a: P, b: P) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+// Esteira: base, lona com marcas correndo para trás no ritmo da passada, coluna do painel e corrimão.
+function esteira(a: Extract<Acessorio, { tipo: "esteira" }>, t: number): Forma[] {
+  const f: Forma[] = [
+    { tipo: "retangulo", x: a.x0 + 6, y: a.lona + 6, w: 4, h: CHAO + 2 - a.lona - 6, tom: "equip" },
+    { tipo: "retangulo", x: a.x1 - 12, y: a.lona + 6, w: 4, h: CHAO + 2 - a.lona - 6, tom: "equip" },
+    { tipo: "retangulo", x: a.x0, y: a.lona, w: a.x1 - a.x0, h: 8, tom: "equip", rx: 4 },
+  ];
+  const L = a.x1 - a.x0 - 10, passo = L / Math.max(1, Math.round(L / 12));
+  for (let k = 0; k * passo < L; k++) {
+    const x = a.x0 + 5 + ((((k * passo - t * a.velocidade) % L) + L) % L);
+    f.push({ tipo: "retangulo", x, y: a.lona + 0.6, w: 4, h: 1.6, tom: "longe" });
+  }
+  const topo: P = [a.x1 - 16, a.console];
+  f.push(cena.linha([a.x1 - 6, a.lona + 2], topo, 4));
+  f.push({ tipo: "retangulo", x: topo[0] - 12, y: topo[1] - 7, w: 16, h: 7, tom: "equip", rx: 1.5 });
+  f.push(cena.linha([a.x0 + (a.x1 - a.x0) * 0.62, a.corrimao], [a.x1 - 13, a.corrimao], 3));
+  return f;
+}
 
 // Braço de alavanca: barra do eixo até a peça, com o pino do eixo.
 function alavanca(eixo: P, ate: P): Forma[] {
@@ -493,6 +591,22 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
       f.push(...pilha(torre, Math.min(45, 0.6 * dist(peca(j), descanso))));
     }
     if (a.tipo === "treno") f.push(...treno(a, j));
+    if (a.tipo === "esteira") f.push(...esteira(a, t));
+    if (a.tipo === "pedivela") {
+      for (const q of [j.tornozeloL, j.tornozelo]) f.push(cena.linha(a.centro, q, 3), cena.linha([q[0] - 4.5, q[1] + 3.5], [q[0] + 4.5, q[1] + 3.5], 2.6));
+      f.push({ tipo: "circulo", x: a.centro[0], y: a.centro[1], r: 7, tom: "equip" }, { tipo: "circulo", x: a.centro[0], y: a.centro[1], r: 2.5, tom: "longe" });
+    }
+    if (a.tipo === "eliptico") {
+      // Volante de trás: cada pedal é puxado por um ponto que gira nele, meio giro de diferença entre os lados.
+      f.push(...anilha(a.volante, a.raio));
+      ([[j.tornozeloL, j.pontaL, Math.PI], [j.tornozelo, j.ponta, 0]] as [P, P, number][]).forEach(([to, po, fase]) => {
+        const g = 2 * Math.PI * t + fase;
+        const [s1, s2] = trecho(to, po, -0.6, 1.3, 4.5);
+        f.push(cena.linha([a.volante[0] + a.raio * 0.7 * Math.cos(g), a.volante[1] + a.raio * 0.7 * Math.sin(g)], [(s1[0] + s2[0]) / 2, (s1[1] + s2[1]) / 2 + 2], 3));
+        f.push({ tipo: "linha", x1: s1[0], y1: s1[1], x2: s2[0], y2: s2[1], largura: 4, tom: "equip" });
+      });
+      f.push(cena.linha(a.pivo, j.maoL, 3), cena.linha(a.pivo, j.mao, 3), { tipo: "circulo", x: a.pivo[0], y: a.pivo[1], r: 3, tom: "equip" });
+    }
     if (a.tipo === "plataforma") {
       const [p1, p2] = trecho(j.tornozelo, j.ponta, -0.9, 1.6, 4.5);
       f.push({ tipo: "linha", x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], largura: 5, tom: "equip" });

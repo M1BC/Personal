@@ -57,7 +57,7 @@ export function BuscaAlimento({ aberto, titulo, categoriaInicial, onEscolher, on
               <button onClick={() => onEscolher(a.id)} className="block min-h-[56px] w-full px-1 py-3 text-left hover:bg-superficie">
                 <span className="block text-lg font-semibold">{a.nome}</span>
                 <span className="block text-base text-suave">
-                  {a.medida_caseira} ≈ {fmt(m.p, 0)} g prot · {fmt(m.c, 0)} g carb · {fmt(m.g, 0)} g gord
+                  {a.medida_caseira} ({a.medida_g} {a.liquido ? "ml" : "g"}) ≈ {fmt(m.p, 0)} g prot · {fmt(m.c, 0)} g carb · {fmt(m.g, 0)} g gord
                 </span>
               </button>
             </li>

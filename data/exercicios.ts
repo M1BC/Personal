@@ -14,14 +14,17 @@ export const GRUPOS: Record<GrupoMuscular, { nome: string; funcao: string; ligac
   panturrilhas: { nome: "Panturrilhas", funcao: "Levantam o calcanhar e empurram o corpo do chão ao andar, correr e saltar.", ligacao: "Formam a base da cadeia da perna: tornozelo, joelho e quadril trabalham em sequência. Panturrilha fraca sobrecarrega o joelho e o tendão." },
 };
 
-export const CATEGORIAS = ["Todos", "Peito", "Costas", "Quadríceps", "Posterior", "Ombros", "Bíceps", "Tríceps", "Panturrilha", "Core"] as const;
+export const CATEGORIAS = ["Todos", "Peito", "Costas", "Quadríceps", "Posterior", "Ombros", "Bíceps", "Tríceps", "Panturrilha", "Core", "Cardio"] as const;
 export type Categoria = (typeof CATEGORIAS)[number];
 
-const CATEGORIA_DO_GRUPO: Record<GrupoMuscular, Exclude<Categoria, "Todos">> = {
+const CATEGORIA_DO_GRUPO: Record<GrupoMuscular, Exclude<Categoria, "Todos" | "Cardio">> = {
   peitoral: "Peito", dorsais: "Costas", quadriceps: "Quadríceps", gluteos: "Posterior", posteriores: "Posterior",
   panturrilhas: "Panturrilha", ombros: "Ombros", biceps: "Bíceps", triceps: "Tríceps", core: "Core", lombar: "Core",
 };
 export const categoriaDe = (g: GrupoMuscular) => CATEGORIA_DO_GRUPO[g];
+// Categoria do exercício na tela: o cardio tem a sua própria, mesmo trabalhando as pernas.
+export const categoriaDoExercicio = (e: Exercicio): Exclude<Categoria, "Todos"> => (e.cardio ? "Cardio" : categoriaDe(e.grupo_primario));
+export const ehCardio = (id: string) => EXERCICIOS.some((e) => e.id === id && e.cardio);
 
 export const EXERCICIOS: Exercicio[] = [
   // Peito
@@ -144,6 +147,22 @@ export const EXERCICIOS: Exercicio[] = [
     explicacao_anatomica: "O core resiste à extensão: ao rolar para a frente, o abdômen impede que a lombar afunde, enquanto os dorsais e os ombros controlam o braço longo. Se o quadril cai, a lombar assume a carga. Comece com amplitude curta e só aumente enquanto o abdômen segurar." },
   { id: "dead-bug", nome: "Dead bug", grupo_primario: "core", grupos_secundarios: ["ombros", "lombar"], equipamento: "Peso do corpo",
     explicacao_anatomica: "Deitado, o core mantém a lombar colada no chão enquanto braços e pernas se movem em lados opostos. Os flexores do quadril e os ombros trabalham em coordenação com o abdômen. Se a lombar descola do chão, o core perdeu o controle e a amplitude deve diminuir." },
+  // Lombar
+  { id: "hiperextensao-lombar", nome: "Hiperextensão lombar (banco 45°)", grupo_primario: "lombar", grupos_secundarios: ["gluteos", "posteriores"], equipamento: "Banco romano 45°",
+    explicacao_anatomica: "Com o quadril apoiado na almofada, o tronco desce dobrando no quadril e os eretores da espinha, junto com glúteos e posteriores, trazem o corpo de volta até ficar em linha com as pernas. A coluna fica neutra o tempo todo: o movimento acontece no quadril, não na lombar. Subir além da linha das pernas não fortalece mais, só comprime a coluna." },
+  { id: "bom-dia", nome: "Bom dia (good morning)", grupo_primario: "lombar", grupos_secundarios: ["posteriores", "gluteos", "core"], equipamento: "Barra nas costas",
+    explicacao_anatomica: "Com a barra nas costas e os joelhos levemente dobrados, o quadril vai para trás e o tronco inclina à frente. A lombar segura a coluna reta contra o peso da barra, enquanto posteriores e glúteos freiam a descida e puxam o tronco de volta. Use carga leve: se a lombar arredondar, o exercício deixa de proteger e passa a sobrecarregar." },
+  { id: "perdigueiro", nome: "Perdigueiro (bird dog)", grupo_primario: "lombar", grupos_secundarios: ["core", "gluteos", "ombros"], equipamento: "Peso do corpo",
+    explicacao_anatomica: "Em quatro apoios, você estica um braço à frente e a perna do lado oposto para trás. Os eretores da espinha e o core impedem que o tronco gire ou que a lombar afunde, e o glúteo estende o quadril da perna que sobe. É um exercício de controle, ótimo para quem sente a lombar: o objetivo é ficar firme, não subir alto." },
+  // Cardio
+  { id: "esteira-caminhada", nome: "Caminhada rápida na esteira", grupo_primario: "gluteos", grupos_secundarios: ["quadriceps", "posteriores", "panturrilhas", "core"], equipamento: "Esteira (inclinação de 3 a 8%)", cardio: true,
+    explicacao_anatomica: "O coração e os pulmões são o foco: num ritmo em que ainda dá para conversar, o corpo melhora a capacidade de levar oxigênio aos músculos e queima gordura como combustível. A cada passo, o glúteo e os posteriores empurram o corpo para a frente e a panturrilha termina o impulso. Com a esteira inclinada, glúteos e posteriores trabalham mais e o impacto continua baixo, bom para quem está começando ou tem o joelho sensível." },
+  { id: "esteira-corrida", nome: "Corrida na esteira", grupo_primario: "quadriceps", grupos_secundarios: ["gluteos", "posteriores", "panturrilhas", "core"], equipamento: "Esteira", cardio: true,
+    explicacao_anatomica: "Na corrida há uma fase no ar, então cada passada aterrissa com 2 a 3 vezes o peso do corpo: quadríceps, glúteos e panturrilhas absorvem a queda e devolvem a energia, como molas. O core mantém o tronco estável e os braços balançam ao contrário das pernas para equilibrar a rotação. Pisar perto do corpo, com passos curtos e rápidos, reduz o impacto no joelho." },
+  { id: "bicicleta", nome: "Bicicleta ergométrica", grupo_primario: "quadriceps", grupos_secundarios: ["gluteos", "posteriores", "panturrilhas"], equipamento: "Bicicleta ergométrica", cardio: true,
+    explicacao_anatomica: "Sentado, o peso do corpo fica no banco, então quase não há impacto nas articulações. O quadríceps empurra o pedal para baixo, o glúteo ajuda na parte de trás do giro e os posteriores puxam o pedal de volta. O banco deve ficar na altura em que o joelho quase estica embaixo, sem o quadril balançar." },
+  { id: "eliptico", nome: "Elíptico (transport)", grupo_primario: "quadriceps", grupos_secundarios: ["gluteos", "posteriores", "dorsais", "peitoral"], equipamento: "Elíptico", cardio: true,
+    explicacao_anatomica: "Os pés nunca saem dos pedais, que percorrem uma elipse: o movimento lembra a corrida, mas sem o impacto da aterrissagem. As pernas empurram os pedais enquanto os braços empurram e puxam os pegadores, o que leva o trabalho também para o peito e as costas. É uma boa opção de cardio para quem sente o joelho ou o quadril na corrida." },
   // Pliometria
   { id: "agachamento-salto", nome: "Agachamento com salto", grupo_primario: "quadriceps", grupos_secundarios: ["gluteos", "panturrilhas", "core", "posteriores"], equipamento: "Peso do corpo",
     explicacao_anatomica: "O quadríceps e o glúteo empurram o chão com força para estender joelho e quadril, e a panturrilha termina o impulso no tornozelo: a força sobe em cadeia, dos pés ao quadril. O core mantém o tronco firme para transmitir essa força. Na aterrissagem, a coxa e a panturrilha freiam o impacto; aterrisse suave, com os joelhos alinhados aos pés. Se o joelho entra para dentro, o glúteo médio não está estabilizando a pelve." },
