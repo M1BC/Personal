@@ -18,11 +18,17 @@ export type Equipamento = "barra" | "halter" | "banco" | "barraCostas";
 export interface Movimento {
   ancora: "quadril" | "pe";
   inicio: Pose; // posição de partida
-  fim: Pose; // posição de máxima contração / amplitude
+  fim: Pose; // outra ponta do movimento
   equipamentos: Equipamento[];
   banco?: { x: number; y: number; largura: number }; // banco fixo no cenário
-  duracao: number; // segundos de um ciclo completo (ida e volta)
+  esforco: "ida" | "volta"; // qual metade é a de força (a outra é a descida controlada)
+  fases: { ida: string; volta: string }; // legenda mostrada em cada metade
+  trajeto: "mao" | "costas" | "quadril"; // ponto cujo caminho é desenhado
+  dicas: string[]; // pontos-chave de execução
 }
+
+// Proporção fixa do quadro (largura / altura), para o cartão não mudar de tamanho entre exercícios.
+export const PROPORCAO = 4 / 3;
 
 const TAM = { tronco: 46, pescoco: 7, cabeca: 8.5, braco: 25, antebraco: 23, coxa: 35, canela: 34, pe: 11 };
 export const CHAO = 150;
@@ -68,22 +74,33 @@ export function interpolar(a: Pose, b: Pose, t: number): Pose {
   };
 }
 
-// Ciclo: sobe (40%), segura (10%), desce (40%), segura (10%). Suavizado nas pontas.
-export function progresso(segundos: number, duracao: number): number {
-  const f = (segundos % duracao) / duracao;
-  const suave = (x: number) => 0.5 - Math.cos(Math.PI * x) / 2;
-  if (f < 0.4) return suave(f / 0.4);
-  if (f < 0.5) return 1;
-  if (f < 0.9) return 1 - suave((f - 0.5) / 0.4);
-  return 0;
+// Ritmo de treino: a fase de força é mais rápida, a descida é controlada, com pausa curta nas pontas.
+const TEMPO = { forca: 1.1, controle: 1.9, pausa: 0.35 };
+// Aceleração e frenagem suaves (sem trancos no começo e no fim de cada fase).
+const suave = (x: number) => x * x * x * (x * (x * 6 - 15) + 10);
+
+export interface Estado { t: number; fase: "ida" | "volta"; emEsforco: boolean; legenda: string; destino: "inicio" | "fim" }
+
+export function estado(segundos: number, m: Movimento): Estado {
+  const dIda = m.esforco === "ida" ? TEMPO.forca : TEMPO.controle;
+  const dVolta = m.esforco === "volta" ? TEMPO.forca : TEMPO.controle;
+  const total = dIda + dVolta + TEMPO.pausa * 2;
+  let x = segundos % total;
+  let t: number, fase: "ida" | "volta";
+  if (x < dIda) { t = suave(x / dIda); fase = "ida"; }
+  else if ((x -= dIda) < TEMPO.pausa) { t = 1; fase = "volta"; }
+  else if ((x -= TEMPO.pausa) < dVolta) { t = 1 - suave(x / dVolta); fase = "volta"; }
+  else { t = 0; fase = "ida"; }
+  return { t, fase, emEsforco: m.esforco === fase, legenda: m.fases[fase], destino: fase === "ida" ? "fim" : "inicio" };
 }
 
 // ---------- Desenho ----------
-export type Tom = "corpo" | "longe" | "primario" | "secundario" | "equip" | "chao";
+export type Tom = "corpo" | "longe" | "primario" | "secundario" | "equip" | "chao" | "fantasma" | "trajeto";
 // Formas na ordem em que devem ser desenhadas (a última fica por cima).
 export type Forma =
   | { tipo: "poligono"; pts: [number, number][]; tom: Tom }
   | { tipo: "linha"; x1: number; y1: number; x2: number; y2: number; largura: number; tom: Tom; opacidade?: number }
+  | { tipo: "caminho"; pts: [number, number][]; tom: Tom; tracejado?: boolean }
   | { tipo: "circulo"; x: number; y: number; r: number; tom: Tom }
   | { tipo: "retangulo"; x: number; y: number; w: number; h: number; tom: Tom; rx?: number };
 
@@ -147,17 +164,68 @@ function tronco(quadril: P, ombro: P, tom: Tom): Forma {
   return { tipo: "poligono", tom, pts: [...PERFIL_FRENTE.map(([u, w]) => ponto(u, w)), ...PERFIL_COSTAS.map(([u, w]) => ponto(u, -w))] };
 }
 
-export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secundarios: GrupoMuscular[]): Forma[] {
+// Silhueta só com o contorno do corpo (usada na "sombra" da posição de destino).
+function silhueta(j: Articulacoes, tom: Tom): Forma[] {
+  return [
+    ...capsula(j.quadril, j.joelho, 15, 10, tom),
+    ...capsula(j.joelho, j.tornozelo, 10, 6.5, tom),
+    ...capsula(j.tornozelo, j.ponta, 6.5, 4.5, tom),
+    tronco(j.quadril, j.ombro, tom),
+    ...capsula(j.ombro, j.pescoco, 8, 6.5, tom),
+    { tipo: "circulo", x: j.cabeca[0], y: j.cabeca[1], r: TAM.cabeca, tom },
+    ...capsula(j.ombro, j.cotovelo, 10, 7, tom),
+    ...capsula(j.cotovelo, j.mao, 7, 5, tom),
+  ];
+}
+
+const pontoDoTrajeto = (m: Movimento, j: Articulacoes): P =>
+  m.trajeto === "mao" ? j.mao : m.trajeto === "quadril" ? j.quadril : trecho(j.quadril, j.ombro, 0.96, 0.96, -14)[0];
+
+// Enquadra o movimento inteiro (as duas pontas e o caminho) com folga, deixando o personagem grande.
+export function enquadrar(m: Movimento): { x: number; y: number; w: number; h: number } {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  const incluir = (q: P, r = 0) => {
+    x0 = Math.min(x0, q[0] - r); y0 = Math.min(y0, q[1] - r);
+    x1 = Math.max(x1, q[0] + r); y1 = Math.max(y1, q[1] + r);
+  };
+  for (let k = 0; k <= 10; k++) {
+    const j = articulacoes(interpolar(m.inicio, m.fim, k / 10), m.ancora);
+    incluir(j.cabeca, TAM.cabeca); incluir(j.mao, m.equipamentos.includes("barra") ? 11 : 5);
+    incluir(j.ombro, 11); incluir(j.quadril, 9); incluir(j.joelho, 6); incluir(j.ponta, 4); incluir(j.cotovelo, 6);
+    if (m.equipamentos.includes("barraCostas")) incluir(trecho(j.quadril, j.ombro, 0.96, 0.96, -14)[0], 11);
+  }
+  if (m.banco) { incluir([m.banco.x, m.banco.y]); incluir([m.banco.x + m.banco.largura, m.banco.y]); }
+  incluir([x0, CHAO + 4]);
+  const folga = 10;
+  let w = x1 - x0 + folga * 2, h = y1 - y0 + folga * 2;
+  if (w / h < PROPORCAO) w = h * PROPORCAO; else h = w / PROPORCAO;
+  const cx = (x0 + x1) / 2;
+  // O chão fica sempre perto da borda de baixo.
+  return { x: cx - w / 2, y: CHAO + 4 + folga / 2 - h, w, h };
+}
+
+export interface OpcoesQuadro { destino?: "inicio" | "fim"; emEsforco?: boolean; guias?: boolean }
+
+export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secundarios: GrupoMuscular[], op: OpcoesQuadro = {}): Forma[] {
   const j = articulacoes(interpolar(m.inicio, m.fim, t), m.ancora);
   const f: Forma[] = [];
+  const guias = op.guias ?? true;
 
   // Cenário: chão e banco.
-  f.push({ tipo: "retangulo", x: 0, y: CHAO + 2, w: 240, h: 2, tom: "chao" });
+  f.push({ tipo: "retangulo", x: -100, y: CHAO + 2, w: 440, h: 3, tom: "chao" });
   if (m.banco) {
     const { x, y, largura } = m.banco;
     f.push({ tipo: "retangulo", x: x + 8, y: y + 4, w: 4, h: CHAO - y - 2, tom: "equip" });
     f.push({ tipo: "retangulo", x: x + largura - 12, y: y + 4, w: 4, h: CHAO - y - 2, tom: "equip" });
     f.push({ tipo: "retangulo", x, y, w: largura, h: 6, tom: "equip", rx: 2 });
+  }
+
+  // Guias de aprendizado: sombra da posição de destino e o caminho que a barra percorre.
+  if (guias) {
+    if (op.destino) f.push(...silhueta(articulacoes(op.destino === "fim" ? m.fim : m.inicio, m.ancora), "fantasma"));
+    const caminho: [number, number][] = [];
+    for (let k = 0; k <= 24; k++) caminho.push(pontoDoTrajeto(m, articulacoes(interpolar(m.inicio, m.fim, k / 24), m.ancora)));
+    f.push({ tipo: "caminho", pts: caminho, tom: "trajeto", tracejado: true });
   }
 
   // Lado de longe (mais escuro e levemente deslocado), depois o lado de perto.
@@ -188,7 +256,8 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
       f.push({ tipo: "linha", x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], largura: LARGURA_MUSCULO[r.seg], tom, opacidade });
     }
   };
-  const brilho = 0.55 + 0.45 * t;
+  // O músculo principal brilha mais na fase de força.
+  const brilho = op.emEsforco === undefined ? 0.55 + 0.45 * t : op.emEsforco ? 1 : 0.6;
   secundarios.forEach((g) => acender(g, "secundario", 0.8, false));
   acender(primario, "primario", brilho, false);
 
@@ -210,6 +279,19 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
       f.push({ tipo: "circulo", x: j.mao[0], y: j.mao[1], r: 2.5, tom: "longe" });
     }
   }
+  // Seta no caminho, apontando para onde o movimento está indo.
+  if (guias && op.destino) {
+    const atual = pontoDoTrajeto(m, j);
+    const adiante = pontoDoTrajeto(m, articulacoes(interpolar(m.inicio, m.fim, op.destino === "fim" ? Math.min(1, t + 0.08) : Math.max(0, t - 0.08)), m.ancora));
+    const dx = adiante[0] - atual[0], dy = adiante[1] - atual[1];
+    const len = Math.hypot(dx, dy);
+    if (len > 0.5) {
+      const ux = dx / len, uy = dy / len;
+      const base: P = [atual[0] + ux * 14, atual[1] + uy * 14]; // um pouco à frente do equipamento
+      const ponta: P = [base[0] + ux * 7, base[1] + uy * 7];
+      f.push({ tipo: "poligono", tom: "trajeto", pts: [ponta, [base[0] - uy * 4.5, base[1] + ux * 4.5], [base[0] + uy * 4.5, base[1] - ux * 4.5]] });
+    }
+  }
   return f;
 }
 
@@ -219,21 +301,30 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     ancora: "quadril",
     banco: { x: 44, y: 106, largura: 104 },
     equipamentos: ["barra"],
-    duracao: 3,
-    inicio: { raiz: [124, 96], tronco: -90, braco: 132, antebraco: -12, coxa: 118, canela: 180 },
+    esforco: "ida",
+    fases: { ida: "Empurre a barra para cima, sem travar os cotovelos", volta: "Desça controlando até encostar no peito" },
+    trajeto: "mao",
+    dicas: ["Pés firmes no chão e escápulas presas ao banco.", "A barra desce na linha do peito, não do pescoço.", "Cotovelos levemente abertos, em torno de 45° do corpo."],
+    inicio: { raiz: [124, 96], tronco: -90, braco: 105, antebraco: -47, coxa: 118, canela: 180 },
     fim: { raiz: [124, 96], tronco: -90, braco: 8, antebraco: 0, coxa: 118, canela: 180 },
   },
   agachamento: {
     ancora: "pe",
     equipamentos: ["barraCostas"],
-    duracao: 3.2,
+    esforco: "volta",
+    fases: { ida: "Desça levando o quadril para trás, como se fosse sentar", volta: "Suba empurrando o chão com o pé inteiro" },
+    trajeto: "costas",
+    dicas: ["Joelhos apontam na mesma direção dos pés.", "Calcanhar sempre no chão.", "Peito aberto e coluna neutra durante todo o movimento."],
     inicio: { raiz: [104, CHAO - 4], tronco: 6, braco: 205, antebraco: 330, coxa: 180, canela: 180 },
     fim: { raiz: [104, CHAO - 4], tronco: 42, braco: 235, antebraco: 345, coxa: 100, canela: 205 },
   },
   "remada-curvada": {
     ancora: "pe",
     equipamentos: ["barra"],
-    duracao: 2.8,
+    esforco: "ida",
+    fases: { ida: "Puxe a barra até a barriga, levando os cotovelos para trás", volta: "Estenda os braços devagar, sem arredondar as costas" },
+    trajeto: "mao",
+    dicas: ["Tronco inclinado e firme: só os braços se movem.", "Joelhos levemente dobrados.", "Junte as escápulas no fim da puxada."],
     inicio: { raiz: [104, CHAO - 4], tronco: 62, braco: 178, antebraco: 178, coxa: 158, canela: 195 },
     fim: { raiz: [104, CHAO - 4], tronco: 62, braco: 245, antebraco: 168, coxa: 158, canela: 195 },
   },

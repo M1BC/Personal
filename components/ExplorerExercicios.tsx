@@ -120,7 +120,7 @@ export function ExplorerExercicios() {
             <h3 className="text-[clamp(2rem,5vw,3rem)] font-extrabold leading-none tracking-tight">{ex.nome}</h3>
             <p className="mt-2 text-base text-suave">Equipamento: {ex.equipamento}</p>
 
-            <div className={`mt-6 grid gap-6 ${temAnimacao(ex.id) ? "md:grid-cols-2" : ""} md:items-center`}>
+            <div className={`mt-6 grid gap-6 ${temAnimacao(ex.id) ? "md:grid-cols-2" : ""} md:items-start`}>
               {temAnimacao(ex.id) && (
                 <Boneco exercicioId={ex.id} nome={ex.nome} primario={ex.grupo_primario} secundarios={ex.grupos_secundarios} />
               )}

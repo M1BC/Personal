@@ -14,6 +14,11 @@
   --primario: 226 29 38;
   --secundario: 240 180 0;
   --sobre-secundario: 12 12 13;
+  /* Personagem animado */
+  --boneco: 176 178 182;
+  --boneco-longe: 92 94 99;
+  --fantasma: 42 44 48;
+  --equip: 217 218 219;
   color-scheme: dark;
 }
 :root[data-tema="claro"] {
@@ -26,6 +31,10 @@
   --primario: 190 20 28;
   --secundario: 143 100 0;
   --sobre-secundario: 255 255 255;
+  --boneco: 85 87 91;
+  --boneco-longe: 163 165 168;
+  --fantasma: 207 208 205;
+  --equip: 38 40 43;
   color-scheme: light;
 }
 
