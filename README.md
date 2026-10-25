@@ -34,11 +34,20 @@ npm start
 
 ## Banco de dados
 
-Rode `supabase/schema.sql` uma vez no SQL Editor do Supabase. Ele cria a tabela `dados_usuario` com segurança por linha (cada usuário só vê os próprios dados).
+Os arquivos de `supabase/` já foram aplicados no projeto, na ordem dos números:
+
+- `01_dados_usuario.sql`: perfil, refeições e distribuição de cada usuário.
+- `02_perfis_fichas.sql`: papéis (aluno, treinador, admin) e fichas montadas pelo treinador.
+
+## Papéis
+
+- **Aluno:** toda conta nova. Vê a ficha do treinador no topo de Treinos e pode gerar a ficha automática.
+- **Treinador:** acessa o Painel, vê todos os alunos e monta ou edita a ficha de cada um.
+- **Administrador:** tudo do treinador, mais a tela Equipe, onde define o papel de cada conta. A conta do dono do app já nasce como administrador.
 
 ## Estrutura
 
-- `app/`: páginas (Anatomia, Refeições, Suplementos, Treinos)
+- `app/`: páginas (Anatomia, Refeições, Suplementos, Treinos, Painel, login e cadastro)
 - `components/`: componentes de tela
 - `data/`: bancos de dados (exercícios, alimentos, fichas de treino)
 - `lib/`: cálculos e utilitários (nutrição, cardápios, montagem das fichas de treino)
