@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { MOVIMENTOS, enquadrar, estado, quadro, type Estado, type Tom } from "@/lib/boneco";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { MOVIMENTOS } from "@/data/movimentos";
+import { enquadrar, estado, quadro, type Estado, type Tom } from "@/lib/boneco";
 import type { GrupoMuscular } from "@/lib/types";
 
 const PREENCHER: Record<Tom, string> = {
@@ -71,8 +72,8 @@ export function Boneco({ exercicioId, nome, primario, secundarios }: Props) {
     };
   }, [mov, tocando, lento]);
 
-  if (!mov || !est) return null;
-  const vb = enquadrar(mov);
+  const vb = useMemo(() => (mov ? enquadrar(mov) : null), [mov]);
+  if (!mov || !est || !vb) return null;
   const formas = quadro(mov, est.t, primario, secundarios, { destino: est.destino, emEsforco: est.emEsforco });
 
   return (
@@ -131,7 +132,7 @@ export function Boneco({ exercicioId, nome, primario, secundarios }: Props) {
           aria-hidden="true"
         />
         <span>
-          <span className="text-suave">{est.emEsforco ? "Força · " : "Controle · "}</span>
+          <span className="text-suave">{est.rotulo} · </span>
           {est.legenda}
         </span>
       </p>
@@ -145,9 +146,11 @@ export function Boneco({ exercicioId, nome, primario, secundarios }: Props) {
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-sm text-suave">
-        A silhueta apagada ao fundo mostra a posição de destino, e a linha tracejada mostra o caminho da barra.
-      </p>
+      {mov.esforco !== "isometrico" && (
+        <p className="mt-3 text-sm text-suave">
+          A silhueta apagada ao fundo mostra a posição de destino{mov.trajeto !== "nenhum" ? ", e a linha tracejada mostra o caminho do movimento" : ""}.
+        </p>
+      )}
     </div>
   );
 }

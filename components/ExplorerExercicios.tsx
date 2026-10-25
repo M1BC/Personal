@@ -98,9 +98,6 @@ export function ExplorerExercicios() {
                         {e.equipamento}
                       </span>
                     </span>
-                    {temAnimacao(e.id) && (
-                      <span className={`shrink-0 text-xs font-bold uppercase tracking-wider ${ativo ? "opacity-80" : "text-primario"}`}>Animado</span>
-                    )}
                   </button>
                 </li>
               );
