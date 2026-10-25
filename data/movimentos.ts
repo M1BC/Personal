@@ -57,8 +57,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Desça o corpo inteiro em bloco, cotovelos para trás", volta: "Empurre o chão até estender os braços" },
     trajeto: "ombro",
     dicas: ["Corpo reto dos calcanhares à cabeça, sem deixar o quadril cair.", "Mãos logo abaixo dos ombros.", "Desça até o peito quase encostar no chão."],
-    inicio: { raiz: [50, 140], canela: 250, coxa: 250, tronco: 70, braco: 180, antebraco: 180, maoAlvo: [158, 149], dobraBraco: 1, pe: 180 },
-    fim: { raiz: [50, 140], canela: 265, coxa: 265, tronco: 85, braco: 180, antebraco: 180, maoAlvo: [158, 149], dobraBraco: 1, pe: 180 },
+    inicio: { raiz: [50, 140], canela: 250, coxa: 250, tronco: 70, braco: 180, antebraco: 180, maoAlvo: [157, 149], dobraBraco: 1, pe: 155 },
+    fim: { raiz: [50, 140], canela: 265, coxa: 265, tronco: 85, braco: 180, antebraco: 180, maoAlvo: [157, 149], dobraBraco: 1, pe: 155 },
   },
   "peck-deck": {
     ancora: "quadril",
@@ -92,8 +92,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Puxe a barra até a parte de cima do peito, cotovelos para baixo", volta: "Suba a barra devagar até esticar os braços" },
     trajeto: "mao",
     dicas: ["Tronco levemente inclinado para trás.", "Leve os cotovelos em direção ao quadril.", "Não use o embalo do corpo."],
-    inicio: { raiz: [100, 112], tronco: -12, coxa: 92, canela: 180, braco: 0, antebraco: 0, maoAlvo: [104, 20], dobraBraco: -1 },
-    fim: { raiz: [100, 112], tronco: -12, coxa: 92, canela: 180, braco: 0, antebraco: 0, maoAlvo: [110, 64], dobraBraco: -1 },
+    inicio: { raiz: [100, 112], tronco: -12, coxa: 92, canela: 180, braco: 16, antebraco: 16, escalaBraco: 1 },
+    fim: { raiz: [100, 112], tronco: -12, coxa: 92, canela: 180, braco: 16, antebraco: 50, escalaBraco: -0.5 },
   },
   "remada-curvada": {
     ancora: "pe",
@@ -147,8 +147,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Puxe os pegadores, levando os cotovelos para trás", volta: "Estenda os braços devagar, sem tirar o peito do apoio" },
     trajeto: "mao",
     dicas: ["Peito sempre encostado no apoio.", "Junte as escápulas no fim do movimento.", "Ombros longe das orelhas."],
-    inicio: { raiz: [86, 116], tronco: 10, coxa: 92, canela: 180, braco: 90, antebraco: 90, maoAlvo: [142, 82], dobraBraco: 1 },
-    fim: { raiz: [86, 116], tronco: 10, coxa: 92, canela: 180, braco: 90, antebraco: 90, maoAlvo: [112, 86], dobraBraco: 1 },
+    inicio: { raiz: [86, 116], tronco: 10, coxa: 84, canela: 180, braco: 90, antebraco: 90, maoAlvo: [140, 82], dobraBraco: 1 },
+    fim: { raiz: [86, 116], tronco: 10, coxa: 84, canela: 180, braco: 90, antebraco: 90, maoAlvo: [112, 86], dobraBraco: 1 },
   },
   "remada-cavalinho": {
     ancora: "pe",
@@ -179,8 +179,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Puxe a corda em direção ao rosto, cotovelos altos", volta: "Estenda os braços devagar" },
     trajeto: "mao",
     dicas: ["Polia na altura do rosto.", "Abra as mãos ao lado das orelhas no final.", "Cotovelos sempre na altura dos ombros."],
-    inicio: { raiz: PE, ...EM_PE, tronco: -4, braco: 90, antebraco: 90, maoAlvo: [150, 34], dobraBraco: -1 },
-    fim: { raiz: PE, ...EM_PE, tronco: -4, braco: 90, antebraco: 90, maoAlvo: [114, 22], dobraBraco: -1 },
+    inicio: { raiz: PE, ...EM_PE, tronco: -4, braco: 92, antebraco: 92, escalaBraco: 1 },
+    fim: { raiz: PE, ...EM_PE, tronco: -4, braco: 92, antebraco: 51, escalaBraco: -0.35 },
   },
 
   // ---------------- Pernas ----------------
@@ -191,8 +191,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Desça levando o quadril para trás, como se fosse sentar", volta: "Suba empurrando o chão com o pé inteiro" },
     trajeto: "costas",
     dicas: ["Joelhos apontam na mesma direção dos pés.", "Calcanhar sempre no chão.", "Peito aberto e coluna neutra durante todo o movimento."],
-    inicio: { raiz: PE, tronco: 6, braco: 205, antebraco: 330, coxa: 180, canela: 180 },
-    fim: { raiz: PE, tronco: 42, braco: 235, antebraco: 345, coxa: 100, canela: 205 },
+    inicio: { raiz: PE, tronco: 6, braco: 205, antebraco: 330, coxa: 180, canela: 180, pe: 90 },
+    fim: { raiz: PE, tronco: 42, braco: 235, antebraco: 345, coxa: 100, canela: 205, pe: 90 },
   },
   "leg-press": {
     ancora: "quadril",
@@ -202,7 +202,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Empurre a plataforma com o pé inteiro, sem travar os joelhos", volta: "Desça devagar até os joelhos chegarem perto do peito" },
     trajeto: "pe",
     dicas: ["Lombar sempre encostada no banco.", "Pés na largura do quadril, no meio da plataforma.", "Não trave os joelhos no alto."],
-    inicio: { raiz: [100, 124], tronco: -62, coxa: 60, canela: 150, braco: 150, antebraco: 120, peAlvo: [124, 98], dobraPerna: -1, pe: -45 },
+    inicio: { raiz: [100, 124], tronco: -62, coxa: 60, canela: 150, braco: 150, antebraco: 120, peAlvo: [131, 91], dobraPerna: -1, pe: -45 },
     fim: { raiz: [100, 124], tronco: -62, coxa: 60, canela: 150, braco: 150, antebraco: 120, peAlvo: [144, 79], dobraPerna: -1, pe: -45 },
   },
   afundo: {
@@ -212,8 +212,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Desça reto, até o joelho de trás quase tocar o chão", volta: "Suba empurrando com a perna da frente" },
     trajeto: "quadril",
     dicas: ["Tronco reto, olhando para a frente.", "O joelho da frente acompanha a ponta do pé.", "Passo longo o bastante para os dois joelhos formarem 90°."],
-    inicio: { raiz: [98, 87], tronco: 0, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 141], dobraPernaL: -1, peL: 160 },
-    fim: { raiz: [98, 110], tronco: 0, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 141], dobraPernaL: -1, peL: 160 },
+    inicio: { raiz: [98, 87], tronco: 0, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 140], dobraPernaL: -1, peL: 155 },
+    fim: { raiz: [98, 110], tronco: 0, coxa: 180, canela: 180, ...BRACOS_SOLTOS, peAlvo: [128, 146], dobraPerna: -1, pe: 90, peAlvoL: [64, 140], dobraPernaL: -1, peL: 155 },
   },
   "levantamento-terra": {
     ancora: "pe",
@@ -244,8 +244,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Suba o quadril até o corpo ficar reto dos ombros aos joelhos", volta: "Desça o quadril devagar, sem encostar no chão" },
     trajeto: "quadril",
     dicas: ["Parte de cima das costas apoiada na borda do banco.", "Canelas na vertical no topo do movimento.", "Aperte os glúteos no alto, sem arquear a lombar."],
-    inicio: { raiz: [140, 146], canela: 175, coxa: 60, tronco: -63, braco: 90, antebraco: 90, maoAlvo: [118, 116], dobraBraco: 1 },
-    fim: { raiz: [140, 146], canela: 178, coxa: 110, tronco: -96, braco: 90, antebraco: 90, maoAlvo: [114, 88], dobraBraco: 1 },
+    inicio: { raiz: [140, 146], canela: 175, coxa: 60, tronco: -63, braco: 90, antebraco: 90, maoAlvo: [104.7, 126.2], dobraBraco: 1 },
+    fim: { raiz: [140, 146], canela: 178, coxa: 110, tronco: -96, braco: 90, antebraco: 90, maoAlvo: [104.5, 96.2], dobraBraco: 1 },
   },
   "cadeira-flexora": {
     ancora: "quadril",
@@ -309,8 +309,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Leve a perna para trás e para cima, apertando o glúteo", volta: "Volte a perna devagar, sem apoiar no chão" },
     trajeto: "pe",
     dicas: ["Tronco firme, levemente inclinado.", "Não arqueie a lombar para subir mais.", "O movimento sai do quadril."],
-    inicio: { raiz: [100, 79], tronco: 22, coxa: 172, canela: 182, coxaL: 180, canelaL: 180, braco: 90, antebraco: 90, maoAlvo: [158, 66], dobraBraco: 1 },
-    fim: { raiz: [100, 79], tronco: 22, coxa: 238, canela: 220, coxaL: 180, canelaL: 180, braco: 90, antebraco: 90, maoAlvo: [158, 66], dobraBraco: 1 },
+    inicio: { raiz: [100, 79], tronco: 28, coxa: 172, canela: 182, coxaL: 180, canelaL: 180, braco: 90, antebraco: 90, maoAlvo: [158, 66], dobraBraco: 1 },
+    fim: { raiz: [100, 79], tronco: 28, coxa: 236, canela: 243, coxaL: 180, canelaL: 180, braco: 90, antebraco: 90, maoAlvo: [158, 66], dobraBraco: 1 },
   },
   "agachamento-salto": {
     ancora: "pe",
@@ -319,7 +319,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Exploda para cima, estendendo quadril, joelhos e tornozelos", volta: "Aterrisse macio e desça de novo para o agachamento" },
     trajeto: "quadril",
     dicas: ["Aterrisse com a ponta do pé e depois o calcanhar.", "Joelhos alinhados com os pés na aterrissagem.", "Use os braços para ganhar impulso."],
-    inicio: { raiz: PE, tronco: 40, coxa: 100, canela: 205, braco: 215, antebraco: 215 },
+    inicio: { raiz: PE, tronco: 40, coxa: 100, canela: 205, braco: 215, antebraco: 215, pe: 90 },
     fim: { raiz: [104, 120], tronco: 2, coxa: 180, canela: 180, braco: 15, antebraco: 15, pe: 150 },
   },
   "box-jump": {
@@ -562,7 +562,7 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     trajeto: "mao",
     dicas: ["Cotovelos fechados, perto da cabeça.", "Só os antebraços se movem.", "Abdômen firme para não arquear a lombar."],
     inicio: { raiz: PE, ...EM_PE, tronco: 0, braco: 2, antebraco: 2 },
-    fim: { raiz: PE, ...EM_PE, tronco: 0, braco: 2, antebraco: 205 },
+    fim: { raiz: PE, ...EM_PE, tronco: 0, braco: 2, antebraco: -150 },
   },
   "triceps-coice": {
     ancora: "pe",
@@ -605,8 +605,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Alinhe o corpo e segure, abdômen e glúteos contraídos", volta: "Apoie os joelhos e descanse" },
     trajeto: "nenhum",
     dicas: ["Cotovelos logo abaixo dos ombros.", "Corpo reto: sem quadril alto nem baixo.", "Respire normalmente durante a sustentação."],
-    inicio: { raiz: [44, 140], canela: 262, coxa: 248, tronco: 74, braco: 180, antebraco: 90, pe: 180 },
-    fim: { raiz: [44, 140], canela: 260, coxa: 260, tronco: 80, braco: 180, antebraco: 90, pe: 180 },
+    inicio: { raiz: [44, 139], canela: 262, coxa: 248, tronco: 74, braco: 180, antebraco: 90, pe: 180 },
+    fim: { raiz: [44, 139], canela: 260, coxa: 260, tronco: 80, braco: 180, antebraco: 90, pe: 180 },
   },
   "prancha-lateral": {
     ancora: "pe",
@@ -615,8 +615,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Suba o quadril até o corpo ficar reto e segure", volta: "Desça o quadril com controle" },
     trajeto: "nenhum",
     dicas: ["Cotovelo logo abaixo do ombro.", "Quadril alto, alinhado com ombros e pés.", "Não deixe o corpo girar para a frente."],
-    inicio: { raiz: [44, 142], canela: 272, coxa: 276, tronco: 70, braco: 180, antebraco: 90, bracoL: 20, antebracoL: 20, pe: 180 },
-    fim: { raiz: [44, 142], canela: 260, coxa: 260, tronco: 80, braco: 180, antebraco: 90, bracoL: 0, antebracoL: 0, pe: 180 },
+    inicio: { raiz: [44, 139], canela: 264, coxa: 264, tronco: 78, braco: 180, antebraco: 90, bracoL: 20, antebracoL: 20, pe: 180 },
+    fim: { raiz: [44, 139], canela: 260, coxa: 260, tronco: 80, braco: 180, antebraco: 90, bracoL: 0, antebracoL: 0, pe: 180 },
   },
   "abdominal-polia": {
     ancora: "quadril",
@@ -626,8 +626,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Enrole o tronco para baixo, levando os cotovelos aos joelhos", volta: "Volte devagar, sem soltar o abdômen" },
     trajeto: "nenhum",
     dicas: ["Ajoelhado, quadril parado.", "Quem se move é a coluna, enrolando.", "Corda ao lado da cabeça o tempo todo."],
-    inicio: { raiz: [96, 108], tronco: 10, coxa: 180, canela: 270, braco: 40, antebraco: 200 },
-    fim: { raiz: [96, 108], tronco: 78, coxa: 180, canela: 270, braco: 112, antebraco: 272 },
+    inicio: { raiz: [96, 108], tronco: 10, coxa: 180, canela: 270, braco: 60, antebraco: -80, pe: 262 },
+    fim: { raiz: [96, 108], tronco: 78, coxa: 180, canela: 270, braco: 128, antebraco: -12, pe: 262 },
   },
   "elevacao-pernas": {
     ancora: "mao",
@@ -648,8 +648,8 @@ export const MOVIMENTOS: Record<string, Movimento> = {
     fases: { ida: "Role para a frente devagar, sem afundar a lombar", volta: "Volte contraindo o abdômen" },
     trajeto: "mao",
     dicas: ["Ajoelhado, com o abdômen firme o tempo todo.", "Vá só até onde conseguir manter a lombar reta.", "Braços estendidos durante o movimento."],
-    inicio: { raiz: [60, 146], canela: 270, coxa: 180, tronco: 30, braco: 180, antebraco: 180, maoAlvo: [126, 138], dobraBraco: 1, pe: 270 },
-    fim: { raiz: [60, 146], canela: 270, coxa: 250, tronco: 82, braco: 90, antebraco: 90, maoAlvo: [214, 138], dobraBraco: 1, pe: 270 },
+    inicio: { raiz: [60, 146], canela: 270, coxa: 165, tronco: 61, braco: 180, antebraco: 180, pe: 270 },
+    fim: { raiz: [60, 146], canela: 270, coxa: 250, tronco: 82, braco: 102.5, antebraco: 102.5, pe: 270 },
   },
   "dead-bug": {
     ancora: "quadril",

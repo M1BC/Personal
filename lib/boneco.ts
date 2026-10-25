@@ -431,7 +431,7 @@ export function quadro(m: Movimento, t: number, primario: GrupoMuscular, secunda
 
   // Acessórios presos ao corpo que ficam sob o braço.
   for (const a of m.acessorios) {
-    if (a.tipo === "barraQuadril") f.push(...anilha(trecho(j.quadril, j.joelho, 0.08, 0.08, 11)[0]));
+    if (a.tipo === "barraQuadril") f.push(...anilha(trecho(j.quadril, j.joelho, 0, 0, -4)[0])); // por cima do quadril
     if (a.tipo === "pesoCintura") f.push({ tipo: "retangulo", x: j.quadril[0] - 6, y: j.quadril[1] + 8, w: 12, h: 12, tom: "equip", rx: 2 });
     if (a.tipo === "rolo") {
       const c =
