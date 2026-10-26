@@ -44,8 +44,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Arquivos estáticos, ícones, manifest e service worker ficam fora da proteção.
+  // Arquivos estáticos, ícones, fontes, logo, manifest, service worker e o arquivo de vínculo com a Play Store
+  // (/.well-known/assetlinks.json) ficam fora da proteção.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icon.png|icons/|sw.js|manifest.webmanifest|.*\\.(?:png|jpg|jpeg|svg|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icon.png|icons/|fontes/|marca/|\\.well-known/|sw.js|manifest.webmanifest|.*\\.(?:png|jpg|jpeg|svg|webp|ico|woff2?)$).*)",
   ],
 };
