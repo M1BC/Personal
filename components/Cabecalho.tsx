@@ -100,7 +100,7 @@ export function Cabecalho() {
                     ativo ? "text-tinta" : "text-suave"
                   }`}
                 >
-                  {ativo && <span className="absolute inset-x-5 top-0 h-[3px] rounded-b-full bg-primario" aria-hidden="true" />}
+                  {ativo && <span className="absolute left-1/2 top-0 h-[3px] w-10 -translate-x-1/2 rounded-b-full bg-primario" aria-hidden="true" />}
                   <Icone nome={l.icone} className={`h-6 w-6 ${ativo ? "text-brasa" : ""}`} />
                   {l.nome}
                 </Link>
