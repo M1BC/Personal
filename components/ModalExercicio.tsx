@@ -1,15 +1,21 @@
 "use client";
 import { EXERCICIOS, GRUPOS } from "@/data/exercicios";
+import { Boneco, temAnimacao } from "./Boneco";
 import { Modal } from "./Modal";
 
-// Explicação anatômica de um exercício (botão "?" das fichas).
+// Botão "?" das fichas: o personagem mostrando a execução e, abaixo, a explicação anatômica.
 export function ModalExercicio({ id, onFechar }: { id: string | null; onFechar: () => void }) {
   const ex = id ? EXERCICIOS.find((e) => e.id === id) : null;
   return (
     <Modal aberto={!!ex} titulo={ex?.nome ?? ""} onFechar={onFechar}>
       {ex && (
         <>
-          <p className="mt-4 text-lg font-semibold">Equipamento</p>
+          {temAnimacao(ex.id) && (
+            <div className="mt-4">
+              <Boneco key={ex.id} exercicioId={ex.id} nome={ex.nome} primario={ex.grupo_primario} secundarios={ex.grupos_secundarios} />
+            </div>
+          )}
+          <p className="mt-6 text-lg font-semibold">Equipamento</p>
           <p className="text-lg text-suave">{ex.equipamento}</p>
           <p className="mt-4 text-lg font-semibold">Músculo principal</p>
           <p className="text-lg text-suave">{GRUPOS[ex.grupo_primario].nome}</p>
