@@ -61,11 +61,6 @@
 }
 
 @layer components {
-  /* Superfícies (cartões, campos) com canto levemente arredondado; avisos com fio lateral ficam retos do lado do fio.
-     Na camada de componentes: um rounded-* no elemento ainda vence. */
-  .bg-superficie { border-radius: 12px; }
-  .bg-superficie.border-l-4 { border-radius: 3px 12px 12px 3px; }
-
   /* Botão principal: placa de metal em brasa, com os cantos chanfrados como o escudo da logo. */
   .btn {
     @apply inline-flex min-h-[48px] items-center justify-center px-6 py-3 text-[17px] font-bold text-white
@@ -150,6 +145,11 @@
   /* Logo em destaque: brilho de brasa em volta. Acende uma vez ao abrir (o único movimento de entrada). */
   .logo-acesa { filter: drop-shadow(0 0 32px rgb(227 38 27 / 0.42)) drop-shadow(0 0 8px rgb(255 107 26 / 0.3)); animation: acender 700ms cubic-bezier(0.23, 1, 0.32, 1) both; }
 }
+
+/* Superfícies (cartões, campos) com canto levemente arredondado; avisos com fio lateral ficam retos do lado do fio.
+   Fora das camadas e com :where() (peso zero): não gera variações de hover e qualquer rounded-* no elemento vence. */
+:where(.bg-superficie) { border-radius: 12px; }
+:where(.bg-superficie.border-l-4) { border-radius: 3px 12px 12px 3px; }
 
 @keyframes acender { from { opacity: 0; transform: scale(0.94); } }
 @keyframes folha { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
