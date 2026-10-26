@@ -14,7 +14,7 @@ interface Props {
 }
 
 const BTN =
-  "min-h-[48px] border-2 border-tinta px-4 font-bold transition-transform duration-100 ease-out active:scale-[0.97] hover:bg-tinta hover:text-fundo";
+  "min-h-[48px] btn-contorno px-4 font-bold";
 
 export function TimerDescanso({ id, segundos, ativo, som, onIniciar }: Props) {
   const [estado, setEstado] = useState<Estado>("parado");
@@ -111,12 +111,12 @@ export function TimerDescanso({ id, segundos, ativo, som, onIniciar }: Props) {
     <div className="mt-2">
       <span className="sr-only" role="status" aria-live="polite">{aviso}</span>
       {estado === "parado" ? (
-        <button className={BTN} onClick={iniciar}>Iniciar Descanso</button>
+        <button className={BTN} onClick={iniciar}>Iniciar descanso</button>
       ) : (
         <div role="timer" aria-label="Contagem regressiva do descanso">
           <div className="flex flex-wrap items-baseline gap-3">
-            <span className={`text-4xl font-extrabold leading-none tabular-nums ${urgente ? "text-primario" : ""}`}>{formatarTempo(restante)}</span>
-            {urgente && <span className="text-base font-bold text-primario">Quase lá</span>}
+            <span className={`text-4xl font-extrabold leading-none tabular-nums ${urgente ? "text-alerta" : ""}`}>{formatarTempo(restante)}</span>
+            {urgente && <span className="text-base font-bold text-alerta">Quase lá</span>}
             {estado === "fim" && <span className="text-base font-bold">Descanso concluído</span>}
           </div>
           <div className="mt-2 h-2 bg-corpo" aria-hidden="true">

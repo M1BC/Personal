@@ -18,7 +18,7 @@ const traduzir = (msg: string) => ERROS.find(([re]) => re.test(msg))?.[1] ?? "N�
 // Só aceita voltar para uma página interna do app.
 function destino() {
   const v = new URLSearchParams(window.location.search).get("voltar");
-  return v && v.startsWith("/") && !v.startsWith("//") ? v : "/anatomia";
+  return v && v.startsWith("/") && !v.startsWith("//") ? v : "/";
 }
 
 const INPUT = "mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg";
@@ -43,6 +43,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
     e.preventDefault();
     setErro("");
     if (cadastro && !nome.trim()) return setErro("Digite seu nome.");
+    if (!email || !senha) return setErro("Preencha o e-mail e a senha.");
     if (cadastro && unidades.length > 0 && !unidade) return setErro("Escolha a unidade onde você treina.");
     if (cadastro && senha !== confirma) return setErro("As duas senhas não são iguais.");
     setEnviando(true);
@@ -88,6 +89,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
           <label htmlFor="nome" className="block text-lg font-semibold">Nome</label>
           <input
             id="nome"
+            name="nome"
             autoComplete="name"
             required
             value={nome}
@@ -97,7 +99,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
           {unidades.length > 0 && (
             <>
               <label htmlFor="unidade" className="block text-lg font-semibold">Unidade onde você treina</label>
-              <select id="unidade" required value={unidade} onChange={(e) => setUnidade(e.target.value)} className={`${INPUT} mb-5`}>
+              <select id="unidade" name="unidade" required value={unidade} onChange={(e) => setUnidade(e.target.value)} className={`${INPUT} mb-5`}>
                 <option value="" disabled>Escolha a unidade</option>
                 {unidades.map((u) => <option key={u.id} value={u.id}>{nomeUnidade(u)}</option>)}
               </select>
@@ -108,7 +110,10 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
       <label htmlFor="email" className="block text-lg font-semibold">E-mail</label>
       <input
         id="email"
+        name="email"
         type="email"
+        spellCheck={false}
+        autoCapitalize="none"
         autoComplete="email"
         inputMode="email"
         required
@@ -120,6 +125,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
       <label htmlFor="senha" className="mt-5 block text-lg font-semibold">Senha</label>
       <input
         id="senha"
+        name="senha"
         type="password"
         autoComplete={cadastro ? "new-password" : "current-password"}
         required
@@ -135,6 +141,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
           <label htmlFor="confirma" className="mt-5 block text-lg font-semibold">Repita a senha</label>
           <input
             id="confirma"
+            name="confirma"
             type="password"
             autoComplete="new-password"
             required
@@ -145,9 +152,9 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
         </>
       )}
 
-      <p role="alert" className="mt-4 min-h-[1.75rem] text-lg font-semibold text-primario">{erro}</p>
+      <p role="alert" className="mt-4 min-h-[1.75rem] text-lg font-semibold text-alerta">{erro}</p>
 
-      <button type="submit" disabled={enviando || !email || !senha} className="btn mt-2 w-full disabled:opacity-50">
+      <button type="submit" disabled={enviando} className="btn mt-2 w-full disabled:opacity-60">
         {enviando ? "Aguarde…" : cadastro ? "Criar conta" : "Entrar"}
       </button>
 

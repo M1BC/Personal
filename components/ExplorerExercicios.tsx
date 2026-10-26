@@ -44,7 +44,7 @@ export function ExplorerExercicios() {
     <div>
       {/* 1. Grupo muscular */}
       <p className="text-lg font-semibold">Escolha o grupo muscular</p>
-      <div role="group" aria-label="Grupo muscular" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-10">
+      <div role="group" aria-label="Grupo muscular" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
         {GRUPOS_CARD.map((g) => {
           const ativo = !buscando && g === grupo;
           return (
@@ -52,12 +52,10 @@ export function ExplorerExercicios() {
               key={g}
               aria-pressed={ativo}
               onClick={() => escolherGrupo(g)}
-              className={`flex min-h-[72px] flex-col justify-between p-3 text-left transition-transform duration-100 ease-out active:scale-[0.97] ${
-                ativo ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"
-              }`}
+              className="opcao flex min-h-[72px] min-w-0 flex-col justify-between gap-1 p-3 text-left"
             >
-              <span className="text-base font-extrabold leading-tight sm:text-lg">{g}</span>
-              <span className={`text-sm ${ativo ? "opacity-80" : "text-suave"}`}>{contar(g)} exercícios</span>
+              <span className="font-titulo text-[19px] font-extrabold leading-none md:text-2xl">{g}</span>
+              <span className="text-sm text-suave">{contar(g)} exercícios</span>
             </button>
           );
         })}
@@ -88,12 +86,12 @@ export function ExplorerExercicios() {
                     aria-pressed={ativo}
                     onClick={() => escolher(e.id)}
                     className={`flex min-h-[60px] w-full items-center justify-between gap-3 px-3 py-2 text-left transition-colors duration-100 ${
-                      ativo ? "bg-tinta text-fundo" : "hover:bg-superficie"
+                      ativo ? "bg-primario/15 shadow-[inset_4px_0_0_rgb(var(--primario))]" : "hover:bg-superficie"
                     }`}
                   >
                     <span className="min-w-0">
                       <span className="block font-bold leading-tight">{e.nome}</span>
-                      <span className={`block text-sm ${ativo ? "opacity-80" : "text-suave"}`}>
+                      <span className="block text-sm text-suave">
                         {buscando ? `${e.cardio ? "Cardio" : GRUPOS[e.grupo_primario].nome} · ` : ""}
                         {e.equipamento}
                       </span>
@@ -114,7 +112,7 @@ export function ExplorerExercicios() {
         {/* 3. O exercício */}
         {ex && (
           <div ref={detalhe} key={ex.id} className="animar scroll-mt-24">
-            <h3 className="text-[clamp(2rem,5vw,3rem)] font-extrabold leading-none tracking-tight">{ex.nome}</h3>
+            <h3 className="text-[clamp(2rem,5vw,3rem)] font-extrabold leading-none">{ex.nome}</h3>
             <p className="mt-2 text-base text-suave">Equipamento: {ex.equipamento}</p>
 
             <div className={`mt-6 grid gap-6 ${temAnimacao(ex.id) ? "md:grid-cols-2" : ""} md:items-start`}>
@@ -127,7 +125,7 @@ export function ExplorerExercicios() {
             </div>
             <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-base text-suave">
               <span className="flex items-center gap-2"><span className="h-3 w-3 bg-primario" /> Músculo principal</span>
-              <span className="flex items-center gap-2"><span className="h-3 w-3 bg-secundario/50" /> Músculos Auxiliares</span>
+              <span className="flex items-center gap-2"><span className="h-3 w-3 bg-secundario/50" /> Músculos auxiliares</span>
             </p>
             <p className="mt-1 text-base text-suave">Toque em qualquer músculo do mapa para entender o que ele faz.</p>
 
@@ -137,7 +135,7 @@ export function ExplorerExercicios() {
               <button
                 onClick={() => setAberto(ex.grupo_primario)}
                 aria-label={`Explicar ${GRUPOS[ex.grupo_primario].nome}`}
-                className="min-h-[48px] min-w-[48px] border-2 border-tinta text-xl font-bold active:scale-[0.95] hover:bg-tinta hover:text-fundo"
+                className="min-h-[48px] min-w-[48px] btn-contorno text-xl font-bold"
               >
                 ?
               </button>
@@ -145,7 +143,7 @@ export function ExplorerExercicios() {
 
             {ex.grupos_secundarios.length > 0 && (
               <>
-                <p className="mt-5 text-lg font-semibold">Músculos Auxiliares</p>
+                <p className="mt-5 text-lg font-semibold">Músculos auxiliares</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {ex.grupos_secundarios.map((g) => (
                     <button

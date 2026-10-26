@@ -32,17 +32,17 @@ export function Modal({ aberto, titulo, onFechar, children }: Props) {
         aria-modal="true"
         aria-labelledby="titulo-modal"
         onClick={(e) => e.stopPropagation()}
-        className="animar-folha max-h-[85dvh] w-full max-w-lg overflow-y-auto bg-fundo p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:pb-6"
+        className="animar-folha max-h-[85dvh] w-full max-w-lg overflow-y-auto overscroll-contain rounded-t-2xl border-t-2 border-primario bg-fundo p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:rounded-2xl md:border md:border-linha md:pb-6"
       >
         <div className="flex items-start justify-between gap-4">
-          <h3 id="titulo-modal" className="text-3xl font-extrabold leading-tight tracking-tight">
+          <h3 id="titulo-modal" className="text-3xl font-extrabold leading-tight">
             {titulo}
           </h3>
           <button
             ref={botaoFechar}
             onClick={onFechar}
             aria-label="Fechar"
-            className="min-h-[48px] min-w-[48px] bg-superficie text-xl font-bold active:scale-[0.95] hover:bg-corpo"
+            className="min-h-[48px] min-w-[48px] shrink-0 bg-superficie text-xl font-bold transition-transform duration-100 active:scale-[0.95] hover:bg-corpo"
           >
             ×
           </button>

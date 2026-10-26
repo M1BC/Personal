@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
+import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { Equipe } from "@/components/painel/Equipe";
-import { CAIXA, H1 } from "@/lib/layout";
+import { CAIXA } from "@/lib/layout";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
-export const metadata = { title: "Equipe | Treino & Nutrição Consciente" };
+export const metadata = { title: "Equipe" };
 
 export default async function Pagina() {
   // Administrador cuida de todos; gerente, da própria unidade (o banco também exige isso).
@@ -16,14 +17,14 @@ export default async function Pagina() {
   if (papel !== "admin" && papel !== "gerente") redirect("/painel");
 
   return (
-    <section className={`${CAIXA} pb-24 pt-12 md:pt-20`}>
-      <h1 className={H1}>Equipe.</h1>
-      <p className="mt-5 max-w-[56ch] text-xl text-suave">
-        Todo mundo que cria conta entra como aluno. Aqui você define o papel de cada pessoa e a unidade onde ela treina ou trabalha.
-      </p>
-      <div className="mt-10">
+    <>
+      <CabecalhoPagina
+        titulo="Equipe."
+        texto="Todo mundo que cria conta entra como aluno. Aqui você define o papel de cada pessoa e a unidade onde ela treina ou trabalha."
+      />
+      <section className={`${CAIXA} pb-24 pt-8 md:pt-12`}>
         <Equipe meuId={user!.id} admin={papel === "admin"} />
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

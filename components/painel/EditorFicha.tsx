@@ -117,7 +117,7 @@ export function EditorFicha({ alunoId }: { alunoId: string }) {
   return (
     <div>
       <Link href="/painel" className={`${BTN_TEXTO} inline-flex items-center text-suave`}>← Todos os alunos</Link>
-      <h1 className="mt-4 text-[clamp(2.25rem,6vw,4rem)] font-extrabold leading-[0.95] tracking-tighter">{nomeOuEmail(aluno)}</h1>
+      <h1 className="mt-4 text-[clamp(2.25rem,6vw,4rem)] font-extrabold leading-[0.95]">{nomeOuEmail(aluno)}</h1>
       {aluno.nome.trim() && <p className="mt-2 text-lg text-suave">{aluno.email}</p>}
 
       {/* Ponto de partida */}
@@ -168,14 +168,14 @@ export function EditorFicha({ alunoId }: { alunoId: string }) {
 
       {existe && (
         <div className="mt-12">
-          <button onClick={apagar} className={`${BTN_TEXTO} text-primario`}>Apagar a ficha deste aluno</button>
+          <button onClick={apagar} className={`${BTN_TEXTO} text-alerta`}>Apagar a ficha deste aluno</button>
         </div>
       )}
 
       {/* Barra de salvar */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-linha bg-fundo pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="fixed inset-x-0 bottom-[calc(60px+env(safe-area-inset-bottom,0px))] z-20 border-t border-linha bg-fundo/95 backdrop-blur-md md:bottom-0 md:pb-[env(safe-area-inset-bottom,0px)]">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 md:px-8">
-          <p role="status" className={`min-w-0 flex-1 text-base font-semibold ${status?.tipo === "erro" ? "text-primario" : status ? "" : "text-suave"}`}>
+          <p role="status" className={`min-w-0 flex-1 text-base font-semibold ${status?.tipo === "erro" ? "text-alerta" : status ? "" : "text-suave"}`}>
             {status?.texto ?? (mudou ? "Alterações não salvas" : existe ? "Tudo salvo" : "Ficha ainda não criada")}
           </p>
           <button onClick={salvar} disabled={salvando || !mudou} className="btn disabled:opacity-40">

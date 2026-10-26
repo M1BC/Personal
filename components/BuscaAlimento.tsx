@@ -15,7 +15,6 @@ type Props = {
   onFechar: () => void;
 };
 
-const CHIP = "min-h-[48px] border-2 border-tinta px-4 py-2 font-bold transition-transform duration-100 ease-out active:scale-[0.97]";
 
 export function BuscaAlimento({ aberto, titulo, categoriaInicial, onEscolher, onFechar }: Props) {
   const [texto, setTexto] = useState("");
@@ -43,7 +42,7 @@ export function BuscaAlimento({ aberto, titulo, categoriaInicial, onEscolher, on
       />
       <div role="group" aria-label="Categoria" className="mt-3 flex flex-wrap gap-2">
         {(["Todos", ...CATEGORIAS_ALIMENTO] as const).map((c) => (
-          <button key={c} aria-pressed={c === cat} onClick={() => setCat(c)} className={`${CHIP} ${c === cat ? "bg-tinta text-fundo" : "hover:bg-superficie"}`}>
+          <button key={c} aria-pressed={c === cat} onClick={() => setCat(c)} className="chip">
             {c}
           </button>
         ))}

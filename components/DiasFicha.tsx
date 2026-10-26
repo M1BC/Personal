@@ -30,7 +30,7 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
               const idTimer = `${prefixo}-${i}-${n}-${it.id}`;
               return (
                 <li key={idTimer} className="flex items-start gap-3 py-3">
-                  <span className="w-6 text-2xl font-extrabold tabular-nums">{n + 1}</span>
+                  <span className="w-6 font-titulo text-3xl font-extrabold tabular-nums">{n + 1}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-lg font-bold leading-tight">{e.nome}</p>
                     <p className="text-base">{it.series}</p>
@@ -49,7 +49,7 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
                   <button
                     onClick={() => onExplicar(it.id)}
                     aria-label={`Entender ${e.nome}`}
-                    className="min-h-[48px] min-w-[48px] border-2 border-tinta text-xl font-bold active:scale-[0.95] hover:bg-tinta hover:text-fundo"
+                    className="min-h-[48px] min-w-[48px] btn-contorno text-xl font-bold"
                   >
                     ?
                   </button>

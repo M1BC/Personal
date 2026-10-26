@@ -79,7 +79,7 @@ export function ListaAlunos() {
         )}
       </div>
 
-      {erro && <p className="mt-6 text-lg font-semibold text-primario">{erro}</p>}
+      {erro && <p className="mt-6 text-lg font-semibold text-alerta">{erro}</p>}
       {!linhas && !erro && <p className="mt-6 text-lg text-suave">Carregando alunos…</p>}
 
       {linhas && (
@@ -107,7 +107,7 @@ export function ListaAlunos() {
                         {nomeUnidade(a.unidade_id ? porId.get(a.unidade_id) : null)}
                       </span>
                     </span>
-                    <span className={`shrink-0 text-base font-semibold ${a.atualizada ? "text-suave" : "text-primario"}`}>
+                    <span className={`shrink-0 text-base font-semibold ${a.atualizada ? "text-suave" : "text-alerta"}`}>
                       {a.atualizada ? `Ficha de ${quando(a.atualizada)}` : "Sem ficha"}
                     </span>
                   </Link>

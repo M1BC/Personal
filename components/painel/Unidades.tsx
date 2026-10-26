@@ -73,7 +73,7 @@ export function Unidades() {
         <button type="submit" className="btn">Adicionar</button>
       </form>
 
-      <p role="status" className={`mt-4 min-h-[1.75rem] text-lg font-semibold ${aviso?.tipo === "erro" ? "text-primario" : ""}`}>{aviso?.texto}</p>
+      <p role="status" className={`mt-4 min-h-[1.75rem] text-lg font-semibold ${aviso?.tipo === "erro" ? "text-alerta" : ""}`}>{aviso?.texto}</p>
       {!lista && !aviso && <p className="text-lg text-suave">Carregando…</p>}
       {lista && lista.length === 0 && <p className="text-lg text-suave">Nenhuma unidade ainda. Cadastre a primeira acima.</p>}
 
@@ -112,7 +112,7 @@ export function Unidades() {
                     >
                       Editar
                     </button>
-                    <button onClick={() => alternar(u)} className={`min-h-[48px] font-bold underline underline-offset-4 ${u.ativa ? "text-primario" : ""}`}>
+                    <button onClick={() => alternar(u)} className={`min-h-[48px] font-bold underline underline-offset-4 ${u.ativa ? "text-alerta" : ""}`}>
                       {u.ativa ? "Desativar" : "Reativar"}
                     </button>
                   </span>

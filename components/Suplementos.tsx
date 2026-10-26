@@ -4,7 +4,7 @@ import { MARCAS_REF, METAS, ORCAMENTOS, PRECOS_REF, SUPLEMENTOS, type MetaPeso, 
 import { Modal } from "./Modal";
 
 const BOTAO_AJUDA =
-  "min-h-[48px] min-w-[48px] border-2 border-tinta text-xl font-bold active:scale-[0.95] hover:bg-tinta hover:text-fundo";
+  "min-h-[48px] min-w-[48px] btn-contorno text-xl font-bold";
 const OPCAO = "min-h-[56px] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
 
 export function Suplementos() {
@@ -27,8 +27,8 @@ export function Suplementos() {
       <p className="mt-8 text-lg font-semibold">Quanto você pode gastar por mês?</p>
       <div role="group" aria-label="Orçamento mensal" className="mt-2 grid gap-2 sm:grid-cols-3">
         {(Object.keys(ORCAMENTOS) as Orcamento[]).map((k) => (
-          <button key={k} aria-pressed={k === orc} onClick={() => setOrc(k)} className={`${OPCAO} ${k === orc ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
-            <span className="block text-xl font-extrabold">{ORCAMENTOS[k].nome}</span>
+          <button key={k} aria-pressed={k === orc} onClick={() => setOrc(k)} className={`${OPCAO} opcao`}>
+            <span className="block font-titulo text-2xl font-extrabold">{ORCAMENTOS[k].nome}</span>
             <span className="block text-base opacity-80">{ORCAMENTOS[k].curto}</span>
           </button>
         ))}
@@ -37,7 +37,7 @@ export function Suplementos() {
       <p className="mt-6 text-lg font-semibold">Qual é o seu objetivo?</p>
       <div role="group" aria-label="Objetivo" className="mt-2 grid gap-2 sm:grid-cols-3">
         {(Object.keys(METAS) as MetaPeso[]).map((k) => (
-          <button key={k} aria-pressed={k === meta} onClick={() => setMeta(k)} className={`${OPCAO} text-lg font-bold ${k === meta ? "bg-tinta text-fundo" : "bg-superficie hover:bg-corpo"}`}>
+          <button key={k} aria-pressed={k === meta} onClick={() => setMeta(k)} className={`${OPCAO} opcao text-lg font-bold`}>
             {METAS[k]}
           </button>
         ))}
@@ -51,7 +51,7 @@ export function Suplementos() {
             const opcional = o.opcionais?.includes(id);
             return (
               <li key={id} className="flex flex-wrap items-start gap-x-5 gap-y-2 py-5">
-                <span className="w-8 text-4xl font-extrabold tabular-nums">{i + 1}</span>
+                <span className="w-8 font-titulo text-5xl font-extrabold tabular-nums">{i + 1}</span>
                 <div className="min-w-0 flex-1 basis-64">
                   <h2 className="text-2xl font-extrabold">
                     {s.nome}

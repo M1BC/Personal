@@ -6,7 +6,7 @@ import type { FichaTreinador } from "@/lib/equipe";
 const INPUT = "mt-1 min-h-[48px] w-full bg-fundo px-3 text-base";
 const ROTULO = "block text-base font-semibold";
 const BTN_ICONE =
-  "min-h-[44px] min-w-[44px] border-2 border-linha text-lg font-bold transition-transform duration-100 ease-out active:scale-[0.95] hover:border-tinta disabled:opacity-30";
+  "min-h-[44px] min-w-[44px] btn-contorno text-lg font-bold disabled:opacity-30";
 const BTN_TEXTO = "min-h-[48px] font-bold underline underline-offset-4";
 const DIAS_SEMANA = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
 export const NOVO_ITEM: ItemDia = { id: "supino-reto", series: "3 × 10 a 12 repetições", descanso: "60 s", obs: "" };
@@ -91,7 +91,7 @@ export function EditorDias({ ficha, onMudar, rotuloObs, placeholderObs }: Props)
                 <button
                   onClick={() => window.confirm(`Remover ${d.dia || "este dia"}?`) && onMudar({ ...ficha, dias: ficha.dias.filter((_, k) => k !== i) })}
                   aria-label="Remover dia"
-                  className={`${BTN_ICONE} hover:border-primario hover:text-primario`}
+                  className={`${BTN_ICONE} hover:border-primario hover:text-alerta`}
                 >
                   ✕
                 </button>
@@ -103,7 +103,7 @@ export function EditorDias({ ficha, onMudar, rotuloObs, placeholderObs }: Props)
                 const cardio = ehCardio(it.id);
                 return (
                   <li key={n} className="grid gap-3 py-4 md:grid-cols-[2rem_minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,0.8fr)_auto] md:items-end">
-                    <span className="text-2xl font-extrabold tabular-nums md:pb-2">{n + 1}</span>
+                    <span className="font-titulo text-3xl font-extrabold tabular-nums md:pb-2">{n + 1}</span>
                     <label className={ROTULO}>
                       Exercício
                       <select value={it.id} onChange={(e) => trocarExercicio(i, n, e.target.value)} className={INPUT}>
@@ -125,7 +125,7 @@ export function EditorDias({ ficha, onMudar, rotuloObs, placeholderObs }: Props)
                     <div className="flex gap-2">
                       <button onClick={() => alterarDia(i, { itens: mover(d.itens, n, n - 1) })} disabled={n === 0} aria-label="Subir exercício" className={BTN_ICONE}>↑</button>
                       <button onClick={() => alterarDia(i, { itens: mover(d.itens, n, n + 1) })} disabled={n === d.itens.length - 1} aria-label="Descer exercício" className={BTN_ICONE}>↓</button>
-                      <button onClick={() => alterarDia(i, { itens: d.itens.filter((_, k) => k !== n) })} aria-label="Remover exercício" className={`${BTN_ICONE} hover:border-primario hover:text-primario`}>✕</button>
+                      <button onClick={() => alterarDia(i, { itens: d.itens.filter((_, k) => k !== n) })} aria-label="Remover exercício" className={`${BTN_ICONE} hover:border-primario hover:text-alerta`}>✕</button>
                     </div>
                     <label className={`${ROTULO} md:col-start-2 md:col-end-6`}>
                       Observação <span className="font-normal text-suave">(opcional)</span>

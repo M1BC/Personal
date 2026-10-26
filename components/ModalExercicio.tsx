@@ -15,7 +15,7 @@ export function ModalExercicio({ id, onFechar }: { id: string | null; onFechar: 
           <p className="text-lg text-suave">{GRUPOS[ex.grupo_primario].nome}</p>
           {ex.grupos_secundarios.length > 0 && (
             <>
-              <p className="mt-4 text-lg font-semibold">Músculos Auxiliares</p>
+              <p className="mt-4 text-lg font-semibold">Músculos auxiliares</p>
               <p className="text-lg text-suave">{ex.grupos_secundarios.map((g) => GRUPOS[g].nome).join(", ")}</p>
             </>
           )}

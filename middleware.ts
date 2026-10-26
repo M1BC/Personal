@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
   }
   if (user && (caminho === "/login" || caminho === "/cadastro")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/anatomia";
+    url.pathname = "/";
     url.search = "";
     return NextResponse.redirect(url);
   }

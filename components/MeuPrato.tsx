@@ -4,7 +4,7 @@ import { mudarQuantidade, remover, type ItemPrato } from "@/lib/diario";
 import { fmt } from "@/lib/nutricao";
 
 const BTN =
-  "min-h-[48px] min-w-[48px] border-2 border-tinta px-3 font-bold transition-transform duration-100 ease-out active:scale-[0.95] hover:bg-tinta hover:text-fundo";
+  "min-h-[48px] min-w-[48px] btn-contorno px-3 font-bold";
 
 type Props = {
   itens: ItemPrato[];

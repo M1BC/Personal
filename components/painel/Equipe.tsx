@@ -106,7 +106,7 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
         </p>
       )}
 
-      <p role="status" className={`mt-4 min-h-[1.75rem] text-lg font-semibold ${aviso?.tipo === "erro" ? "text-primario" : ""}`}>{aviso?.texto}</p>
+      <p role="status" className={`mt-4 min-h-[1.75rem] text-lg font-semibold ${aviso?.tipo === "erro" ? "text-alerta" : ""}`}>{aviso?.texto}</p>
       {!perfis && !aviso && <p className="text-lg text-suave">Carregando…</p>}
 
       {perfis && (
@@ -138,15 +138,13 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
                       {ativas.map((u) => <option key={u.id} value={u.id}>{nomeUnidade(u)}</option>)}
                     </select>
                   )}
-                  <div role="group" aria-label={`Papel de ${nomeOuEmail(p)}`} className="flex flex-wrap">
+                  <div role="group" aria-label={`Papel de ${nomeOuEmail(p)}`} className="flex flex-wrap gap-2">
                     {papeis.map((papel) => (
                       <button
                         key={papel}
                         aria-pressed={p.papel === papel}
                         onClick={() => trocarPapel(p, papel)}
-                        className={`min-h-[48px] border-2 border-tinta px-3 text-base font-bold transition-transform duration-100 ease-out active:scale-[0.97] [&+&]:-ml-[2px] ${
-                          p.papel === papel ? "bg-tinta text-fundo" : "hover:bg-superficie"
-                        }`}
+                        className="chip text-base"
                       >
                         {NOME_PAPEL[papel]}
                       </button>

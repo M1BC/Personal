@@ -43,7 +43,7 @@ export function PerfilForm() {
           </select>
         </label>
       </form>
-      <ul className="mt-3 min-h-[1.5rem] font-semibold text-primario" aria-live="polite">
+      <ul className="mt-3 min-h-[1.5rem] font-semibold text-alerta" aria-live="polite">
         {erros.map((e) => <li key={e}>{e}</li>)}
       </ul>
     </div>

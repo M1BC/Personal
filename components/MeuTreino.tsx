@@ -95,7 +95,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
 
   return (
     <div className="animar mt-10">
-      <h2 className="text-4xl font-extrabold leading-none tracking-tight">{ficha.titulo || "Meu treino"}</h2>
+      <h2 className="text-4xl font-extrabold leading-none">{ficha.titulo || "Meu treino"}</h2>
       <p className="mt-3 max-w-[70ch] text-lg text-suave">
         Monte o seu treino do seu jeito: escolha os dias, os exercícios (por músculo, inclusive cardio), as séries e o descanso.
         Tocando em “?” você vê como cada exercício trabalha o corpo; a animação de cada um está na aba Anatomia.
@@ -106,7 +106,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
           {ficha.observacoes && <p className="mt-4 max-w-[70ch] whitespace-pre-line border-l-4 border-secundario bg-superficie p-4 text-lg">{ficha.observacoes}</p>}
           <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
             <button onClick={() => setEditando(true)} className="btn">Editar treino</button>
-            <button onClick={apagar} className="min-h-[48px] font-bold text-primario underline underline-offset-4">Apagar</button>
+            <button onClick={apagar} className="min-h-[48px] font-bold text-alerta underline underline-offset-4">Apagar</button>
           </div>
           <p role="status" className="mt-3 min-h-[1.5rem] text-base font-semibold">{aviso}</p>
           <DiasFicha dias={ficha.dias} prefixo="meu" som={som} timerAtivo={timerAtivo} onIniciarTimer={onIniciarTimer} onExplicar={onExplicar} />
@@ -158,9 +158,9 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
           </div>
 
           {/* Barra de salvar */}
-          <div className="fixed inset-x-0 bottom-0 z-20 border-t border-linha bg-fundo pb-[env(safe-area-inset-bottom,0px)]">
+          <div className="fixed inset-x-0 bottom-[calc(60px+env(safe-area-inset-bottom,0px))] z-20 border-t border-linha bg-fundo/95 backdrop-blur-md md:bottom-0 md:pb-[env(safe-area-inset-bottom,0px)]">
             <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 md:px-8">
-              <p role="status" className={`min-w-0 flex-1 text-base font-semibold ${aviso && !aviso.startsWith("Treino") ? "text-primario" : "text-suave"}`}>
+              <p role="status" className={`min-w-0 flex-1 text-base font-semibold ${aviso && !aviso.startsWith("Treino") ? "text-alerta" : "text-suave"}`}>
                 {aviso ?? (mudou ? "Alterações não salvas" : "Nada alterado")}
               </p>
               {ficha.dias.length > 0 && !mudou && (

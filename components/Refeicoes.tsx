@@ -135,7 +135,7 @@ export function Refeicoes() {
           )}
           {(proj.tipo === "perder" || proj.tipo === "ganhar") && (
             <>
-              <p className="text-3xl font-extrabold leading-tight tracking-tight">Faltam {fmt(proj.kg, 1)} kg para sua meta.</p>
+              <p className="font-titulo text-4xl font-extrabold leading-tight">Faltam {fmt(proj.kg, 1)} kg para sua meta.</p>
               <p className="mt-2 text-xl">
                 Seguindo esse plano ({proj.tipo === "perder" ? "déficit" : "superávit"} de{" "}
                 {proj.ajusteMin === proj.ajusteMax ? `cerca de ${fmt(proj.ajusteMax, 0)}` : `${fmt(proj.ajusteMin, 0)} a ${fmt(proj.ajusteMax, 0)}`}{" "}
@@ -164,7 +164,7 @@ export function Refeicoes() {
       {plano && (
         <div className="mt-10">
           <p className="text-lg font-semibold">Meta do dia: {fmt(plano.kcal, 0)} kcal</p>
-          <p className="text-[clamp(2.25rem,8vw,4rem)] font-extrabold leading-none tracking-tighter tabular-nums">
+          <p className="font-titulo text-[clamp(2.75rem,10vw,5rem)] font-extrabold leading-none tabular-nums">
             {fmt(plano.proteina, 0)} g prot · {fmt(plano.carbo, 0)} g carb · {fmt(plano.gordura, 0)} g gord
           </p>
           <p className="mt-2 max-w-[62ch] text-base text-suave">
@@ -179,14 +179,14 @@ export function Refeicoes() {
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
             <button role="switch" aria-checked={personalizar} onClick={alternar} className="flex min-h-[48px] items-center gap-3 text-lg font-bold">
-              <span className={`relative h-7 w-12 transition-colors duration-150 ease-out ${personalizar ? "bg-primario" : "bg-corpo"}`}>
-                <span className={`absolute top-1 h-5 w-5 bg-white transition-transform duration-150 ease-out ${personalizar ? "translate-x-6" : "translate-x-1"}`} />
+              <span className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors duration-150 ease-out ${personalizar ? "border-primario bg-primario" : "border-linha bg-corpo"}`}>
+                <span className={`absolute left-0 top-[3px] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${personalizar ? "translate-x-[23px] bg-white" : "translate-x-[3px] bg-suave"}`} />
               </span>
               Personalizar distribuição
             </button>
             {personalizar && (
               <>
-                <p className={`text-base font-semibold ${soma === 100 ? "text-suave" : "text-primario"}`} aria-live="polite">
+                <p className={`text-base font-semibold ${soma === 100 ? "text-suave" : "text-alerta"}`} aria-live="polite">
                   Soma: {soma}%{soma !== 100 && " (o ideal é 100%)"}
                 </p>
                 <button onClick={restaurarPct} className={BTN_TEXTO}>Restaurar porcentagens</button>
@@ -280,7 +280,7 @@ export function Refeicoes() {
                       {([["Proteína", r.proteina], ["Carboidrato", r.carbo], ["Gordura", r.gordura]] as const).map(([nome, v]) => (
                         <div key={nome}>
                           <dt className="text-base text-suave">{nome}</dt>
-                          <dd className="text-3xl font-extrabold tabular-nums">{fmt(v, 0)} g</dd>
+                          <dd className="font-titulo text-4xl font-extrabold tabular-nums">{fmt(v, 0)} g</dd>
                         </div>
                       ))}
                     </dl>

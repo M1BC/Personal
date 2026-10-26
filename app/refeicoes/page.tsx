@@ -1,18 +1,19 @@
+import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { Refeicoes } from "@/components/Refeicoes";
-import { CAIXA, H1 } from "@/lib/layout";
+import { CAIXA } from "@/lib/layout";
 
-export const metadata = { title: "Refeições | Treino & Nutrição Consciente" };
+export const metadata = { title: "Refeições" };
 
 export default function Pagina() {
   return (
-    <section className={`${CAIXA} pb-24 pt-12 md:pt-20`}>
-      <h1 className={H1}>Seu dia alimentar, refeição por refeição.</h1>
-      <p className="mt-5 max-w-[52ch] text-xl text-suave">
-        Informe seu peso atual e seu peso meta para ver o plano e a projeção de tempo. Ligue “Personalizar distribuição” para montar o seu prato, escolhendo o que vai comer em cada refeição.
-      </p>
-      <div className="mt-10">
+    <>
+      <CabecalhoPagina
+        titulo="Seu dia alimentar, refeição por refeição."
+        texto="Informe seu peso atual e seu peso meta para ver o plano e a projeção de tempo. Ligue “Personalizar distribuição” para montar o seu prato, escolhendo o que vai comer em cada refeição."
+      />
+      <section className={`${CAIXA} pb-24 pt-8 md:pt-12`}>
         <Refeicoes />
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

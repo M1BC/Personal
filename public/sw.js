@@ -1,6 +1,6 @@
 // Service worker do app: deixa abrir mais rápido e mostra a última versão vista quando a internet cai.
 // Páginas: rede primeiro (sempre a versão nova quando há conexão). Arquivos estáticos: cache primeiro.
-const CACHE = "tn-v1";
+const CACHE = "bgs-v1"; // trocar o nome apaga o cache antigo (ícones e fontes novos)
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -18,7 +18,7 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return; // Supabase e outros serviços passam direto
   if (url.pathname.startsWith("/auth") || url.pathname.startsWith("/api")) return;
 
-  if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/")) {
+  if (/^\/(_next\/static|icons|fontes|marca)\//.test(url.pathname)) {
     event.respondWith(
       caches.match(req).then(
         (salvo) =>
@@ -43,7 +43,7 @@ self.addEventListener("fetch", (event) => {
           }
           return resp;
         })
-        .catch(() => caches.match(req).then((salvo) => salvo || caches.match("/anatomia")))
+        .catch(() => caches.match(req).then((salvo) => salvo || caches.match("/")))
     );
   }
 });

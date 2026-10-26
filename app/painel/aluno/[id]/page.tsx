@@ -1,7 +1,7 @@
 import { EditorFicha } from "@/components/painel/EditorFicha";
 import { CAIXA } from "@/lib/layout";
 
-export const metadata = { title: "Ficha do aluno | Treino & Nutrição Consciente" };
+export const metadata = { title: "Ficha do aluno" };
 
 export default function Pagina({ params }: { params: { id: string } }) {
   return (

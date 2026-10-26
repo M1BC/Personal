@@ -2,61 +2,156 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Escuro: ferro e pretos de academia, com vermelho (músculo principal) e dourado (auxiliares). */
-:root,
-:root[data-tema="escuro"] {
-  --fundo: 12 12 13;
-  --superficie: 24 25 27;
-  --corpo: 52 54 58;
-  --linha: 44 46 49;
-  --tinta: 243 241 236;
-  --suave: 168 170 172;
-  --primario: 226 29 38;
-  --secundario: 240 180 0;
-  --sobre-secundario: 12 12 13;
+/* ---------- Fontes (hospedadas no app: funcionam offline e sem depender de serviço externo) ---------- */
+@font-face { font-family: "Barlow"; src: url("/fontes/barlow-400.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow"; src: url("/fontes/barlow-500.woff") format("woff"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow"; src: url("/fontes/barlow-600.woff") format("woff"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow"; src: url("/fontes/barlow-700.woff") format("woff"); font-weight: 700 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Big Shoulders Display"; src: url("/fontes/big-shoulders-display.woff") format("woff"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+/* ---------- Cores da BGS Pro Fitness: carvão, ferro, fogo, brasa, chama e cromo ---------- */
+:root {
+  --fundo: 16 13 12; /* carvão */
+  --superficie: 28 24 22; /* ferro */
+  --corpo: 39 34 32; /* ferro mais claro: hover, trilhos de barra */
+  --linha: 58 50 46;
+  --tinta: 243 239 235; /* cromo */
+  --suave: 171 163 157;
+  --primario: 227 38 27; /* fogo: botões, ativo, músculo principal */
+  --alerta: 255 90 71; /* fogo claro: texto vermelho legível sobre o escuro */
+  --brasa: 255 107 26; /* laranja da chama */
+  --secundario: 247 179 43; /* chama: músculos auxiliares */
+  --sobre-secundario: 16 13 12;
+  --aberto: 74 222 128;
   /* Personagem animado */
-  --boneco: 176 178 182;
-  --boneco-longe: 92 94 99;
-  --fantasma: 42 44 48;
-  --equip: 217 218 219;
+  --boneco: 184 177 171;
+  --boneco-longe: 96 89 85;
+  --fantasma: 46 40 37;
+  --equip: 222 217 212;
   color-scheme: dark;
 }
-:root[data-tema="claro"] {
-  --fundo: 238 238 236;
-  --superficie: 224 224 221;
-  --corpo: 196 197 194;
-  --linha: 200 201 198;
-  --tinta: 17 17 18;
-  --suave: 78 80 82;
-  --primario: 190 20 28;
-  --secundario: 143 100 0;
-  --sobre-secundario: 255 255 255;
-  --boneco: 85 87 91;
-  --boneco-longe: 163 165 168;
-  --fantasma: 207 208 205;
-  --equip: 38 40 43;
-  color-scheme: light;
-}
 
-html {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-text-size-adjust: 100%;
-  overscroll-behavior: none;
-  scroll-padding-top: 5rem;
-}
-body { background: rgb(var(--fundo)); color: rgb(var(--tinta)); }
-button, a, [role="button"] { touch-action: manipulation; }
-button { -webkit-user-select: none; user-select: none; }
-input, select, textarea { font-size: 16px; }
-:focus-visible { outline: 2px solid rgb(var(--tinta)); outline-offset: 2px; }
-
-@layer components {
-  .btn {
-    @apply inline-flex min-h-[48px] items-center justify-center bg-tinta px-6 py-3 font-bold text-fundo
-      transition-transform duration-100 ease-out active:scale-[0.97] hover:bg-suave;
+/* Estilos de base ficam na camada base, para as classes utilitárias sempre poderem sobrescrever. */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+  /* Sem "elástico" da página com mouse; no toque fica o padrão (puxar para atualizar). */
+  @media (pointer: fine) { html { overscroll-behavior: none; } }
+  body {
+    background: rgb(var(--fundo));
+    color: rgb(var(--tinta));
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  h1, h2, h3 { font-family: "Big Shoulders Display", "Barlow", system-ui, sans-serif; font-weight: 800; text-wrap: balance; }
+  button, a, [role="button"] { touch-action: manipulation; }
+  button { -webkit-user-select: none; user-select: none; }
+  input, select, textarea { font-size: 16px; border-radius: 8px; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid rgb(var(--brasa)); outline-offset: 1px; }
+  :focus-visible { outline: 2px solid rgb(var(--brasa)); outline-offset: 2px; }
+  ::selection { background: rgb(var(--primario) / 0.45); }
+  /* No celular a navegação fica fixa embaixo: o espaço extra evita que ela cubra o fim da página. */
+  @media (max-width: 767px) {
+    body:has(.barra-app) { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+    html:has(.barra-app) { scroll-padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
   }
 }
 
+@layer components {
+  /* Superfícies (cartões, campos) com canto levemente arredondado; avisos com fio lateral ficam retos do lado do fio.
+     Na camada de componentes: um rounded-* no elemento ainda vence. */
+  .bg-superficie { border-radius: 12px; }
+  .bg-superficie.border-l-4 { border-radius: 3px 12px 12px 3px; }
+
+  /* Botão principal: placa de metal em brasa, com os cantos chanfrados como o escudo da logo. */
+  .btn {
+    @apply inline-flex min-h-[48px] items-center justify-center px-6 py-3 text-[17px] font-bold text-white
+      transition-[transform,filter] duration-100 ease-out active:scale-[0.97];
+    background-image: linear-gradient(180deg, #ef3a26 0%, #d4211a 55%, #b51a12 100%);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28);
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:focus-visible { outline: 2px solid #fff; outline-offset: -5px; }
+  .btn:disabled { filter: grayscale(0.6); }
+
+  /* Opção que se escolhe (frequência, objetivo, grupo muscular...). A escolhida fica em brasa. */
+  .opcao {
+    @apply rounded-xl border-2 border-transparent bg-superficie transition-[transform,background-color,border-color] duration-100 ease-out
+      hover:bg-corpo active:scale-[0.97];
+  }
+  .opcao[aria-pressed="true"] {
+    border-color: rgb(var(--primario));
+    background-color: rgb(var(--primario) / 0.16);
+    box-shadow: inset 0 0 24px rgb(var(--primario) / 0.18);
+  }
+
+  /* Etiqueta escolhível (músculo, categoria de alimento, papel na equipe). */
+  .chip {
+    @apply inline-flex min-h-[44px] items-center rounded-full border-2 border-linha px-4 py-1.5 font-semibold
+      transition-[transform,background-color,border-color] duration-100 ease-out hover:border-suave active:scale-[0.97];
+  }
+  .chip[aria-pressed="true"] { border-color: rgb(var(--primario)); background-color: rgb(var(--primario)); color: #fff; }
+
+  /* Botão secundário de contorno ("?", +, −, timer). */
+  .btn-contorno {
+    @apply inline-flex items-center justify-center rounded-lg border-2 border-linha text-tinta
+      transition-[transform,border-color,color] duration-100 ease-out hover:border-brasa hover:text-brasa active:scale-[0.95];
+  }
+
+  /* Título cromado (só nos destaques: abertura das páginas e início). */
+  .titulo-metal {
+    background-image: linear-gradient(180deg, #ffffff 0%, #ece7e2 42%, #a8a19b 54%, #f3efeb 78%, #d7d1cb 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    /* A folga no recorte do degradê evita cortar acentos e o pé do "j" e do "g". */
+    padding-block: 0.06em 0.12em;
+    /* Usado num <span> dentro do título: cada linha ganha o próprio brilho de cromo. */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* Abertura de página: carvão com textura, brilho de brasa vindo de baixo e um fio de fogo na borda. */
+  .destaque-brasa {
+    position: relative;
+    isolation: isolate;
+    background-color: rgb(var(--fundo));
+    background-image:
+      radial-gradient(120% 90% at 8% 120%, rgb(227 38 27 / 0.32), transparent 55%),
+      radial-gradient(80% 70% at 95% -10%, rgb(255 107 26 / 0.14), transparent 60%);
+  }
+  .destaque-brasa::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.22;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+  }
+  .destaque-brasa::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgb(227 38 27), rgb(255 107 26) 45%, rgb(247 179 43 / 0.6) 70%, transparent);
+  }
+
+  /* Placa de ferro com cantos chanfrados (ícones dos atalhos). */
+  .placa { clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+
+  /* Logo em destaque: brilho de brasa em volta. Acende uma vez ao abrir (o único movimento de entrada). */
+  .logo-acesa { filter: drop-shadow(0 0 32px rgb(227 38 27 / 0.42)) drop-shadow(0 0 8px rgb(255 107 26 / 0.3)); animation: acender 700ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+}
+
+@keyframes acender { from { opacity: 0; transform: scale(0.94); } }
 @keyframes folha { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes fundo { from { opacity: 0; } to { opacity: 1; } }
 @keyframes entra { from { opacity: 0; transform: translateY(6px); } to { transform: none; opacity: 1; } }
@@ -64,10 +159,14 @@ input, select, textarea { font-size: 16px; }
 .animar-fundo { animation: fundo 180ms ease-out; }
 .animar { animation: entra 220ms cubic-bezier(0.23, 1, 0.32, 1); }
 
-/* Músculo principal do exercício escolhido: brilho vermelho suave. */
+/* Músculo principal do exercício escolhido: brilho de brasa. */
 @keyframes acende { from { opacity: 0.4; } to { opacity: 1; } }
-.musculo-ativo { filter: drop-shadow(0 0 4px rgb(var(--primario) / 0.65)); animation: acende 320ms ease-out; }
+.musculo-ativo { filter: drop-shadow(0 0 5px rgb(var(--primario) / 0.75)); animation: acende 320ms ease-out; }
+
+/* "Aberta agora": pulso lento no ponto verde (único movimento automático da tela inicial). */
+@keyframes pulso { 0% { transform: scale(1); opacity: 0.6; } 70%, 100% { transform: scale(2.6); opacity: 0; } }
+.ponto-aberto::after { content: ""; position: absolute; inset: 0; border-radius: 9999px; background: inherit; animation: pulso 2.4s ease-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .animar, .animar-folha, .animar-fundo, .musculo-ativo { animation: none; }
+  .animar, .animar-folha, .animar-fundo, .musculo-ativo, .ponto-aberto::after, .logo-acesa { animation: none; }
 }

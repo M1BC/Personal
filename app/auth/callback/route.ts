@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const codigo = searchParams.get("code");
   if (codigo) {
     const { error } = await criarClienteServidor().auth.exchangeCodeForSession(codigo);
-    if (!error) return NextResponse.redirect(`${origin}/anatomia`);
+    if (!error) return NextResponse.redirect(`${origin}/`);
   }
   return NextResponse.redirect(`${origin}/login?erro=link`);
 }

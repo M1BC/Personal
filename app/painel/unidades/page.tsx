@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
+import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { Unidades } from "@/components/painel/Unidades";
-import { CAIXA, H1 } from "@/lib/layout";
+import { CAIXA } from "@/lib/layout";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
-export const metadata = { title: "Unidades | Treino & Nutrição Consciente" };
+export const metadata = { title: "Unidades" };
 
 export default async function Pagina() {
   const supabase = criarClienteServidor();
@@ -14,14 +15,14 @@ export default async function Pagina() {
   if (data?.papel !== "admin") redirect("/painel");
 
   return (
-    <section className={`${CAIXA} pb-24 pt-12 md:pt-20`}>
-      <h1 className={H1}>Unidades.</h1>
-      <p className="mt-5 max-w-[56ch] text-xl text-suave">
-        As filiais da rede. As unidades ativas aparecem na lista do cadastro para o aluno escolher onde treina.
-      </p>
-      <div className="mt-10">
+    <>
+      <CabecalhoPagina
+        titulo="Unidades."
+        texto="As filiais da rede. As unidades ativas aparecem na lista do cadastro para o aluno escolher onde treina."
+      />
+      <section className={`${CAIXA} pb-24 pt-8 md:pt-12`}>
         <Unidades />
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
