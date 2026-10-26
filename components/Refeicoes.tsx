@@ -13,7 +13,7 @@ import { usePerfil } from "./PerfilProvider";
 const meses = (semanas: number) => semanas / 4.345;
 const PADRAO: Record<string, string> = Object.fromEntries(REFEICOES.map((r) => [r.id, String(r.pct * 100)]));
 const pctNum = (s: string) => Math.min(100, Math.max(0, Number(s.replace(",", ".")) || 0));
-const BTN_TEXTO = "min-h-[48px] underline underline-offset-4";
+const BTN_TEXTO = "min-h-[3rem] underline underline-offset-4";
 
 const TEXTO_OBJETIVO = {
   manter: "Calorias próximas ao seu gasto, para manter o peso.",
@@ -165,7 +165,8 @@ export function Refeicoes() {
         <div className="mt-10">
           <p className="text-lg font-semibold">Meta do dia: {fmt(plano.kcal, 0)} kcal</p>
           <p className="font-titulo text-[clamp(2.75rem,10vw,5rem)] font-extrabold leading-none tabular-nums">
-            {fmt(plano.proteina, 0)} g prot · {fmt(plano.carbo, 0)} g carb · {fmt(plano.gordura, 0)} g gord
+            <span className="whitespace-nowrap">{fmt(plano.proteina, 0)} g prot</span> · <span className="whitespace-nowrap">{fmt(plano.carbo, 0)} g carb</span> ·{" "}
+            <span className="whitespace-nowrap">{fmt(plano.gordura, 0)} g gord</span>
           </p>
           <p className="mt-2 max-w-[62ch] text-base text-suave">
             {TEXTO_OBJETIVO[plano.objetivo]} Proteína: 1,6 g por kg. Gordura: 25% das calorias. Carboidrato: o restante.
@@ -178,9 +179,9 @@ export function Refeicoes() {
           )}
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <button role="switch" aria-checked={personalizar} onClick={alternar} className="flex min-h-[48px] items-center gap-3 text-lg font-bold">
+            <button role="switch" aria-checked={personalizar} onClick={alternar} className="flex min-h-[3rem] items-center gap-3 text-left text-lg font-bold">
               <span className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors duration-150 ease-out ${personalizar ? "border-primario bg-primario" : "border-linha bg-corpo"}`}>
-                <span className={`absolute left-0 top-[3px] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${personalizar ? "translate-x-[23px] bg-white" : "translate-x-[3px] bg-suave"}`} />
+                <span className={`absolute left-0 top-[calc(0.25rem-1px)] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${personalizar ? "translate-x-[calc(1.5625rem-2px)] bg-white" : "translate-x-[0.1875rem] bg-suave"}`} />
               </span>
               Personalizar distribuição
             </button>
@@ -235,7 +236,7 @@ export function Refeicoes() {
                         value={pcts[r.id]}
                         onChange={(e) => mudarPct(r.id, e.target.value)}
                         aria-label={`Porcentagem do dia para ${r.nome}`}
-                        className="min-h-[48px] w-20 bg-fundo px-3 text-lg font-bold tabular-nums text-tinta"
+                        className="min-h-[3rem] w-20 bg-fundo px-3 text-lg font-bold tabular-nums text-tinta"
                       />
                       % do dia
                     </label>
@@ -263,7 +264,7 @@ export function Refeicoes() {
                     />
                     <p className="mt-3 text-base text-suave">Salada e legumes à vontade: não entram na conta.</p>
                     <details className="mt-2">
-                      <summary className="flex min-h-[48px] cursor-pointer items-center font-semibold">Outras sugestões</summary>
+                      <summary className="flex min-h-[3rem] cursor-pointer items-center font-semibold">Outras sugestões</summary>
                       <ul className="divide-y divide-linha border-y border-linha">
                         {sug.map((s, i) => (
                           <li key={i} className="py-3">

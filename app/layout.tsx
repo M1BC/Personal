@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Cabecalho />
           <main id="conteudo">{children}</main>
           <footer className="border-t border-linha">
-            <div className={`${CAIXA} flex flex-col gap-4 py-8 text-[15px] text-suave pb-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:flex-row sm:items-center sm:gap-6`}>
+            <div className={`${CAIXA} flex flex-col gap-4 py-8 text-[0.9375rem] text-suave pb-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:flex-row sm:items-center sm:gap-6`}>
               <span className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/marca/bgs-logo-128.webp" alt="" width={32} height={32} className="h-8 w-8 rounded-full opacity-90" />

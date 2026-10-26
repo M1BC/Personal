@@ -20,7 +20,7 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
   return (
     <div className="mt-4 grid gap-6 lg:grid-cols-2">
       {dias.map((d, i) => (
-        <section key={i} className="bg-superficie p-6">
+        <section key={i} className="bg-superficie p-4 sm:p-6">
           <h3 className="text-2xl font-extrabold leading-tight">{d.dia}</h3>
           <p className="text-lg text-suave">{d.titulo}</p>
           <ol className="mt-3 divide-y divide-linha border-y border-linha">
@@ -29,8 +29,8 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
               if (!e) return null;
               const idTimer = `${prefixo}-${i}-${n}-${it.id}`;
               return (
-                <li key={idTimer} className="flex items-start gap-3 py-3">
-                  <span className="w-6 font-titulo text-3xl font-extrabold tabular-nums">{n + 1}</span>
+                <li key={idTimer} className="flex items-start gap-2.5 py-3 sm:gap-3">
+                  <span className="w-5 shrink-0 font-titulo text-3xl font-extrabold tabular-nums sm:w-6">{n + 1}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-lg font-bold leading-tight">{e.nome}</p>
                     <p className="text-base">{it.series}</p>
@@ -49,7 +49,7 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
                   <button
                     onClick={() => onExplicar(it.id)}
                     aria-label={`Entender ${e.nome}`}
-                    className="min-h-[48px] min-w-[48px] btn-contorno text-xl font-bold"
+                    className="min-h-[2.75rem] min-w-[2.75rem] shrink-0 btn-contorno text-xl font-bold sm:min-h-[3rem] sm:min-w-[3rem]"
                   >
                     ?
                   </button>

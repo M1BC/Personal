@@ -33,6 +33,8 @@
 
 /* Estilos de base ficam na camada base, para as classes utilitárias sempre poderem sobrescrever. */
 @layer base {
+  /* Celular: tudo 12,5% maior (letras, botões e espaços são medidos em rem). No computador fica 16 px. */
+  @media (max-width: 767px) { html { font-size: 112.5%; } }
   html {
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
@@ -43,27 +45,27 @@
   body {
     background: rgb(var(--fundo));
     color: rgb(var(--tinta));
-    font-size: 17px;
+    font-size: 1.0625rem; /* 17 px no computador, 19 px no celular */
     line-height: 1.5;
   }
   h1, h2, h3 { font-family: "Big Shoulders Display", "Barlow", system-ui, sans-serif; font-weight: 800; text-wrap: balance; }
   button, a, [role="button"] { touch-action: manipulation; }
   button { -webkit-user-select: none; user-select: none; }
-  input, select, textarea { font-size: 16px; border-radius: 8px; }
+  input, select, textarea { font-size: 1rem; border-radius: 8px; } /* nunca abaixo de 16 px: o iPhone dá zoom em campos menores */
   input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid rgb(var(--brasa)); outline-offset: 1px; }
   :focus-visible { outline: 2px solid rgb(var(--brasa)); outline-offset: 2px; }
   ::selection { background: rgb(var(--primario) / 0.45); }
   /* No celular a navegação fica fixa embaixo: o espaço extra evita que ela cubra o fim da página. */
   @media (max-width: 767px) {
-    body:has(.barra-app) { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
-    html:has(.barra-app) { scroll-padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    body:has(.barra-app) { padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px)); }
+    html:has(.barra-app) { scroll-padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   }
 }
 
 @layer components {
   /* Botão principal: placa de metal em brasa, com os cantos chanfrados como o escudo da logo. */
   .btn {
-    @apply inline-flex min-h-[48px] items-center justify-center px-6 py-3 text-[17px] font-bold text-white
+    @apply inline-flex min-h-[3rem] items-center justify-center px-6 py-3 text-[1.0625rem] font-bold text-white
       transition-[transform,filter] duration-100 ease-out active:scale-[0.97];
     background-image: linear-gradient(180deg, #ef3a26 0%, #d4211a 55%, #b51a12 100%);
     clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
@@ -86,7 +88,7 @@
 
   /* Etiqueta escolhível (músculo, categoria de alimento, papel na equipe). */
   .chip {
-    @apply inline-flex min-h-[44px] items-center rounded-full border-2 border-linha px-4 py-1.5 font-semibold
+    @apply inline-flex min-h-[2.75rem] items-center rounded-full border-2 border-linha px-4 py-1.5 font-semibold
       transition-[transform,background-color,border-color] duration-100 ease-out hover:border-suave active:scale-[0.97];
   }
   .chip[aria-pressed="true"] { border-color: rgb(var(--primario)); background-color: rgb(var(--primario)); color: #fff; }

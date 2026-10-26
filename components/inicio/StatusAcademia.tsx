@@ -50,7 +50,7 @@ export function QuadroHorario() {
           >
             <dt className="font-semibold">
               {l.dias}
-              {destaque && <span className="ml-2 text-[15px] font-semibold text-alerta">hoje</span>}
+              {destaque && <span className="ml-2 text-[0.9375rem] font-semibold text-alerta">hoje</span>}
             </dt>
             <dd className={`font-titulo text-xl font-bold tabular-nums ${l.horario === "Fechada" ? "text-suave" : ""}`}>{l.horario}</dd>
           </div>

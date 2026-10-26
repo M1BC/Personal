@@ -3,11 +3,11 @@ import { CATEGORIAS, EXERCICIOS, categoriaDoExercicio, ehCardio } from "@/data/e
 import type { Dia, ItemDia } from "@/components/DiasFicha";
 import type { FichaTreinador } from "@/lib/equipe";
 
-const INPUT = "mt-1 min-h-[48px] w-full bg-fundo px-3 text-base";
+const INPUT = "mt-1 min-h-[3rem] w-full bg-fundo px-3 text-base";
 const ROTULO = "block text-base font-semibold";
 const BTN_ICONE =
-  "min-h-[44px] min-w-[44px] btn-contorno text-lg font-bold disabled:opacity-30";
-const BTN_TEXTO = "min-h-[48px] font-bold underline underline-offset-4";
+  "min-h-[2.75rem] min-w-[2.75rem] btn-contorno text-lg font-bold disabled:opacity-30";
+const BTN_TEXTO = "min-h-[3rem] font-bold underline underline-offset-4";
 const DIAS_SEMANA = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
 export const NOVO_ITEM: ItemDia = { id: "supino-reto", series: "3 × 10 a 12 repetições", descanso: "60 s", obs: "" };
 const NOVO_CARDIO = { series: "20 min · ritmo moderado", descanso: "—" };

@@ -107,14 +107,14 @@ export function Boneco({ exercicioId, nome, primario, secundarios }: Props) {
           <button
             onClick={() => setLento(!lento)}
             aria-pressed={lento}
-            className={`min-h-[44px] px-3 text-sm font-bold transition-transform duration-100 ease-out active:scale-[0.95] rounded-lg ${lento ? "bg-primario text-white" : "bg-fundo/85 text-tinta"}`}
+            className={`min-h-[2.75rem] px-3 text-sm font-bold transition-transform duration-100 ease-out active:scale-[0.95] rounded-lg ${lento ? "bg-primario text-white" : "bg-fundo/85 text-tinta"}`}
           >
             Câmera lenta
           </button>
           <button
             onClick={() => setTocando(!tocando)}
             aria-label={tocando ? "Pausar animação" : "Ver o movimento"}
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-fundo/85 text-tinta transition-transform duration-100 ease-out active:scale-[0.95]"
+            className="flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center rounded-lg bg-fundo/85 text-tinta transition-transform duration-100 ease-out active:scale-[0.95]"
           >
             {tocando ? (
               <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" /><rect x="14" y="5" width="4" height="14" /></svg>

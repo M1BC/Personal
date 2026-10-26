@@ -14,7 +14,7 @@ interface Props {
 }
 
 const BTN =
-  "min-h-[48px] btn-contorno px-4 font-bold";
+  "min-h-[3rem] btn-contorno whitespace-nowrap px-3 text-base font-bold sm:px-4";
 
 export function TimerDescanso({ id, segundos, ativo, som, onIniciar }: Props) {
   const [estado, setEstado] = useState<Estado>("parado");

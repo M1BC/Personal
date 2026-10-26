@@ -42,7 +42,7 @@ export function Modal({ aberto, titulo, onFechar, children }: Props) {
             ref={botaoFechar}
             onClick={onFechar}
             aria-label="Fechar"
-            className="min-h-[48px] min-w-[48px] shrink-0 bg-superficie text-xl font-bold transition-transform duration-100 active:scale-[0.95] hover:bg-corpo"
+            className="min-h-[3rem] min-w-[3rem] shrink-0 bg-superficie text-xl font-bold transition-transform duration-100 active:scale-[0.95] hover:bg-corpo"
           >
             ×
           </button>

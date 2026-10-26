@@ -71,9 +71,9 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
   return (
     <div>
       <div className="flex flex-wrap gap-x-8">
-        <Link href="/painel" className="inline-flex min-h-[48px] items-center font-bold text-suave underline underline-offset-4">← Painel</Link>
+        <Link href="/painel" className="inline-flex min-h-[3rem] items-center font-bold text-suave underline underline-offset-4">← Painel</Link>
         {admin && (
-          <Link href="/painel/unidades" className="inline-flex min-h-[48px] items-center font-bold underline underline-offset-4">Gerenciar unidades →</Link>
+          <Link href="/painel/unidades" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">Gerenciar unidades →</Link>
         )}
       </div>
 
@@ -85,13 +85,13 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Nome ou e-mail"
-            className="mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg font-normal"
+            className="mt-1 min-h-[3rem] w-full bg-superficie px-4 text-lg font-normal"
           />
         </label>
         {admin && (
           <label className="block text-lg font-semibold">
             Unidade
-            <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className="mt-1 min-h-[48px] w-full bg-superficie px-3 text-lg font-normal">
+            <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className="mt-1 min-h-[3rem] w-full bg-superficie px-3 text-lg font-normal">
               <option value="todas">Todas as unidades</option>
               {unidades.map((u) => <option key={u.id} value={u.id}>{nomeUnidade(u)}{u.ativa ? "" : " (inativa)"}</option>)}
               <option value={SEM}>Sem unidade</option>
@@ -131,7 +131,7 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
                       aria-label={`Unidade de ${nomeOuEmail(p)}`}
                       value={p.unidade_id ?? ""}
                       onChange={(e) => trocarUnidade(p, e.target.value)}
-                      className="min-h-[48px] max-w-[16rem] bg-superficie px-3 text-base"
+                      className="min-h-[3rem] max-w-[16rem] bg-superficie px-3 text-base"
                     >
                       {admin && <option value="">Sem unidade</option>}
                       {!admin && !p.unidade_id && <option value="" disabled>Sem unidade</option>}
@@ -152,7 +152,7 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
                   </div>
                 </div>
               ) : (
-                <span className="min-h-[48px] py-3 font-bold">{NOME_PAPEL[p.papel]}</span>
+                <span className="min-h-[3rem] py-3 font-bold">{NOME_PAPEL[p.papel]}</span>
               )}
             </li>
           ))}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { criarUnidade, editarUnidade, listarUnidades, type Unidade } from "@/lib/equipe";
 
-const INPUT = "mt-1 min-h-[48px] w-full bg-superficie px-3 text-base font-normal";
+const INPUT = "mt-1 min-h-[3rem] w-full bg-superficie px-3 text-base font-normal";
 
 export function Unidades() {
   const [lista, setLista] = useState<Unidade[] | null>(null);
@@ -57,8 +57,8 @@ export function Unidades() {
   return (
     <div>
       <div className="flex flex-wrap gap-x-8">
-        <Link href="/painel" className="inline-flex min-h-[48px] items-center font-bold text-suave underline underline-offset-4">← Painel</Link>
-        <Link href="/painel/equipe" className="inline-flex min-h-[48px] items-center font-bold underline underline-offset-4">Equipe e papéis →</Link>
+        <Link href="/painel" className="inline-flex min-h-[3rem] items-center font-bold text-suave underline underline-offset-4">← Painel</Link>
+        <Link href="/painel/equipe" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">Equipe e papéis →</Link>
       </div>
 
       <form onSubmit={adicionar} className="mt-6 grid max-w-3xl gap-3 bg-superficie p-5 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
@@ -93,7 +93,7 @@ export function Unidades() {
                   </label>
                   <div className="flex gap-4">
                     <button onClick={() => salvarEdicao(u)} className="btn">Salvar</button>
-                    <button onClick={() => setEditando(null)} className="min-h-[48px] font-bold underline underline-offset-4">Cancelar</button>
+                    <button onClick={() => setEditando(null)} className="min-h-[3rem] font-bold underline underline-offset-4">Cancelar</button>
                   </div>
                 </div>
               ) : (
@@ -108,11 +108,11 @@ export function Unidades() {
                         setEditando(u.id);
                         setRascunho({ nome: u.nome, cidade: u.cidade });
                       }}
-                      className="min-h-[48px] font-bold underline underline-offset-4"
+                      className="min-h-[3rem] font-bold underline underline-offset-4"
                     >
                       Editar
                     </button>
-                    <button onClick={() => alternar(u)} className={`min-h-[48px] font-bold underline underline-offset-4 ${u.ativa ? "text-alerta" : ""}`}>
+                    <button onClick={() => alternar(u)} className={`min-h-[3rem] font-bold underline underline-offset-4 ${u.ativa ? "text-alerta" : ""}`}>
                       {u.ativa ? "Desativar" : "Reativar"}
                     </button>
                   </span>

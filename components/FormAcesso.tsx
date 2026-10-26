@@ -21,7 +21,7 @@ function destino() {
   return v && v.startsWith("/") && !v.startsWith("//") ? v : "/";
 }
 
-const INPUT = "mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg";
+const INPUT = "mt-1 min-h-[3rem] w-full bg-superficie px-4 text-lg";
 
 export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
   const cadastro = modo === "cadastrar";

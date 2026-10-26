@@ -44,7 +44,7 @@ export function ExplorerExercicios() {
     <div>
       {/* 1. Grupo muscular */}
       <p className="text-lg font-semibold">Escolha o grupo muscular</p>
-      <div role="group" aria-label="Grupo muscular" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+      <div role="group" aria-label="Grupo muscular" className="mt-2 grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5">
         {GRUPOS_CARD.map((g) => {
           const ativo = !buscando && g === grupo;
           return (
@@ -52,9 +52,9 @@ export function ExplorerExercicios() {
               key={g}
               aria-pressed={ativo}
               onClick={() => escolherGrupo(g)}
-              className="opcao flex min-h-[72px] min-w-0 flex-col justify-between gap-1 p-3 text-left"
+              className="opcao flex min-h-[4.5rem] min-w-0 flex-col justify-between gap-1 p-3 text-left"
             >
-              <span className="font-titulo text-[19px] font-extrabold leading-none md:text-2xl">{g}</span>
+              <span className="font-titulo text-[1.1875rem] font-extrabold leading-none md:text-2xl">{g}</span>
               <span className="text-sm text-suave">{contar(g)} exercícios</span>
             </button>
           );
@@ -68,7 +68,7 @@ export function ExplorerExercicios() {
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
         placeholder="Ex.: rosca, agachamento, polia"
-        className="mt-1 min-h-[48px] w-full max-w-md bg-superficie px-4 text-lg"
+        className="mt-1 min-h-[3rem] w-full max-w-md bg-superficie px-4 text-lg"
       />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start">
@@ -85,7 +85,7 @@ export function ExplorerExercicios() {
                   <button
                     aria-pressed={ativo}
                     onClick={() => escolher(e.id)}
-                    className={`flex min-h-[60px] w-full items-center justify-between gap-3 px-3 py-2 text-left transition-colors duration-100 ${
+                    className={`flex min-h-[3.75rem] w-full items-center justify-between gap-3 px-3 py-2 text-left transition-colors duration-100 ${
                       ativo ? "bg-primario/15 shadow-[inset_4px_0_0_rgb(var(--primario))]" : "hover:bg-superficie"
                     }`}
                   >
@@ -103,7 +103,7 @@ export function ExplorerExercicios() {
             {lista.length === 0 && (
               <li className="py-4">
                 <p className="text-lg text-suave">Nenhum exercício encontrado.</p>
-                <button onClick={() => setBusca("")} className="mt-2 min-h-[48px] underline underline-offset-4">Limpar busca</button>
+                <button onClick={() => setBusca("")} className="mt-2 min-h-[3rem] underline underline-offset-4">Limpar busca</button>
               </li>
             )}
           </ul>
@@ -135,7 +135,7 @@ export function ExplorerExercicios() {
               <button
                 onClick={() => setAberto(ex.grupo_primario)}
                 aria-label={`Explicar ${GRUPOS[ex.grupo_primario].nome}`}
-                className="min-h-[48px] min-w-[48px] btn-contorno text-xl font-bold"
+                className="min-h-[3rem] min-w-[3rem] btn-contorno text-xl font-bold"
               >
                 ?
               </button>
@@ -149,7 +149,7 @@ export function ExplorerExercicios() {
                     <button
                       key={g}
                       onClick={() => setAberto(g)}
-                      className="min-h-[48px] border-2 border-secundario px-4 py-2 font-semibold active:scale-[0.97] hover:bg-secundario hover:text-sobre-secundario"
+                      className="min-h-[3rem] border-2 border-secundario px-4 py-2 font-semibold active:scale-[0.97] hover:bg-secundario hover:text-sobre-secundario"
                     >
                       {GRUPOS[g].nome}
                     </button>

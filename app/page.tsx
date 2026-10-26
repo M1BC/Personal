@@ -76,12 +76,12 @@ export default async function Inicio() {
           <ul className="mt-3 divide-y divide-linha">
             {atalhos.map((a) => (
               <li key={a.href}>
-                <Link href={a.href} className="group flex min-h-[84px] items-center gap-4 py-3">
+                <Link href={a.href} className="group flex min-h-[5.25rem] items-center gap-4 py-3">
                   <span className="placa flex h-12 w-12 shrink-0 items-center justify-center bg-corpo text-brasa transition-colors duration-100 group-hover:bg-primario group-hover:text-white">
                     <Icone nome={a.icone} />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-titulo text-[26px] font-extrabold leading-tight">{a.nome}</span>
+                    <span className="block font-titulo text-[1.625rem] font-extrabold leading-tight">{a.nome}</span>
                     <span className="block text-base text-suave">{a.texto}</span>
                   </span>
                   <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-suave transition-transform duration-100 group-hover:translate-x-0.5 group-hover:text-tinta" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

@@ -33,11 +33,11 @@ export function Cabecalho() {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-linha/70 bg-fundo/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md">
-        <div className={`${CAIXA} flex min-h-[60px] items-center gap-x-6`}>
+        <div className={`${CAIXA} flex min-h-[3.75rem] items-center gap-x-3 md:gap-x-6`}>
           <Link href="/" className="flex shrink-0 items-center gap-3" aria-label={`${MARCA.nome}, início`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/marca/bgs-logo-128.webp" alt="" width={40} height={40} className="h-10 w-10 rounded-full ring-1 ring-linha" />
-            <span translate="no" className="whitespace-nowrap font-titulo text-[22px] font-extrabold leading-none tracking-wide">{MARCA.nome}</span>
+            <span translate="no" className="whitespace-nowrap font-titulo text-[1.25rem] font-extrabold md:text-[1.375rem] leading-none tracking-wide">{MARCA.nome}</span>
           </Link>
 
           <nav aria-label="Principal" className="ml-auto hidden items-center gap-1 md:flex">
@@ -48,7 +48,7 @@ export function Cabecalho() {
                   key={l.href}
                   href={l.href}
                   aria-current={ativo ? "page" : undefined}
-                  className={`relative rounded-lg px-3 py-2 text-[15px] font-semibold transition-colors duration-100 ${
+                  className={`relative rounded-lg px-3 py-2 text-[0.9375rem] font-semibold transition-colors duration-100 ${
                     ativo ? "text-tinta" : "text-suave hover:bg-superficie hover:text-tinta"
                   }`}
                 >
@@ -65,7 +65,7 @@ export function Cabecalho() {
               <Link
                 href="/painel"
                 aria-current={noPainel ? "page" : undefined}
-                className={`flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-lg px-2.5 text-[15px] font-semibold transition-colors duration-100 hover:bg-superficie hover:text-tinta sm:px-3 md:hidden ${
+                className={`flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center gap-2 rounded-lg px-2.5 text-[0.9375rem] font-semibold transition-colors duration-100 hover:bg-superficie hover:text-tinta sm:px-3 md:hidden ${
                   noPainel ? "text-tinta" : "text-suave"
                 }`}
               >
@@ -75,7 +75,7 @@ export function Cabecalho() {
             )}
             <button
               onClick={() => sair()}
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-lg px-2.5 text-[15px] font-semibold text-suave transition-colors duration-100 hover:bg-superficie hover:text-tinta sm:px-3"
+              className="flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center gap-2 rounded-lg px-2.5 text-[0.9375rem] font-semibold text-suave transition-colors duration-100 hover:bg-superficie hover:text-tinta sm:px-3"
             >
               <Icone nome="sair" className="h-5 w-5" />
               <span className="sr-only sm:not-sr-only">Sair</span>
@@ -88,15 +88,15 @@ export function Cabecalho() {
         aria-label="Principal"
         className="barra-app fixed inset-x-0 bottom-0 z-30 border-t border-linha/80 bg-fundo/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md md:hidden"
       >
-        <ul className="mx-auto grid max-w-lg grid-cols-5">
+        <ul className="mx-auto flex max-w-lg">
           {LINKS.map((l) => {
             const ativo = ativoEm(l.href, caminho);
             return (
-              <li key={l.href}>
+              <li key={l.href} className="min-w-0 flex-auto">
                 <Link
                   href={l.href}
                   aria-current={ativo ? "page" : undefined}
-                  className={`relative flex min-h-[60px] flex-col items-center justify-center gap-1 text-[12px] font-semibold ${
+                  className={`relative flex min-h-[3.75rem] flex-col items-center justify-center gap-1 whitespace-nowrap px-1 text-[0.75rem] font-semibold ${
                     ativo ? "text-tinta" : "text-suave"
                   }`}
                 >

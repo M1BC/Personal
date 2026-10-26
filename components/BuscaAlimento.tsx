@@ -38,7 +38,7 @@ export function BuscaAlimento({ aberto, titulo, categoriaInicial, onEscolher, on
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
         placeholder="Ex.: arroz, frango, banana"
-        className="mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg"
+        className="mt-1 min-h-[3rem] w-full bg-superficie px-4 text-lg"
       />
       <div role="group" aria-label="Categoria" className="mt-3 flex flex-wrap gap-2">
         {(["Todos", ...CATEGORIAS_ALIMENTO] as const).map((c) => (
@@ -53,7 +53,7 @@ export function BuscaAlimento({ aberto, titulo, categoriaInicial, onEscolher, on
           const m = porMedida(a);
           return (
             <li key={a.id}>
-              <button onClick={() => onEscolher(a.id)} className="block min-h-[56px] w-full px-1 py-3 text-left hover:bg-superficie">
+              <button onClick={() => onEscolher(a.id)} className="block min-h-[3.5rem] w-full px-1 py-3 text-left hover:bg-superficie">
                 <span className="block text-lg font-semibold">{a.nome}</span>
                 <span className="block text-base text-suave">
                   {a.medida_caseira} ({a.medida_g} {a.liquido ? "ml" : "g"}) ≈ {fmt(m.p, 0)} g prot · {fmt(m.c, 0)} g carb · {fmt(m.g, 0)} g gord

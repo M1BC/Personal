@@ -4,8 +4,8 @@ import { MARCAS_REF, METAS, ORCAMENTOS, PRECOS_REF, SUPLEMENTOS, type MetaPeso, 
 import { Modal } from "./Modal";
 
 const BOTAO_AJUDA =
-  "min-h-[48px] min-w-[48px] btn-contorno text-xl font-bold";
-const OPCAO = "min-h-[56px] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
+  "min-h-[3rem] min-w-[3rem] btn-contorno text-xl font-bold";
+const OPCAO = "min-h-[3.5rem] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
 
 export function Suplementos() {
   const [orc, setOrc] = useState<Orcamento>("moderado");

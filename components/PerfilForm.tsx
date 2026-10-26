@@ -2,7 +2,7 @@
 import { ATIVIDADES, validar, type Atividade, type Sexo } from "@/lib/nutricao";
 import { usePerfil } from "./PerfilProvider";
 
-const CAMPO = "mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg font-semibold";
+const CAMPO = "mt-1 min-h-[3rem] w-full bg-superficie px-4 text-lg font-semibold";
 const ROTULO = "block text-base font-semibold";
 
 export function PerfilForm() {

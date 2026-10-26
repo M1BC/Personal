@@ -9,7 +9,7 @@ import { FichaDoTreinador } from "./FichaDoTreinador";
 import { MeuTreino } from "./MeuTreino";
 import { ModalExercicio } from "./ModalExercicio";
 
-const OPCAO = "min-h-[56px] px-5 py-3 text-left";
+const OPCAO = "min-h-[3.5rem] px-5 py-3 text-left";
 const CHAVE_SOM = "treino:som";
 
 export function Treinos() {
@@ -159,9 +159,9 @@ export function Treinos() {
               </div>
             )}
 
-            <button role="switch" aria-checked={som} onClick={alternarSom} className="mt-5 flex min-h-[48px] items-center gap-3 text-lg font-bold">
+            <button role="switch" aria-checked={som} onClick={alternarSom} className="mt-5 flex min-h-[3rem] items-center gap-3 text-left text-lg font-bold">
               <span className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors duration-150 ease-out ${som ? "border-primario bg-primario" : "border-linha bg-corpo"}`}>
-                <span className={`absolute left-0 top-[3px] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${som ? "translate-x-[23px] bg-white" : "translate-x-[3px] bg-suave"}`} />
+                <span className={`absolute left-0 top-[calc(0.25rem-1px)] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${som ? "translate-x-[calc(1.5625rem-2px)] bg-white" : "translate-x-[0.1875rem] bg-suave"}`} />
               </span>
               Som do timer de descanso: {som ? "ligado" : "desligado"}
             </button>

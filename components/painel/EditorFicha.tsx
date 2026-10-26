@@ -9,9 +9,9 @@ import { criarCliente } from "@/lib/supabase/client";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
 
-const INPUT = "mt-1 min-h-[48px] w-full bg-fundo px-3 text-base";
+const INPUT = "mt-1 min-h-[3rem] w-full bg-fundo px-3 text-base";
 const ROTULO = "block text-base font-semibold";
-const BTN_TEXTO = "min-h-[48px] font-bold underline underline-offset-4";
+const BTN_TEXTO = "min-h-[3rem] font-bold underline underline-offset-4";
 const GERAVEIS = OBJETIVOS.filter((o): o is Extract<(typeof OBJETIVOS)[number], { id: ObjetivoId }> => o.id !== "criar");
 
 export function EditorFicha({ alunoId }: { alunoId: string }) {
@@ -173,7 +173,7 @@ export function EditorFicha({ alunoId }: { alunoId: string }) {
       )}
 
       {/* Barra de salvar */}
-      <div className="fixed inset-x-0 bottom-[calc(60px+env(safe-area-inset-bottom,0px))] z-20 border-t border-linha bg-fundo/95 backdrop-blur-md md:bottom-0 md:pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="fixed inset-x-0 bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] z-20 border-t border-linha bg-fundo/95 backdrop-blur-md md:bottom-0 md:pb-[env(safe-area-inset-bottom,0px)]">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 md:px-8">
           <p role="status" className={`min-w-0 flex-1 text-base font-semibold ${status?.tipo === "erro" ? "text-alerta" : status ? "" : "text-suave"}`}>
             {status?.texto ?? (mudou ? "Alterações não salvas" : existe ? "Tudo salvo" : "Ficha ainda não criada")}

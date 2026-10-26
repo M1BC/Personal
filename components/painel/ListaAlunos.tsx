@@ -45,11 +45,11 @@ export function ListaAlunos() {
     <div>
       {(admin || papel === "gerente") && (
         <div className="mb-8 flex flex-wrap gap-x-8">
-          <Link href="/painel/equipe" className="inline-flex min-h-[48px] items-center font-bold underline underline-offset-4">
+          <Link href="/painel/equipe" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">
             Equipe e papéis →
           </Link>
           {admin && (
-            <Link href="/painel/unidades" className="inline-flex min-h-[48px] items-center font-bold underline underline-offset-4">
+            <Link href="/painel/unidades" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">
               Unidades →
             </Link>
           )}
@@ -64,13 +64,13 @@ export function ListaAlunos() {
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Nome ou e-mail"
-            className="mt-1 min-h-[48px] w-full bg-superficie px-4 text-lg font-normal"
+            className="mt-1 min-h-[3rem] w-full bg-superficie px-4 text-lg font-normal"
           />
         </label>
         {admin && unidades.length > 0 && (
           <label className="block text-lg font-semibold">
             Unidade
-            <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className="mt-1 min-h-[48px] w-full bg-superficie px-3 text-lg font-normal">
+            <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className="mt-1 min-h-[3rem] w-full bg-superficie px-3 text-lg font-normal">
               <option value="todas">Todas as unidades</option>
               {unidades.map((u) => <option key={u.id} value={u.id}>{nomeUnidade(u)}</option>)}
               <option value="sem">Sem unidade</option>
@@ -98,7 +98,7 @@ export function ListaAlunos() {
                 <li key={a.id}>
                   <Link
                     href={`/painel/aluno/${a.id}`}
-                    className="flex min-h-[64px] items-center justify-between gap-4 py-3 transition-colors duration-100 hover:bg-superficie"
+                    className="flex min-h-[4rem] items-center justify-between gap-4 py-3 transition-colors duration-100 hover:bg-superficie"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-lg font-bold">{nomeOuEmail(a)}</span>
