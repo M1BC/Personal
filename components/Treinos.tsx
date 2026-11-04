@@ -2,14 +2,34 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CICLOS, FREQUENCIAS, NIVEIS, OBJETIVOS, PONTOS_FRACOS, type Ciclo, type Freq, type Nivel, type ObjetivoTela } from "@/data/treinos";
 import { prepararAudio, tocarBipe } from "@/lib/som";
-import { montarFicha } from "@/lib/treino";
+import { montarFicha, type Resultado } from "@/lib/treino";
+import { alternativas, trocarItem } from "@/lib/troca";
+import { EXERCICIOS } from "@/data/exercicios";
 import type { GrupoMuscular } from "@/lib/types";
 import { DiasFicha } from "./DiasFicha";
 import { MeuTreino } from "./MeuTreino";
+import { Modal } from "./Modal";
 import { ModalExercicio } from "./ModalExercicio";
 
 const OPCAO = "min-h-[3.5rem] px-5 py-3 text-left";
 const CHAVE_SOM = "treino:som";
+const CHAVE_TROCAS = "treino:trocas";
+// Trocas de exercício por ficha: { "hipertrofia-4-intermediario-novo-": { "0-2": { de, para } } }
+type Trocas = Record<string, Record<string, { de: string; para: string }>>;
+const nomeDe = (id: string) => EXERCICIOS.find((e) => e.id === id)?.nome ?? id;
+
+// Aplica as trocas salvas. Só troca se a posição ainda tiver o mesmo exercício original (a ficha pode ter mudado).
+function aplicarTrocas(r: Resultado | null, minhas: Trocas[string] | undefined): Resultado | null {
+  if (!r || "erro" in r || !minhas) return r;
+  const dias = r.ficha.dias.map((d, i) => ({
+    ...d,
+    itens: d.itens.map((it, n) => {
+      const t = minhas[`${i}-${n}`];
+      return t && t.de === it.id ? trocarItem(it, t.para) : it;
+    }),
+  }));
+  return { ficha: { ...r.ficha, dias } };
+}
 
 export function Treinos() {
   const [freq, setFreq] = useState<Freq>(3);
@@ -21,7 +41,57 @@ export function Treinos() {
   const [som, setSom] = useState(true);
   const [timerAtivo, setTimerAtivo] = useState<string | null>(null);
   const fechar = useCallback(() => setAberto(null), []);
-  const r = useMemo(() => (obj === "criar" ? null : montarFicha(freq, obj, grupo, ciclo, nivel)), [freq, obj, grupo, ciclo, nivel]);
+  const base = useMemo(() => (obj === "criar" ? null : montarFicha(freq, obj, grupo, ciclo, nivel)), [freq, obj, grupo, ciclo, nivel]);
+  const chaveFicha = `${obj}-${freq}-${nivel}-${ciclo}-${obj === "fraco" ? grupo : ""}`;
+  const [trocas, setTrocas] = useState<Trocas>({});
+  const [trocando, setTrocando] = useState<{ dia: number; item: number } | null>(null);
+  const fecharTroca = useCallback(() => setTrocando(null), []);
+  const r = useMemo(() => aplicarTrocas(base, trocas[chaveFicha]), [base, trocas, chaveFicha]);
+
+  // Trocas de exercício ficam salvas neste aparelho.
+  useEffect(() => {
+    try {
+      const salvo = localStorage.getItem(CHAVE_TROCAS);
+      if (salvo) setTrocas(JSON.parse(salvo));
+    } catch {
+      // Sem armazenamento: as trocas valem só nesta sessão.
+    }
+  }, []);
+
+  const escolherTroca = (novoId: string) => {
+    if (!trocando || !base || "erro" in base) return;
+    const pos = `${trocando.dia}-${trocando.item}`;
+    const originalId = base.ficha.dias[trocando.dia].itens[trocando.item].id;
+    const daFicha = { ...(trocas[chaveFicha] ?? {}) };
+    if (novoId === originalId) delete daFicha[pos];
+    else daFicha[pos] = { de: originalId, para: novoId };
+    const novas = { ...trocas, [chaveFicha]: daFicha };
+    setTrocas(novas);
+    try {
+      localStorage.setItem(CHAVE_TROCAS, JSON.stringify(novas));
+    } catch {
+      // Sem armazenamento: vale só nesta sessão.
+    }
+    setTrocando(null);
+  };
+
+  const originalDe = (dia: number, item: number) => {
+    const t = trocas[chaveFicha]?.[`${dia}-${item}`];
+    if (!t || !base || "erro" in base || base.ficha.dias[dia]?.itens[item]?.id !== t.de) return undefined;
+    return nomeDe(t.de);
+  };
+
+  // Opções da janela de troca: equivalentes que ainda não estão no dia, com o original no topo se já foi trocado.
+  const opcoesTroca = (() => {
+    if (!trocando || !r || "erro" in r || !base || "erro" in base) return null;
+    const dia = r.ficha.dias[trocando.dia];
+    const atual = dia.itens[trocando.item];
+    const originalId = base.ficha.dias[trocando.dia].itens[trocando.item].id;
+    const noDia = dia.itens.map((x) => x.id);
+    const lista = alternativas(atual.id, noDia);
+    const ordenada = originalId !== atual.id ? [...lista.filter((e) => e.id === originalId), ...lista.filter((e) => e.id !== originalId)] : lista;
+    return { atual, originalId, lista: ordenada };
+  })();
 
   // Lembra se o usuário silenciou o timer.
   useEffect(() => {
@@ -186,6 +256,8 @@ export function Treinos() {
               timerAtivo={timerAtivo}
               onIniciarTimer={setTimerAtivo}
               onExplicar={setAberto}
+              onTrocar={(dia, item) => setTrocando({ dia, item })}
+              original={originalDe}
             />
 
             <ul className="mt-6 max-w-[70ch] list-disc space-y-1 pl-5 text-base text-suave">
@@ -197,6 +269,27 @@ export function Treinos() {
       )}
 
       <ModalExercicio id={aberto} onFechar={fechar} />
+      <Modal aberto={!!opcoesTroca} titulo={opcoesTroca ? `Trocar ${nomeDe(opcoesTroca.atual.id).toLowerCase()}` : ""} onFechar={fecharTroca}>
+        {opcoesTroca && (
+          <>
+            <p className="mt-2 text-base text-suave">Mesmo músculo e mesmo tipo de movimento. As séries, repetições e descanso continuam os mesmos.</p>
+            <ul className="mt-4 grid gap-2">
+              {opcoesTroca.lista.map((e) => (
+                <li key={e.id}>
+                  <button onClick={() => escolherTroca(e.id)} className="opcao w-full px-4 py-3 text-left">
+                    <span className="block text-lg font-bold leading-tight">
+                      {e.nome}
+                      {e.id === opcoesTroca.originalId && <span className="ml-2 text-base font-semibold text-brasa">Original</span>}
+                    </span>
+                    <span className="block text-base text-suave">{e.equipamento}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {opcoesTroca.lista.length === 0 && <p className="mt-4 text-base">Os exercícios equivalentes já estão neste dia.</p>}
+          </>
+        )}
+      </Modal>
     </div>
   );
 }
