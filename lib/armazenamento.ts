@@ -1,5 +1,5 @@
-// Dados do usuário (perfil, refeições, treino criado) guardados só neste aparelho, no navegador.
-export const CHAVES = ["perfil", "distribuicao", "pratos", "meuTreino"] as const;
+// Dados do usuário (o treino que ele cria) guardados só neste aparelho, no navegador.
+export const CHAVES = ["meuTreino"] as const;
 export type Chave = (typeof CHAVES)[number];
 type Dados = Partial<Record<Chave, unknown>>;
 

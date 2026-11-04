@@ -5,8 +5,6 @@ import { CAIXA, H1 } from "@/lib/layout";
 const ATALHOS: { href: string; nome: string; texto: string; icone: NomeIcone }[] = [
   { href: "/treinos", nome: "Treinos", texto: "Ficha pelo seu objetivo, com séries, descanso e o motivo de cada exercício.", icone: "treinos" },
   { href: "/anatomia", nome: "Anatomia", texto: "Os músculos que cada exercício trabalha e o movimento animado.", icone: "anatomia" },
-  { href: "/refeicoes", nome: "Refeições", texto: "Quanto comer em cada refeição para chegar ao seu peso meta.", icone: "refeicoes" },
-  { href: "/suplementos", nome: "Suplementos", texto: "O que vale comprar dentro do seu orçamento.", icone: "suplementos" },
 ];
 
 // Tela inicial: saudação, o atalho principal e as seções do app.

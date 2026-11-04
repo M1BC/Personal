@@ -1,13 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Cabecalho } from "@/components/Cabecalho";
-import { PerfilProvider } from "@/components/PerfilProvider";
 import { RegistrarSW } from "@/components/RegistrarSW";
 import { CAIXA, MARCA } from "@/lib/layout";
 
 export const metadata: Metadata = {
   title: { default: MARCA.nome, template: `%s | ${MARCA.nome}` },
-  description: "Seu treino, sua alimentação e seus suplementos, com o porquê de cada escolha.",
+  description: "Seu treino, com o porquê de cada exercício.",
   applicationName: MARCA.nome,
   appleWebApp: { capable: true, title: MARCA.curto, statusBarStyle: "black-translucent" },
   icons: { apple: "/icons/apple-touch-icon.png" },
@@ -37,18 +36,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Pular para o conteúdo
         </a>
         <RegistrarSW />
-        <PerfilProvider>
-          <Cabecalho />
-          <main id="conteudo">{children}</main>
-          <footer className="border-t border-linha">
-            <div className={`${CAIXA} flex flex-col gap-4 py-8 text-[0.9375rem] text-suave pb-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:flex-row sm:items-center sm:gap-6`}>
-              <span className="font-titulo text-lg font-bold text-tinta">{MARCA.nome}</span>
-              <p className="max-w-[60ch]">
-                Conteúdo educativo. Não substitui médico, nutricionista ou educador físico: para dieta e suplementos, consulte um nutricionista.
-              </p>
-            </div>
-          </footer>
-        </PerfilProvider>
+        <Cabecalho />
+        <main id="conteudo">{children}</main>
+        <footer className="border-t border-linha">
+          <div className={`${CAIXA} flex flex-col gap-4 py-8 text-[0.9375rem] text-suave pb-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:flex-row sm:items-center sm:gap-6`}>
+            <span className="font-titulo text-lg font-bold text-tinta">{MARCA.nome}</span>
+            <p className="max-w-[60ch]">
+              Conteúdo educativo. Não substitui médico nem educador físico.
+            </p>
+          </div>
+        </footer>
       </body>
     </html>
   );

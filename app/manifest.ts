@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "Meu Treino",
     short_name: "Meu Treino",
-    description: "Seu treino, sua alimentação e seus suplementos, com o porquê de cada escolha.",
+    description: "Seu treino, com o porquê de cada exercício.",
     lang: "pt-BR",
     start_url: "/",
     scope: "/",

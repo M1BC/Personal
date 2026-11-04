@@ -9,8 +9,6 @@ const LINKS: readonly { href: string; nome: string; icone: NomeIcone }[] = [
   { href: "/", nome: "Início", icone: "inicio" },
   { href: "/treinos", nome: "Treinos", icone: "treinos" },
   { href: "/anatomia", nome: "Anatomia", icone: "anatomia" },
-  { href: "/refeicoes", nome: "Refeições", icone: "refeicoes" },
-  { href: "/suplementos", nome: "Suplementos", icone: "suplementos" },
 ];
 
 const ativoEm = (href: string, caminho: string) => (href === "/" ? caminho === "/" : caminho.startsWith(href));
