@@ -135,7 +135,7 @@ export function Treinos() {
       </div>
       {obj === "fraco" && freq >= 4 && (
         <p className="mt-3 max-w-[70ch] border-l-4 border-primario bg-superficie p-4 text-base" role="note">
-          No Ponto Fraco, o músculo escolhido é treinado no máximo 3 vezes por semana (48 horas de descanso entre as sessões). A ficha abaixo tem 3 sessões.
+          No Ponto Fraco são no máximo 3 treinos por semana, com 48 horas de descanso entre eles.
         </p>
       )}
 
@@ -206,8 +206,8 @@ export function Treinos() {
               </p>
             )}
             <h2 className="text-4xl font-extrabold leading-none">{r.ficha.titulo}</h2>
-            <p className="mt-4 max-w-[70ch] text-xl">{r.ficha.justificativa}</p>
-            <p className="mt-3 max-w-[70ch] text-base text-suave">{r.ficha.divisao}</p>
+            <p className="mt-4 max-w-[70ch] text-xl">{r.ficha.divisao}</p>
+            <p className="mt-2 max-w-[70ch] text-base text-suave">{r.ficha.justificativa}</p>
 
             {r.ficha.variada && (
               <div className="mt-4 max-w-[70ch]">
@@ -223,7 +223,7 @@ export function Treinos() {
                 ) : (
                   <p className="mt-1 text-base text-suave">Neste caso não há troca de exercício possível: a variação está nas séries, repetições e descansos.</p>
                 )}
-                <p className="mt-2 text-base text-suave">As séries, repetições e descansos também foram alterados para dar um novo estímulo.</p>
+                
               </div>
             )}
 
@@ -237,7 +237,7 @@ export function Treinos() {
             {r.ficha.volume && (
               <div className="mt-6 max-w-3xl">
                 <p className="text-lg font-semibold">Séries diretas por semana</p>
-                <p className="text-base text-suave">Os supinos também treinam tríceps e ombros, e as remadas e puxadas também treinam bíceps.</p>
+                <p className="text-base text-suave">Supinos também contam para tríceps e ombros; remadas e puxadas, para bíceps.</p>
                 <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3">
                   {r.ficha.volume.map((v) => (
                     <div key={v.musculo} className="flex items-baseline justify-between gap-3 border-b border-linha py-1.5">

@@ -1,7 +1,7 @@
 import { EXERCICIOS, categoriaDe } from "@/data/exercicios";
 import {
   APOIOS, FOCO_ORDEM, FOCO_POR_SESSAO, ISOMETRICOS, MENSAGEM_VARIADA, MIN_FOCO, NIVEIS, NOMES_DIAS, NOME_MUSCULO,
-  NOTAS_HIPER, NOTA_CICLO_MEIO, NOTA_FOCO_FREQ, ORDEM_GERAL, PLANOS_HIPER, PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS,
+  NOTAS_HIPER, NOTA_CICLO_MEIO, ORDEM_GERAL, PLANOS_HIPER, PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS,
   PRESC, PRESC_VARIADA, PRINCIPAIS, REPS_HIPER, REPS_HIPER_VARIADA, RESERVA_HIPER, SERIES_MAX_EXERCICIO, SERIES_MAX_SESSAO,
   SESSOES_HIPER, UNILATERAIS, VAGAS, VOLUME_ALVO, mensagemPoucos,
   type Ciclo, type Freq, type Musculo, type Nivel, type NomeVaga, type ObjetivoId, type Presc,
@@ -100,12 +100,11 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular, ciclo: Ciclo): Resultado {
   });
 
   const notas: string[] = [];
-  if (freq >= 4) notas.push(NOTA_FOCO_FREQ);
   return {
     ficha: {
       titulo: `Ponto fraco: ${nome} · ${dias.length}x por semana${variada ? " · Ficha variada" : ""}`,
       divisao: plano.divisao,
-      justificativa: `Cada sessão tem 3 exercícios para ${nome}, por ângulos diferentes, e 2 para os músculos que dão apoio a ele: ${apoio.nomes}. ${apoio.porque} Mantenha o resto do corpo ativo em outros dias da semana.`,
+      justificativa: `3 exercícios para ${nome} e 2 para os músculos que dão apoio a ele: ${apoio.nomes}.`,
       notas,
       dias,
       variada,
@@ -204,8 +203,8 @@ function montarHipertrofia(freq: Freq, nivel: Nivel, ciclo: Ciclo): Resultado {
     NOTAS_HIPER.progressao,
     NOTAS_HIPER.amplitude,
     NOTAS_HIPER.deload,
-    ...(abaixo && freq <= 3 ? [`Com ${freq} treinos por semana, alguns músculos ficam abaixo do volume ideal para o nível ${nomeNivel.toLowerCase()}, porque cada sessão tem um limite de séries para não ficar longa demais. Se puder, treine 4 vezes.`] : []),
-    ...(freq === 2 ? ["Com 2 treinos, panturrilha e abdômen ficam fora para manter 6 exercícios por dia. Se quiser, inclua 2 a 3 séries de cada no fim de um dos treinos."] : []),
+    ...(abaixo && freq <= 3 ? [`Com ${freq} treinos, alguns músculos ficam abaixo do volume ideal. Se puder, treine 4 vezes.`] : []),
+    ...(freq === 2 ? ["Panturrilha e abdômen ficam fora; se quiser, faça 2 a 3 séries no fim de um treino."] : []),
     NOTAS_HIPER.recuperacao,
   ];
   const r = reps;
@@ -213,7 +212,7 @@ function montarHipertrofia(freq: Freq, nivel: Nivel, ciclo: Ciclo): Resultado {
     ficha: {
       titulo: `Hipertrofia · ${nomeNivel} · ${freq}x por semana${variada ? " · Ficha variada" : ""}`,
       divisao: plano.divisao,
-      justificativa: `Cada músculo é treinado pelo menos 2 vezes por semana, com o volume ajustado ao seu nível. Os multiarticulares vêm primeiro, mais pesados (${r.pesado.reps} repetições, descanso de ${r.pesado.rest}); depois os isolados (${r.medio.reps}, descanso de ${r.medio.rest}) e os exercícios menores, como elevação lateral, panturrilha e abdômen (${r.leve.reps}). Sempre que possível, a ficha usa variações que trabalham o músculo alongado, que nos estudos dão mais crescimento.`,
+      justificativa: `Multiarticulares primeiro (${r.pesado.reps} repetições, ${r.pesado.rest} de descanso), depois os isolados (${r.medio.reps}, ${r.medio.rest}) e os menores (${r.leve.reps}).`,
       notas,
       dias,
       variada,

@@ -103,10 +103,10 @@ export const SESSOES_HIPER: Record<SessaoHiper, { titulo: string; vagas: NomeVag
 // Cada músculo é treinado pelo menos 2 vezes por semana, com 48 h ou mais entre sessões que o repetem.
 export type PlanoHiper = { sessoes: SessaoHiper[]; dias: number[]; nome: string; divisao: string };
 export const PLANOS_HIPER: Record<Freq, PlanoHiper> = {
-  2: { sessoes: ["fullA", "fullB"], dias: [0, 3], nome: "Corpo inteiro A/B", divisao: "Dois treinos de corpo inteiro (segunda e quinta). Cada músculo é treinado 2 vezes por semana, o mínimo que as pesquisas indicam para hipertrofia." },
-  3: { sessoes: ["fullA", "fullB", "fullC"], dias: [0, 2, 4], nome: "Corpo inteiro A/B/C", divisao: "Três treinos de corpo inteiro diferentes (segunda, quarta e sexta), com 48 horas entre eles. Os músculos grandes são treinados 2 a 3 vezes por semana, por ângulos diferentes." },
-  4: { sessoes: ["superiorA", "inferiorA", "superiorB", "inferiorB"], dias: [0, 1, 3, 4], nome: "Superiores/Inferiores", divisao: "Superiores e Inferiores, duas vezes cada (segunda e quinta; terça e sexta), com 72 horas entre sessões do mesmo grupo. A segunda sessão de cada grupo usa outros exercícios, e os músculos pequenos alternam entre os dias." },
-  5: { sessoes: ["superiorA", "inferiorA", "empurrar", "puxar", "pernas"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Empurrar/Puxar/Pernas", divisao: "Começa a semana com Superiores e Inferiores e termina com Empurrar, Puxar e Pernas. Cada músculo é treinado 2 vezes por semana, com pelo menos 48 horas entre as sessões." },
+  2: { sessoes: ["fullA", "fullB"], dias: [0, 3], nome: "Corpo inteiro A/B", divisao: "Corpo inteiro A e B: segunda e quinta." },
+  3: { sessoes: ["fullA", "fullB", "fullC"], dias: [0, 2, 4], nome: "Corpo inteiro A/B/C", divisao: "Corpo inteiro A, B e C: segunda, quarta e sexta." },
+  4: { sessoes: ["superiorA", "inferiorA", "superiorB", "inferiorB"], dias: [0, 1, 3, 4], nome: "Superiores/Inferiores", divisao: "Superiores segunda e quinta, inferiores terça e sexta." },
+  5: { sessoes: ["superiorA", "inferiorA", "empurrar", "puxar", "pernas"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Empurrar/Puxar/Pernas", divisao: "Superiores, inferiores, empurrar, puxar e pernas, de segunda a sexta." },
 };
 
 export interface Presc { sets: number; reps: string; rest: string }
@@ -124,16 +124,16 @@ export const REPS_HIPER_VARIADA: Record<Nivel, Record<Peso, { reps: string; rest
 };
 // Quão perto da falha terminar cada série.
 export const RESERVA_HIPER: Record<Nivel, string> = {
-  iniciante: "Esforço: termine as séries com 2 a 3 repetições de reserva (você ainda faria mais 2 ou 3). Nos primeiros meses, a técnica vem antes da carga.",
-  intermediario: "Esforço: nos multiarticulares, pare com 1 a 2 repetições de reserva; nos isolados, vá até 0 a 1 de reserva na última série. Treinar perto da falha é o que mais conta para crescer.",
-  avancado: "Esforço: multiarticulares com 1 a 2 repetições de reserva; isolados e a última série de cada exercício até 0 a 1 de reserva (a falha técnica, sem roubar).",
+  iniciante: "Esforço: pare com 2 a 3 repetições de reserva; técnica antes da carga.",
+  intermediario: "Esforço: multiarticulares com 1 a 2 repetições de reserva; isolados até 0 a 1.",
+  avancado: "Esforço: multiarticulares com 1 a 2 repetições de reserva; isolados e a última série até a falha técnica.",
 };
 export const NOTAS_HIPER = {
-  progressao: "Progressão (dupla progressão): use a mesma carga até fazer o topo da faixa de repetições em todas as séries; aí suba a carga (cerca de 2 a 5%) e volte ao início da faixa. Subir repetições ou carga funciona igual para crescer: o importante é anotar e progredir.",
-  amplitude: "Amplitude: desça até o músculo ficar bem alongado (peito no fundo do supino, braços estendidos acima da cabeça no tríceps, quadril bem para trás no stiff). Controle 2 a 3 segundos na descida.",
-  aquecimento: "Aquecimento: 2 a 3 séries leves no primeiro exercício (subindo a carga) e 1 nos seguintes do mesmo músculo. Elas não contam no volume.",
-  deload: "A cada 5 a 6 semanas, faça uma semana mais leve (metade das séries, mesma carga, longe da falha). Ela ajuda articulações e recuperação e prepara a próxima fase.",
-  recuperacao: "Recuperação: proteína ao longo do dia (cerca de 1,6 g por kg de peso) e 7 a 9 horas de sono. Sem isso, o treino rende menos.",
+  progressao: "Progressão: fez o topo da faixa em todas as séries, suba 2 a 5% da carga.",
+  amplitude: "Amplitude completa, com o músculo bem alongado embaixo e 2 a 3 s na descida.",
+  aquecimento: "Aquecimento: 2 a 3 séries leves no primeiro exercício e 1 nos seguintes do mesmo músculo.",
+  deload: "A cada 5 a 6 semanas, uma semana leve com metade das séries.",
+  recuperacao: "Recuperação: cerca de 1,6 g de proteína por kg e 7 a 9 horas de sono.",
 };
 
 // ---------- Ponto Fraco: músculos de apoio ----------
@@ -186,14 +186,11 @@ export const FOCO_ORDEM: Record<GrupoMuscular, string[]> = {
 };
 
 export const PLANO_FOCO: Record<Freq, { dias: number[]; divisao: string }> = {
-  2: { dias: [0, 3], divisao: "Duas sessões por semana (segunda e quinta), com pelo menos 48 horas de descanso entre elas." },
-  3: { dias: [0, 2, 4], divisao: "Três sessões por semana (segunda, quarta e sexta), com pelo menos 48 horas de descanso entre elas." },
-  4: { dias: [0, 2, 4], divisao: "Três sessões por semana (segunda, quarta e sexta), com pelo menos 48 horas de descanso entre elas." },
-  5: { dias: [0, 2, 4], divisao: "Três sessões por semana (segunda, quarta e sexta), com pelo menos 48 horas de descanso entre elas." },
+  2: { dias: [0, 3], divisao: "Segunda e quinta." },
+  3: { dias: [0, 2, 4], divisao: "Segunda, quarta e sexta." },
+  4: { dias: [0, 2, 4], divisao: "Segunda, quarta e sexta." },
+  5: { dias: [0, 2, 4], divisao: "Segunda, quarta e sexta." },
 };
-export const NOTA_FOCO_FREQ =
-  "No Ponto Fraco, o músculo escolhido é treinado no máximo 3 vezes por semana, para ter pelo menos 48 horas de descanso entre as sessões.";
-
 // ---------- Exercícios especiais ----------
 export const PLIOMETRICOS = ["agachamento-salto", "box-jump", "saltos-tornozelo"]; // ficam fora das fichas automáticas
 export const ISOMETRICOS: Record<string, string> = { prancha: "30 a 45 segundos", "prancha-lateral": "20 a 30 segundos por lado" };
@@ -216,9 +213,9 @@ export const CICLOS: { id: Ciclo; nome: string }[] = [
   { id: "longo", nome: "Mais de 3 meses" },
 ];
 export const MENSAGEM_VARIADA =
-  "Como você está há mais de 3 meses neste treino, geramos uma variação: outros exercícios para os mesmos músculos e outra faixa de repetições. Use esta ficha pelas próximas 4 a 6 semanas.";
+  "Mais de 3 meses na mesma ficha: esta é uma variação, com outros exercícios e outra faixa de repetições. Use por 4 a 6 semanas.";
 export const NOTA_CICLO_MEIO =
-  "Você está no meio do ciclo: mantenha a ficha e continue subindo carga ou repetições aos poucos antes de trocar.";
+  "Meio do ciclo: mantenha a ficha e continue subindo carga ou repetições.";
 export const PRESC_VARIADA = {
   foco: { sets: 4, reps: "8 a 12", rest: "75 s" },
 } satisfies Record<string, Presc>;
