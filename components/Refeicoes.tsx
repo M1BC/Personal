@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { alimentoPorId, CARDAPIOS, montar } from "@/lib/cardapio";
 import { adicionar, macrosDoPrato, trocar, type ItemPrato } from "@/lib/diario";
-import { carregarDados, salvarDado, type Chave } from "@/lib/nuvem";
+import { carregarDados, salvarDado, type Chave } from "@/lib/armazenamento";
 import { REFEICOES, calcularPlano, dividir, fmt, projetar, validar } from "@/lib/nutricao";
 import type { CategoriaAlimento } from "@/lib/types";
 import { BuscaAlimento } from "./BuscaAlimento";

@@ -1,7 +1,7 @@
 "use client";
 import { CATEGORIAS, EXERCICIOS, categoriaDoExercicio, ehCardio } from "@/data/exercicios";
 import type { Dia, ItemDia } from "@/components/DiasFicha";
-import type { FichaTreinador } from "@/lib/equipe";
+import type { FichaTreinador } from "@/lib/ficha";
 
 const INPUT = "mt-1 min-h-[3rem] w-full bg-fundo px-3 text-base";
 const ROTULO = "block text-base font-semibold";
@@ -33,7 +33,7 @@ type Props = {
   placeholderObs: string;
 };
 
-// Edição dos dias e exercícios de uma ficha (usada pelo treinador e pelo aluno na aba Criar).
+// Edição dos dias e exercícios de uma ficha (aba Criar meu treino).
 export function EditorDias({ ficha, onMudar, rotuloObs, placeholderObs }: Props) {
   const alterarDia = (i: number, d: Partial<Dia>) => onMudar({ ...ficha, dias: ficha.dias.map((x, k) => (k === i ? { ...x, ...d } : x)) });
   const alterarItem = (i: number, n: number, it: Partial<ItemDia>) =>

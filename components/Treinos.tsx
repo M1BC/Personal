@@ -5,7 +5,6 @@ import { prepararAudio, tocarBipe } from "@/lib/som";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
 import { DiasFicha } from "./DiasFicha";
-import { FichaDoTreinador } from "./FichaDoTreinador";
 import { MeuTreino } from "./MeuTreino";
 import { ModalExercicio } from "./ModalExercicio";
 
@@ -55,7 +54,6 @@ export function Treinos() {
 
   return (
     <div>
-      <FichaDoTreinador som={som} timerAtivo={timerAtivo} onIniciarTimer={setTimerAtivo} onExplicar={setAberto} />
 
       <p className="text-lg font-semibold">1. Quantas vezes por semana você quer treinar?</p>
       <div role="group" aria-label="Frequência semanal" className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">

@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { Icone, type NomeIcone } from "@/components/Icone";
 import { CAIXA, H1 } from "@/lib/layout";
-import { criarClienteServidor } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
 
 const ATALHOS: { href: string; nome: string; texto: string; icone: NomeIcone }[] = [
   { href: "/treinos", nome: "Treinos", texto: "Ficha pelo seu objetivo, com séries, descanso e o motivo de cada exercício.", icone: "treinos" },
@@ -11,47 +8,21 @@ const ATALHOS: { href: string; nome: string; texto: string; icone: NomeIcone }[]
   { href: "/refeicoes", nome: "Refeições", texto: "Quanto comer em cada refeição para chegar ao seu peso meta.", icone: "refeicoes" },
   { href: "/suplementos", nome: "Suplementos", texto: "O que vale comprar dentro do seu orçamento.", icone: "suplementos" },
 ];
-const PAINEL = { href: "/painel", nome: "Painel do treinador", texto: "Monte e ajuste a ficha dos seus alunos.", icone: "painel" as const };
 
 // Tela inicial: saudação, o atalho principal e as seções do app.
-export default async function Inicio() {
-  const supabase = criarClienteServidor();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let nome = "";
-  let equipe = false;
-  let ficha: { titulo: string } | null = null;
-  if (user) {
-    const [{ data: perfil }, { data: registro }] = await Promise.all([
-      supabase.from("perfis").select("nome, papel").eq("id", user.id).maybeSingle(),
-      supabase.from("fichas").select("conteudo").eq("aluno_id", user.id).maybeSingle(),
-    ]);
-    nome = String(perfil?.nome ?? "").trim().split(/\s+/)[0] ?? "";
-    equipe = ["treinador", "gerente", "admin"].includes(String(perfil?.papel ?? ""));
-    const c = (registro?.conteudo ?? null) as { titulo?: unknown; dias?: unknown } | null;
-    if (c && Array.isArray(c.dias) && c.dias.length > 0) ficha = { titulo: typeof c.titulo === "string" ? c.titulo.trim() : "" };
-  }
-  const atalhos = equipe ? [...ATALHOS, PAINEL] : ATALHOS;
-
+export default function Inicio() {
   return (
     <>
       <section className="destaque-brasa overflow-hidden">
         <div className={`${CAIXA} grid items-center gap-6 pb-12 pt-8 md:pb-20 md:pt-16`}>
           <div>
             <h1 className={H1}>
-              <span className="titulo-metal">{nome ? `Bom treino, ${nome}.` : "Bom treino."}</span>
+              <span className="titulo-metal">Bom treino.</span>
             </h1>
             <div className="mt-8">
               <Link href="/treinos" className="btn w-full sm:w-auto">
-                {ficha ? "Abrir minha ficha" : "Montar meu treino"}
+                Montar meu treino
               </Link>
-              {ficha && (
-                <p className="mt-3 text-base text-suave">
-                  Seu treinador montou {ficha.titulo ? <>“{ficha.titulo}”</> : "uma ficha"} para você.
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -61,7 +32,7 @@ export default async function Inicio() {
         <section aria-labelledby="atalhos">
           <h2 id="atalhos" className="text-3xl leading-none md:text-4xl">Atalhos</h2>
           <ul className="mt-3 grid divide-y divide-linha md:grid-cols-2 md:gap-x-12 md:divide-y-0">
-            {atalhos.map((a) => (
+            {ATALHOS.map((a) => (
               <li key={a.href}>
                 <Link href={a.href} className="group flex min-h-[5.25rem] items-center gap-4 py-3">
                   <span className="placa flex h-12 w-12 shrink-0 items-center justify-center bg-corpo text-brasa transition-colors duration-100 group-hover:bg-primario group-hover:text-white">

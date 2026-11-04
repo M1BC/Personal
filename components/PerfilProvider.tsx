@@ -1,9 +1,9 @@
 "use client";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { carregarDados, salvarDado } from "@/lib/nuvem";
+import { carregarDados, salvarDado } from "@/lib/armazenamento";
 import { PERFIL_PADRAO, type Perfil } from "@/lib/nutricao";
 
-// Os dados digitados em uma tela valem nas outras (ficam salvos na conta, no Supabase).
+// Os dados digitados em uma tela valem nas outras (ficam salvos neste aparelho).
 const Ctx = createContext<{ perfil: Perfil; atualizar: (p: Partial<Perfil>) => void }>({
   perfil: PERFIL_PADRAO,
   atualizar: () => {},

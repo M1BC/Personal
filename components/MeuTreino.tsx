@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { EXERCICIOS } from "@/data/exercicios";
 import { NIVEIS, OBJETIVOS, PONTOS_FRACOS, type Freq, type Nivel, type ObjetivoId } from "@/data/treinos";
-import { FICHA_VAZIA, lerFicha, type FichaTreinador } from "@/lib/equipe";
-import { carregarDados, salvarDado } from "@/lib/nuvem";
+import { FICHA_VAZIA, lerFicha, type FichaTreinador } from "@/lib/ficha";
+import { carregarDados, salvarDado } from "@/lib/armazenamento";
 import { montarFicha } from "@/lib/treino";
 import type { GrupoMuscular } from "@/lib/types";
 import { DiasFicha } from "./DiasFicha";

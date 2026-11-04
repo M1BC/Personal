@@ -24,13 +24,6 @@ const CAMINHOS = {
       <path d="m10.4 8.6 3.6 5.2" />
     </>
   ),
-  painel: (
-    <>
-      <rect x="5" y="4.5" width="14" height="16" rx="2" />
-      <path d="M9 4.5V3.5h6v1M8.5 10h7M8.5 13.5h7M8.5 17h4" />
-    </>
-  ),
-  sair: <path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 16l4-4-4-4M14 12H4" />,
 } as const;
 
 export type NomeIcone = keyof typeof CAMINHOS;

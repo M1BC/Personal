@@ -1,10 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ehEquipe, meuPerfil } from "@/lib/equipe";
 import { CAIXA, MARCA } from "@/lib/layout";
-import { sair } from "@/lib/nuvem";
 import { Icone, type NomeIcone } from "./Icone";
 import { Simbolo } from "./Marca";
 
@@ -21,15 +18,6 @@ const ativoEm = (href: string, caminho: string) => (href === "/" ? caminho === "
 // Topo com o nome do app. No computador a navegação fica aqui; no celular vai para a barra de baixo.
 export function Cabecalho() {
   const caminho = usePathname();
-  const acesso = caminho === "/login" || caminho === "/cadastro";
-  const [equipe, setEquipe] = useState(false);
-  useEffect(() => {
-    if (!acesso) meuPerfil().then((p) => setEquipe(ehEquipe(p?.papel)));
-  }, [acesso]);
-
-  // Login e cadastro já mostram a marca grande e não têm menu (o app exige estar logado).
-  if (acesso) return null;
-  const noPainel = caminho.startsWith("/painel");
 
   return (
     <>
@@ -41,7 +29,7 @@ export function Cabecalho() {
           </Link>
 
           <nav aria-label="Principal" className="ml-auto hidden items-center gap-1 md:flex">
-            {[...LINKS, ...(equipe ? [{ href: "/painel", nome: "Painel", icone: "painel" as const }] : [])].map((l) => {
+            {LINKS.map((l) => {
               const ativo = ativoEm(l.href, caminho);
               return (
                 <Link
@@ -59,28 +47,6 @@ export function Cabecalho() {
             })}
           </nav>
 
-          {/* No celular, abaixo de 640 px, Painel e Sair ficam só com o ícone (o nome continua para leitores de tela). */}
-          <div className="ml-auto flex items-center gap-1 md:ml-2">
-            {equipe && (
-              <Link
-                href="/painel"
-                aria-current={noPainel ? "page" : undefined}
-                className={`flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center gap-2 rounded-lg px-2.5 text-[0.9375rem] font-semibold transition-colors duration-100 hover:bg-superficie hover:text-tinta sm:px-3 md:hidden ${
-                  noPainel ? "text-tinta" : "text-suave"
-                }`}
-              >
-                <Icone nome="painel" className={`h-5 w-5 ${noPainel ? "text-brasa" : ""}`} />
-                <span className="sr-only sm:not-sr-only">Painel</span>
-              </Link>
-            )}
-            <button
-              onClick={() => sair()}
-              className="flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center gap-2 rounded-lg px-2.5 text-[0.9375rem] font-semibold text-suave transition-colors duration-100 hover:bg-superficie hover:text-tinta sm:px-3"
-            >
-              <Icone nome="sair" className="h-5 w-5" />
-              <span className="sr-only sm:not-sr-only">Sair</span>
-            </button>
-          </div>
         </div>
       </header>
 

@@ -1,6 +1,6 @@
 // Service worker do app: deixa abrir mais rápido e mostra a última versão vista quando a internet cai.
 // Páginas: rede primeiro (sempre a versão nova quando há conexão). Arquivos estáticos: cache primeiro.
-const CACHE = "mt-v1"; // trocar o nome apaga o cache antigo (ícones e fontes novos)
+const CACHE = "mt-v2"; // trocar o nome apaga o cache antigo (ícones e fontes novos)
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -15,7 +15,7 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return; // Supabase e outros serviços passam direto
+  if (url.origin !== self.location.origin) return; // outros sites passam direto
   if (url.pathname.startsWith("/auth") || url.pathname.startsWith("/api")) return;
 
   if (/^\/(_next\/static|icons|fontes)\//.test(url.pathname)) {
