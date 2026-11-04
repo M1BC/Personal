@@ -246,15 +246,3 @@ export const ORDEM_GERAL: Partial<Record<Cat, string[]>> = {
 
 export const NOMES_DIAS = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
 
-export const DICAS = [
-  "Aqueça por 5 a 10 minutos antes. Se sentir dor (não o cansaço normal do músculo), pare.",
-];
-
-// ---------- Cardio nas fichas ----------
-export const CARDIO = {
-  fraco: { id: "bicicleta", series: "5 a 8 min · aquecimento leve", onde: "inicio" },
-} as const;
-export const NOTA_CARDIO: Record<ObjetivoId, string> = {
-  hipertrofia: "Cardio leve (bike, elíptico ou caminhada inclinada) 2 a 3 vezes por semana ajuda o coração e a recuperação sem atrapalhar o ganho de massa. Deixe para o fim dos treinos de superiores e evite cardio intenso antes das pernas.",
-  fraco: "Aqueça 5 a 8 minutos antes: músculo aquecido rende mais e se protege melhor.",
-};

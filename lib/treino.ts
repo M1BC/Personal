@@ -1,7 +1,7 @@
 import { EXERCICIOS, categoriaDe } from "@/data/exercicios";
 import {
-  APOIOS, CARDIO, DICAS, FOCO_ORDEM, FOCO_POR_SESSAO, ISOMETRICOS, MENSAGEM_VARIADA, MIN_FOCO, NIVEIS, NOMES_DIAS, NOME_MUSCULO,
-  NOTAS_HIPER, NOTA_CARDIO, NOTA_CICLO_MEIO, NOTA_FOCO_FREQ, ORDEM_GERAL, PLANOS_HIPER, PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS,
+  APOIOS, FOCO_ORDEM, FOCO_POR_SESSAO, ISOMETRICOS, MENSAGEM_VARIADA, MIN_FOCO, NIVEIS, NOMES_DIAS, NOME_MUSCULO,
+  NOTAS_HIPER, NOTA_CICLO_MEIO, NOTA_FOCO_FREQ, ORDEM_GERAL, PLANOS_HIPER, PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS,
   PRESC, PRESC_VARIADA, PRINCIPAIS, REPS_HIPER, REPS_HIPER_VARIADA, RESERVA_HIPER, SERIES_MAX_EXERCICIO, SERIES_MAX_SESSAO,
   SESSOES_HIPER, UNILATERAIS, VAGAS, VOLUME_ALVO, mensagemPoucos,
   type Ciclo, type Freq, type Musculo, type Nivel, type NomeVaga, type ObjetivoId, type Presc,
@@ -61,15 +61,6 @@ function formatar(e: Exercicio, p: Presc, leve: boolean): ItemFicha {
   return { id: e.id, series: `${sets} × ${reps}`, descanso: p.rest };
 }
 
-// Cardio de cada objetivo: aquecimento no começo ou bloco no fim da sessão.
-function cardio(chave: keyof typeof CARDIO): ItemFicha {
-  const c = CARDIO[chave];
-  return { id: c.id, series: c.series, descanso: "—" };
-}
-function comCardio(itens: ItemFicha[], chave: keyof typeof CARDIO): ItemFicha[] {
-  return CARDIO[chave].onde === "inicio" ? [cardio(chave), ...itens] : [...itens, cardio(chave)];
-}
-
 const nomeDoGrupo = (g: GrupoMuscular) => PONTOS_FRACOS.find((p) => p.id === g)?.nome ?? "o músculo escolhido";
 
 // Ponto Fraco: 3 exercícios do músculo escolhido + 2 dos músculos que dão apoio a ele (para não lesionar).
@@ -105,12 +96,12 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular, ciclo: Ciclo): Resultado {
       ...alvo.map((e) => formatar(e, presc, false)),
       ...deApoio.map((e) => ({ ...formatar(e, PRESC.apoio, false), obs: "Músculo de apoio: protege o ponto fraco" })),
     ];
-    return { dia: NOMES_DIAS[dia], titulo: `${nome} + apoio · sessão ${i + 1}`, itens: comCardio(itens, "fraco") };
+    return { dia: NOMES_DIAS[dia], titulo: `${nome} + apoio · sessão ${i + 1}`, nota: NOTAS_HIPER.aquecimento, itens };
   });
 
   const notas: string[] = [];
   if (freq >= 4) notas.push(NOTA_FOCO_FREQ);
-  notas.push(NOTA_CARDIO.fraco, ...DICAS);
+  notas.push(NOTAS_HIPER.dor);
   return {
     ficha: {
       titulo: `Ponto fraco: ${nome} · ${dias.length}x por semana${variada ? " · Ficha variada" : ""}`,
