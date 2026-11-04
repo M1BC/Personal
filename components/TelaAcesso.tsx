@@ -2,19 +2,28 @@ import type { ReactNode } from "react";
 import { MARCA } from "@/lib/layout";
 import { Simbolo } from "./Marca";
 
-// Login e cadastro: uma coluna estreita e centralizada, com o nome do app no topo.
+// Login e cadastro: no computador, a marca ocupa a metade esquerda; no celular, vira uma faixa curta no topo.
 export function TelaAcesso({ titulo, texto, children }: { titulo: string; texto: ReactNode; children: ReactNode }) {
   return (
-    <section className="flex min-h-[100dvh] justify-center px-5 pb-16 pt-[calc(2.5rem+env(safe-area-inset-top,0px))] md:items-center md:py-16">
-      <div className="w-full max-w-md">
-        <p className="flex items-center gap-3 text-lg font-semibold">
-          <Simbolo className="h-10 w-10" />
-          {MARCA.nome}
-        </p>
-        <h1 className="mt-10 text-[clamp(2rem,6vw,2.75rem)] font-semibold leading-tight tracking-[-0.03em]">{titulo}</h1>
-        <p className="mt-3 text-lg text-suave">{texto}</p>
-        <div className="mt-8">{children}</div>
+    <div className="md:grid md:min-h-[100dvh] md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <div className="destaque-brasa flex items-center md:after:hidden">
+        <div className="mx-auto flex w-full max-w-xl items-center gap-5 px-5 pb-8 pt-[calc(2rem+env(safe-area-inset-top,0px))] md:flex-col md:items-start md:gap-8 md:px-12 md:py-16">
+          <Simbolo className="h-16 w-16 shrink-0 md:h-24 md:w-24" />
+          <div>
+            <p className="font-titulo text-3xl font-extrabold leading-none md:text-6xl">
+              <span className="titulo-metal">{MARCA.nome}</span>
+            </p>
+            <p className="mt-2 max-w-[34ch] text-base text-suave md:mt-4 md:text-lg">Treino, alimentação e suplementos, com o porquê de cada escolha.</p>
+          </div>
+        </div>
       </div>
-    </section>
+      <section className="border-linha px-5 pb-24 pt-10 md:flex md:items-center md:border-l md:px-12 md:py-16">
+        <div className="mx-auto w-full max-w-md">
+          <h1 className="text-[clamp(2.75rem,8vw,4.5rem)] font-extrabold leading-[0.9]">{titulo}</h1>
+          <p className="mt-4 text-lg text-suave">{texto}</p>
+          <div className="mt-8">{children}</div>
+        </div>
+      </section>
+    </div>
   );
 }

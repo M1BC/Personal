@@ -54,7 +54,7 @@ export function ExplorerExercicios() {
               onClick={() => escolherGrupo(g)}
               className="opcao flex min-h-[4.5rem] min-w-0 flex-col justify-between gap-1 p-3 text-left"
             >
-              <span className="text-base font-semibold leading-tight md:text-lg">{g}</span>
+              <span className="font-titulo text-[1.1875rem] font-extrabold leading-none md:text-2xl">{g}</span>
               <span className="text-sm text-suave">{contar(g)} exercícios</span>
             </button>
           );
@@ -90,7 +90,7 @@ export function ExplorerExercicios() {
                     }`}
                   >
                     <span className="min-w-0">
-                      <span className="block font-semibold leading-tight">{e.nome}</span>
+                      <span className="block font-bold leading-tight">{e.nome}</span>
                       <span className="block text-sm text-suave">
                         {buscando ? `${e.cardio ? "Cardio" : GRUPOS[e.grupo_primario].nome} · ` : ""}
                         {e.equipamento}
@@ -112,7 +112,7 @@ export function ExplorerExercicios() {
         {/* 3. O exercício */}
         {ex && (
           <div ref={detalhe} key={ex.id} className="animar scroll-mt-24">
-            <h3 className="text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-tight tracking-[-0.02em]">{ex.nome}</h3>
+            <h3 className="text-[clamp(2rem,5vw,3rem)] font-extrabold leading-none">{ex.nome}</h3>
             <p className="mt-2 text-base text-suave">Equipamento: {ex.equipamento}</p>
 
             <div className={`mt-6 grid gap-6 ${temAnimacao(ex.id) ? "md:grid-cols-2" : ""} md:items-start`}>
@@ -131,11 +131,11 @@ export function ExplorerExercicios() {
 
             <p className="mt-6 text-lg font-semibold">Músculo principal</p>
             <div className="mt-2 flex items-center gap-2">
-              <span className="bg-primario px-4 py-3 font-semibold text-fundo">{GRUPOS[ex.grupo_primario].nome}</span>
+              <span className="bg-primario px-4 py-3 font-bold text-white">{GRUPOS[ex.grupo_primario].nome}</span>
               <button
                 onClick={() => setAberto(ex.grupo_primario)}
                 aria-label={`Explicar ${GRUPOS[ex.grupo_primario].nome}`}
-                className="min-h-[3rem] min-w-[3rem] btn-contorno text-xl font-semibold"
+                className="min-h-[3rem] min-w-[3rem] btn-contorno text-xl font-bold"
               >
                 ?
               </button>

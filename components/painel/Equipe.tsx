@@ -71,9 +71,9 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
   return (
     <div>
       <div className="flex flex-wrap gap-x-8">
-        <Link href="/painel" className="inline-flex min-h-[3rem] items-center font-semibold text-suave underline underline-offset-4">← Painel</Link>
+        <Link href="/painel" className="inline-flex min-h-[3rem] items-center font-bold text-suave underline underline-offset-4">← Painel</Link>
         {admin && (
-          <Link href="/painel/unidades" className="inline-flex min-h-[3rem] items-center font-semibold underline underline-offset-4">Gerenciar unidades →</Link>
+          <Link href="/painel/unidades" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">Gerenciar unidades →</Link>
         )}
       </div>
 
@@ -102,7 +102,7 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
 
       {admin && unidades.length === 0 && perfis && (
         <p className="mt-6 max-w-[60ch] border-l-4 border-primario bg-superficie p-4 text-lg">
-          Nenhuma unidade cadastrada ainda. <Link href="/painel/unidades" className="font-semibold underline underline-offset-4">Cadastre as unidades</Link> para separar alunos e treinadores por filial.
+          Nenhuma unidade cadastrada ainda. <Link href="/painel/unidades" className="font-bold underline underline-offset-4">Cadastre as unidades</Link> para separar alunos e treinadores por filial.
         </p>
       )}
 
@@ -114,7 +114,7 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
           {visiveis.map((p) => (
             <li key={p.id} className="grid gap-3 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
               <span className="min-w-0">
-                <span className="block truncate text-lg font-semibold">
+                <span className="block truncate text-lg font-bold">
                   {nomeOuEmail(p)}
                   {p.id === meuId && <span className="ml-2 text-base font-semibold text-suave">(você)</span>}
                 </span>
@@ -152,7 +152,7 @@ export function Equipe({ meuId, admin }: { meuId: string; admin: boolean }) {
                   </div>
                 </div>
               ) : (
-                <span className="min-h-[3rem] py-3 font-semibold">{NOME_PAPEL[p.papel]}</span>
+                <span className="min-h-[3rem] py-3 font-bold">{NOME_PAPEL[p.papel]}</span>
               )}
             </li>
           ))}

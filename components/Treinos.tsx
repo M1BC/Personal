@@ -60,7 +60,7 @@ export function Treinos() {
       <p className="text-lg font-semibold">1. Quantas vezes por semana você quer treinar?</p>
       <div role="group" aria-label="Frequência semanal" className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {FREQUENCIAS.map((f) => (
-          <button key={f} aria-pressed={f === freq} onClick={() => setFreq(f)} className={`${OPCAO} opcao text-lg font-semibold`}>
+          <button key={f} aria-pressed={f === freq} onClick={() => setFreq(f)} className={`${OPCAO} opcao font-titulo text-2xl font-extrabold`}>
             {f}x/semana
           </button>
         ))}
@@ -75,7 +75,7 @@ export function Treinos() {
       <div role="group" aria-label="Objetivo" className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {OBJETIVOS.map((o) => (
           <button key={o.id} aria-pressed={o.id === obj} onClick={() => setObj(o.id)} className={`${OPCAO} opcao`}>
-            <span className="block text-lg font-semibold leading-tight">{o.nome}</span>
+            <span className="block font-titulo text-2xl font-extrabold leading-tight">{o.nome}</span>
             <span className="block text-base opacity-80">{o.sub}</span>
           </button>
         ))}
@@ -87,7 +87,7 @@ export function Treinos() {
           <div role="group" aria-label="Nível de experiência" className="mt-2 grid gap-2 sm:grid-cols-3">
             {NIVEIS.map((n) => (
               <button key={n.id} aria-pressed={n.id === nivel} onClick={() => setNivel(n.id)} className={`${OPCAO} opcao`}>
-                <span className="block text-lg font-semibold leading-tight">{n.nome}</span>
+                <span className="block font-titulo text-2xl font-extrabold leading-tight">{n.nome}</span>
                 <span className="block text-base opacity-80">{n.sub}</span>
               </button>
             ))}
@@ -114,7 +114,7 @@ export function Treinos() {
           <p className="mt-6 text-lg font-semibold">Há quanto tempo você está usando esta ficha?</p>
           <div role="group" aria-label="Tempo de uso da ficha" className="mt-2 grid gap-2 sm:grid-cols-3">
             {CICLOS.map((c) => (
-              <button key={c.id} aria-pressed={c.id === ciclo} onClick={() => setCiclo(c.id)} className={`${OPCAO} opcao text-lg font-semibold`}>
+              <button key={c.id} aria-pressed={c.id === ciclo} onClick={() => setCiclo(c.id)} className={`${OPCAO} opcao text-lg font-bold`}>
                 {c.nome}
               </button>
             ))}
@@ -137,7 +137,7 @@ export function Treinos() {
                 {r.ficha.avisoCiclo}
               </p>
             )}
-            <h2 className="text-4xl font-semibold leading-none">{r.ficha.titulo}</h2>
+            <h2 className="text-4xl font-extrabold leading-none">{r.ficha.titulo}</h2>
             <p className="mt-4 max-w-[70ch] text-xl">{r.ficha.justificativa}</p>
             <p className="mt-3 max-w-[70ch] text-base text-suave">{r.ficha.divisao}</p>
 
@@ -159,7 +159,7 @@ export function Treinos() {
               </div>
             )}
 
-            <button role="switch" aria-checked={som} onClick={alternarSom} className="mt-5 flex min-h-[3rem] items-center gap-3 text-left text-lg font-semibold">
+            <button role="switch" aria-checked={som} onClick={alternarSom} className="mt-5 flex min-h-[3rem] items-center gap-3 text-left text-lg font-bold">
               <span className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors duration-150 ease-out ${som ? "border-primario bg-primario" : "border-linha bg-corpo"}`}>
                 <span className={`absolute left-0 top-[calc(0.25rem-1px)] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${som ? "translate-x-[calc(1.5625rem-2px)] bg-white" : "translate-x-[0.1875rem] bg-suave"}`} />
               </span>

@@ -14,7 +14,7 @@ interface Props {
 }
 
 const BTN =
-  "min-h-[3rem] btn-contorno whitespace-nowrap px-3 text-base font-semibold sm:px-4";
+  "min-h-[3rem] btn-contorno whitespace-nowrap px-3 text-base font-bold sm:px-4";
 
 export function TimerDescanso({ id, segundos, ativo, som, onIniciar }: Props) {
   const [estado, setEstado] = useState<Estado>("parado");
@@ -115,9 +115,9 @@ export function TimerDescanso({ id, segundos, ativo, som, onIniciar }: Props) {
       ) : (
         <div role="timer" aria-label="Contagem regressiva do descanso">
           <div className="flex flex-wrap items-baseline gap-3">
-            <span className={`text-4xl font-semibold leading-none tabular-nums ${urgente ? "text-alerta" : ""}`}>{formatarTempo(restante)}</span>
-            {urgente && <span className="text-base font-semibold text-alerta">Quase lá</span>}
-            {estado === "fim" && <span className="text-base font-semibold">Descanso concluído</span>}
+            <span className={`text-4xl font-extrabold leading-none tabular-nums ${urgente ? "text-alerta" : ""}`}>{formatarTempo(restante)}</span>
+            {urgente && <span className="text-base font-bold text-alerta">Quase lá</span>}
+            {estado === "fim" && <span className="text-base font-bold">Descanso concluído</span>}
           </div>
           <div className="mt-2 h-2 bg-corpo" aria-hidden="true">
             <div

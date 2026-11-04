@@ -135,7 +135,7 @@ export function Refeicoes() {
           )}
           {(proj.tipo === "perder" || proj.tipo === "ganhar") && (
             <>
-              <p className="text-2xl font-semibold leading-tight tracking-[-0.02em]">Faltam {fmt(proj.kg, 1)} kg para sua meta.</p>
+              <p className="font-titulo text-4xl font-extrabold leading-tight">Faltam {fmt(proj.kg, 1)} kg para sua meta.</p>
               <p className="mt-2 text-xl">
                 Seguindo esse plano ({proj.tipo === "perder" ? "déficit" : "superávit"} de{" "}
                 {proj.ajusteMin === proj.ajusteMax ? `cerca de ${fmt(proj.ajusteMax, 0)}` : `${fmt(proj.ajusteMin, 0)} a ${fmt(proj.ajusteMax, 0)}`}{" "}
@@ -164,7 +164,7 @@ export function Refeicoes() {
       {plano && (
         <div className="mt-10">
           <p className="text-lg font-semibold">Meta do dia: {fmt(plano.kcal, 0)} kcal</p>
-          <p className="text-[clamp(1.75rem,5vw,2.75rem)] font-semibold leading-tight tracking-[-0.02em] tabular-nums">
+          <p className="font-titulo text-[clamp(2.75rem,10vw,5rem)] font-extrabold leading-none tabular-nums">
             <span className="whitespace-nowrap">{fmt(plano.proteina, 0)} g prot</span> · <span className="whitespace-nowrap">{fmt(plano.carbo, 0)} g carb</span> ·{" "}
             <span className="whitespace-nowrap">{fmt(plano.gordura, 0)} g gord</span>
           </p>
@@ -179,7 +179,7 @@ export function Refeicoes() {
           )}
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <button role="switch" aria-checked={personalizar} onClick={alternar} className="flex min-h-[3rem] items-center gap-3 text-left text-lg font-semibold">
+            <button role="switch" aria-checked={personalizar} onClick={alternar} className="flex min-h-[3rem] items-center gap-3 text-left text-lg font-bold">
               <span className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors duration-150 ease-out ${personalizar ? "border-primario bg-primario" : "border-linha bg-corpo"}`}>
                 <span className={`absolute left-0 top-[calc(0.25rem-1px)] h-5 w-5 rounded-full shadow transition-[transform,background-color] duration-150 ease-out ${personalizar ? "translate-x-[calc(1.5625rem-2px)] bg-white" : "translate-x-[0.1875rem] bg-suave"}`} />
               </span>
@@ -211,7 +211,7 @@ export function Refeicoes() {
 
           {personalizar && (
             <section className="mt-6 bg-superficie p-6" aria-live="polite">
-              <h2 className="text-2xl font-semibold">Total do dia</h2>
+              <h2 className="text-2xl font-extrabold">Total do dia</h2>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
                 <Barra rotulo="Calorias" atual={dia.kcal} meta={meta.kcal} un="kcal" />
                 <Barra rotulo="Proteína" atual={dia.p} meta={meta.p} un="g" />
@@ -225,7 +225,7 @@ export function Refeicoes() {
             {detalhes.map(({ r, sug, itens, prato }) => (
               <section key={r.id} className="bg-superficie p-6">
                 <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                  <h2 className="text-2xl font-semibold">{r.nome}</h2>
+                  <h2 className="text-2xl font-extrabold">{r.nome}</h2>
                   {personalizar ? (
                     <label className="flex items-center gap-2 text-base text-suave">
                       <input
@@ -236,7 +236,7 @@ export function Refeicoes() {
                         value={pcts[r.id]}
                         onChange={(e) => mudarPct(r.id, e.target.value)}
                         aria-label={`Porcentagem do dia para ${r.nome}`}
-                        className="min-h-[3rem] w-20 bg-fundo px-3 text-lg font-semibold tabular-nums text-tinta"
+                        className="min-h-[3rem] w-20 bg-fundo px-3 text-lg font-bold tabular-nums text-tinta"
                       />
                       % do dia
                     </label>
@@ -281,7 +281,7 @@ export function Refeicoes() {
                       {([["Proteína", r.proteina], ["Carboidrato", r.carbo], ["Gordura", r.gordura]] as const).map(([nome, v]) => (
                         <div key={nome}>
                           <dt className="text-base text-suave">{nome}</dt>
-                          <dd className="text-3xl font-semibold tabular-nums tracking-[-0.02em]">{fmt(v, 0)} g</dd>
+                          <dd className="font-titulo text-4xl font-extrabold tabular-nums">{fmt(v, 0)} g</dd>
                         </div>
                       ))}
                     </dl>

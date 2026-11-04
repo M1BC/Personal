@@ -160,7 +160,7 @@ export function FormAcesso({ modo }: { modo: "entrar" | "cadastrar" }) {
 
       <p className="mt-6 text-lg">
         {cadastro ? "Já tem conta? " : "Ainda não tem conta? "}
-        <Link href={cadastro ? "/login" : "/cadastro"} className="font-semibold underline underline-offset-4">
+        <Link href={cadastro ? "/login" : "/cadastro"} className="font-bold underline underline-offset-4">
           {cadastro ? "Entrar" : "Criar conta"}
         </Link>
       </p>

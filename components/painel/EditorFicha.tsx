@@ -11,7 +11,7 @@ import type { GrupoMuscular } from "@/lib/types";
 
 const INPUT = "mt-1 min-h-[3rem] w-full bg-fundo px-3 text-base";
 const ROTULO = "block text-base font-semibold";
-const BTN_TEXTO = "min-h-[3rem] font-semibold underline underline-offset-4";
+const BTN_TEXTO = "min-h-[3rem] font-bold underline underline-offset-4";
 const GERAVEIS = OBJETIVOS.filter((o): o is Extract<(typeof OBJETIVOS)[number], { id: ObjetivoId }> => o.id !== "criar");
 
 export function EditorFicha({ alunoId }: { alunoId: string }) {
@@ -117,12 +117,12 @@ export function EditorFicha({ alunoId }: { alunoId: string }) {
   return (
     <div>
       <Link href="/painel" className={`${BTN_TEXTO} inline-flex items-center text-suave`}>← Todos os alunos</Link>
-      <h1 className="mt-4 text-[clamp(2.25rem,6vw,4rem)] font-semibold leading-[0.95]">{nomeOuEmail(aluno)}</h1>
+      <h1 className="mt-4 text-[clamp(2.25rem,6vw,4rem)] font-extrabold leading-[0.95]">{nomeOuEmail(aluno)}</h1>
       {aluno.nome.trim() && <p className="mt-2 text-lg text-suave">{aluno.email}</p>}
 
       {/* Ponto de partida */}
       <div className="mt-10 border-l-4 border-primario bg-superficie p-5 md:p-6">
-        <p className="text-xl font-semibold">{existe || ficha.dias.length ? "Recomeçar da ficha automática" : "Começar pela ficha automática"}</p>
+        <p className="text-xl font-extrabold">{existe || ficha.dias.length ? "Recomeçar da ficha automática" : "Começar pela ficha automática"}</p>
         <p className="mt-1 max-w-[60ch] text-base text-suave">Gera a divisão, os exercícios e as séries pelo objetivo. Depois é só ajustar.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           <label className={ROTULO}>

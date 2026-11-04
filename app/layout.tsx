@@ -18,7 +18,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#111214",
+  themeColor: "#100D0C",
   colorScheme: "dark",
 };
 
@@ -26,12 +26,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="preload" href="/fontes/geist.woff" as="font" type="font/woff" crossOrigin="" />
+        <link rel="preload" href="/fontes/big-shoulders-display.woff" as="font" type="font/woff" crossOrigin="" />
+        <link rel="preload" href="/fontes/barlow-400.woff" as="font" type="font/woff" crossOrigin="" />
       </head>
       <body className="font-sans antialiased">
         <a
           href="#conteudo"
-          className="fixed left-4 top-4 z-50 -translate-y-[200%] rounded-lg bg-tinta px-4 py-3 font-semibold text-fundo transition-transform duration-150 focus:translate-y-0"
+          className="fixed left-4 top-4 z-50 -translate-y-[200%] rounded-lg bg-primario px-4 py-3 font-bold text-white transition-transform duration-150 focus:translate-y-0"
         >
           Pular para o conteúdo
         </a>
@@ -41,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="conteudo">{children}</main>
           <footer className="border-t border-linha">
             <div className={`${CAIXA} flex flex-col gap-4 py-8 text-[0.9375rem] text-suave pb-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:flex-row sm:items-center sm:gap-6`}>
-              <span className="font-semibold text-tinta">{MARCA.nome}</span>
+              <span className="font-titulo text-lg font-bold text-tinta">{MARCA.nome}</span>
               <p className="max-w-[60ch]">
                 Conteúdo educativo. Não substitui médico, nutricionista ou educador físico: para dieta e suplementos, consulte um nutricionista.
               </p>
