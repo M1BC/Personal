@@ -35,14 +35,14 @@ export function Modal({ aberto, titulo, onFechar, children }: Props) {
         className="animar-folha max-h-[85dvh] w-full max-w-lg overflow-y-auto overscroll-contain rounded-t-2xl border-t-2 border-primario bg-fundo p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:rounded-2xl md:border md:border-linha md:pb-6"
       >
         <div className="flex items-start justify-between gap-4">
-          <h3 id="titulo-modal" className="text-3xl font-extrabold leading-tight">
+          <h3 id="titulo-modal" className="text-2xl font-semibold leading-tight tracking-[-0.02em]">
             {titulo}
           </h3>
           <button
             ref={botaoFechar}
             onClick={onFechar}
             aria-label="Fechar"
-            className="min-h-[3rem] min-w-[3rem] shrink-0 bg-superficie text-xl font-bold transition-transform duration-100 active:scale-[0.95] hover:bg-corpo"
+            className="min-h-[3rem] min-w-[3rem] shrink-0 bg-superficie text-xl font-semibold transition-transform duration-100 active:scale-[0.95] hover:bg-corpo"
           >
             ×
           </button>

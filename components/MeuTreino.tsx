@@ -95,7 +95,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
 
   return (
     <div className="animar mt-10">
-      <h2 className="text-4xl font-extrabold leading-none">{ficha.titulo || "Meu treino"}</h2>
+      <h2 className="text-3xl font-semibold leading-tight tracking-[-0.02em]">{ficha.titulo || "Meu treino"}</h2>
       <p className="mt-3 max-w-[70ch] text-lg text-suave">
         Monte o seu treino do seu jeito: escolha os dias, os exercícios (por músculo, inclusive cardio), as séries e o descanso.
         Tocando em “?” você vê como cada exercício trabalha o corpo; a animação de cada um está na aba Anatomia.
@@ -106,7 +106,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
           {ficha.observacoes && <p className="mt-4 max-w-[70ch] whitespace-pre-line border-l-4 border-secundario bg-superficie p-4 text-lg">{ficha.observacoes}</p>}
           <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
             <button onClick={() => setEditando(true)} className="btn">Editar treino</button>
-            <button onClick={apagar} className="min-h-[3rem] font-bold text-alerta underline underline-offset-4">Apagar</button>
+            <button onClick={apagar} className="min-h-[3rem] font-semibold text-alerta underline underline-offset-4">Apagar</button>
           </div>
           <p role="status" className="mt-3 min-h-[1.5rem] text-base font-semibold">{aviso}</p>
           <DiasFicha dias={ficha.dias} prefixo="meu" som={som} timerAtivo={timerAtivo} onIniciarTimer={onIniciarTimer} onExplicar={onExplicar} />
@@ -114,7 +114,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
       ) : (
         <>
           <div className="mt-6 border-l-4 border-primario bg-superficie p-5 md:p-6">
-            <p className="text-xl font-extrabold">Começar de um modelo (opcional)</p>
+            <p className="text-xl font-semibold">Começar de um modelo (opcional)</p>
             <p className="mt-1 max-w-[60ch] text-base text-suave">
               Copia uma ficha automática ({freq}x por semana, a frequência escolhida acima) para você ajustar. Ou comece do zero logo abaixo.
             </p>
@@ -164,7 +164,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
                 {aviso ?? (mudou ? "Alterações não salvas" : "Nada alterado")}
               </p>
               {ficha.dias.length > 0 && !mudou && (
-                <button onClick={() => setEditando(false)} className="min-h-[3rem] font-bold underline underline-offset-4">Ver treino</button>
+                <button onClick={() => setEditando(false)} className="min-h-[3rem] font-semibold underline underline-offset-4">Ver treino</button>
               )}
               <button onClick={salvar} disabled={!mudou} className="btn disabled:opacity-40">Salvar treino</button>
             </div>

@@ -4,7 +4,7 @@ import { MARCAS_REF, METAS, ORCAMENTOS, PRECOS_REF, SUPLEMENTOS, type MetaPeso, 
 import { Modal } from "./Modal";
 
 const BOTAO_AJUDA =
-  "min-h-[3rem] min-w-[3rem] btn-contorno text-xl font-bold";
+  "min-h-[3rem] min-w-[3rem] btn-contorno text-xl font-semibold";
 const OPCAO = "min-h-[3.5rem] px-5 py-3 text-left transition-transform duration-100 ease-out active:scale-[0.97]";
 
 export function Suplementos() {
@@ -28,7 +28,7 @@ export function Suplementos() {
       <div role="group" aria-label="Orçamento mensal" className="mt-2 grid gap-2 sm:grid-cols-3">
         {(Object.keys(ORCAMENTOS) as Orcamento[]).map((k) => (
           <button key={k} aria-pressed={k === orc} onClick={() => setOrc(k)} className={`${OPCAO} opcao`}>
-            <span className="block font-titulo text-2xl font-extrabold">{ORCAMENTOS[k].nome}</span>
+            <span className="block text-lg font-semibold">{ORCAMENTOS[k].nome}</span>
             <span className="block text-base opacity-80">{ORCAMENTOS[k].curto}</span>
           </button>
         ))}
@@ -37,7 +37,7 @@ export function Suplementos() {
       <p className="mt-6 text-lg font-semibold">Qual é o seu objetivo?</p>
       <div role="group" aria-label="Objetivo" className="mt-2 grid gap-2 sm:grid-cols-3">
         {(Object.keys(METAS) as MetaPeso[]).map((k) => (
-          <button key={k} aria-pressed={k === meta} onClick={() => setMeta(k)} className={`${OPCAO} opcao text-lg font-bold`}>
+          <button key={k} aria-pressed={k === meta} onClick={() => setMeta(k)} className={`${OPCAO} opcao text-lg font-semibold`}>
             {METAS[k]}
           </button>
         ))}
@@ -51,9 +51,9 @@ export function Suplementos() {
             const opcional = o.opcionais?.includes(id);
             return (
               <li key={id} className="flex flex-wrap items-start gap-x-5 gap-y-2 py-5">
-                <span className="w-8 font-titulo text-5xl font-extrabold tabular-nums">{i + 1}</span>
+                <span className="w-8 text-3xl font-semibold tabular-nums text-suave">{i + 1}</span>
                 <div className="min-w-0 flex-1 basis-64">
-                  <h2 className="text-2xl font-extrabold">
+                  <h2 className="text-2xl font-semibold">
                     {s.nome}
                     {opcional && <span className="ml-3 text-base font-semibold text-suave">opcional</span>}
                   </h2>
@@ -72,7 +72,7 @@ export function Suplementos() {
         <section className="animar mt-10 border-l-4 border-primario bg-superficie p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-extrabold">Alerta: hipercalórico</h2>
+              <h2 className="text-2xl font-semibold">Alerta: hipercalórico</h2>
               <p className="mt-2 max-w-[56ch] text-lg">{hiper.alerta_uso}</p>
               <p className="mt-2 text-base text-suave">Marcas conhecidas: {hiper.marcas.join(", ")}.</p>
               <p className="mt-1 text-base text-suave">Preço estimado: {hiper.faixa_preco_brl}.</p>

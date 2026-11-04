@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-// Cores vêm de variáveis CSS (ver globals.css): a paleta da BGS Pro Fitness.
+// Cores vêm de variáveis CSS (ver globals.css): tema escuro neutro com destaque azul-acinzentado.
 const v = (nome: string) => `rgb(var(--${nome}) / <alpha-value>)`;
 
 const config: Config = {
@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Barlow", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
-        titulo: ["Big Shoulders Display", "Barlow", "system-ui", "sans-serif"],
+        sans: ["Geist", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        titulo: ["Geist", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
       },
       colors: {
         fundo: v("fundo"),

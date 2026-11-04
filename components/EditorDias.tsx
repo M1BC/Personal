@@ -6,8 +6,8 @@ import type { FichaTreinador } from "@/lib/equipe";
 const INPUT = "mt-1 min-h-[3rem] w-full bg-fundo px-3 text-base";
 const ROTULO = "block text-base font-semibold";
 const BTN_ICONE =
-  "min-h-[2.75rem] min-w-[2.75rem] btn-contorno text-lg font-bold disabled:opacity-30";
-const BTN_TEXTO = "min-h-[3rem] font-bold underline underline-offset-4";
+  "min-h-[2.75rem] min-w-[2.75rem] btn-contorno text-lg font-semibold disabled:opacity-30";
+const BTN_TEXTO = "min-h-[3rem] font-semibold underline underline-offset-4";
 const DIAS_SEMANA = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
 export const NOVO_ITEM: ItemDia = { id: "supino-reto", series: "3 × 10 a 12 repetições", descanso: "60 s", obs: "" };
 const NOVO_CARDIO = { series: "20 min · ritmo moderado", descanso: "—" };
@@ -103,7 +103,7 @@ export function EditorDias({ ficha, onMudar, rotuloObs, placeholderObs }: Props)
                 const cardio = ehCardio(it.id);
                 return (
                   <li key={n} className="grid gap-3 py-4 md:grid-cols-[2rem_minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,0.8fr)_auto] md:items-end">
-                    <span className="font-titulo text-3xl font-extrabold tabular-nums md:pb-2">{n + 1}</span>
+                    <span className="text-lg font-semibold tabular-nums text-suave md:pb-3">{n + 1}</span>
                     <label className={ROTULO}>
                       Exercício
                       <select value={it.id} onChange={(e) => trocarExercicio(i, n, e.target.value)} className={INPUT}>

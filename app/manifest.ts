@@ -4,16 +4,16 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "BGS Pro Fitness",
-    short_name: "BGS",
-    description: "Seu treino, sua alimentação e seus suplementos na BGS Pro Fitness, com o porquê de cada escolha.",
+    name: "Meu Treino",
+    short_name: "Meu Treino",
+    description: "Seu treino, sua alimentação e seus suplementos, com o porquê de cada escolha.",
     lang: "pt-BR",
     start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#100D0C",
-    theme_color: "#100D0C",
+    background_color: "#111214",
+    theme_color: "#111214",
     categories: ["health", "fitness", "education"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

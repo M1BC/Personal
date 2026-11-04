@@ -57,8 +57,8 @@ export function Unidades() {
   return (
     <div>
       <div className="flex flex-wrap gap-x-8">
-        <Link href="/painel" className="inline-flex min-h-[3rem] items-center font-bold text-suave underline underline-offset-4">← Painel</Link>
-        <Link href="/painel/equipe" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">Equipe e papéis →</Link>
+        <Link href="/painel" className="inline-flex min-h-[3rem] items-center font-semibold text-suave underline underline-offset-4">← Painel</Link>
+        <Link href="/painel/equipe" className="inline-flex min-h-[3rem] items-center font-semibold underline underline-offset-4">Equipe e papéis →</Link>
       </div>
 
       <form onSubmit={adicionar} className="mt-6 grid max-w-3xl gap-3 bg-superficie p-5 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
@@ -93,13 +93,13 @@ export function Unidades() {
                   </label>
                   <div className="flex gap-4">
                     <button onClick={() => salvarEdicao(u)} className="btn">Salvar</button>
-                    <button onClick={() => setEditando(null)} className="min-h-[3rem] font-bold underline underline-offset-4">Cancelar</button>
+                    <button onClick={() => setEditando(null)} className="min-h-[3rem] font-semibold underline underline-offset-4">Cancelar</button>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className={u.ativa ? "" : "opacity-60"}>
-                    <span className="block text-lg font-bold">{u.nome}{!u.ativa && " (inativa)"}</span>
+                    <span className="block text-lg font-semibold">{u.nome}{!u.ativa && " (inativa)"}</span>
                     {u.cidade && <span className="block text-base text-suave">{u.cidade}</span>}
                   </span>
                   <span className="flex gap-5">
@@ -108,11 +108,11 @@ export function Unidades() {
                         setEditando(u.id);
                         setRascunho({ nome: u.nome, cidade: u.cidade });
                       }}
-                      className="min-h-[3rem] font-bold underline underline-offset-4"
+                      className="min-h-[3rem] font-semibold underline underline-offset-4"
                     >
                       Editar
                     </button>
-                    <button onClick={() => alternar(u)} className={`min-h-[3rem] font-bold underline underline-offset-4 ${u.ativa ? "text-alerta" : ""}`}>
+                    <button onClick={() => alternar(u)} className={`min-h-[3rem] font-semibold underline underline-offset-4 ${u.ativa ? "text-alerta" : ""}`}>
                       {u.ativa ? "Desativar" : "Reativar"}
                     </button>
                   </span>

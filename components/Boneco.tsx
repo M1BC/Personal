@@ -107,7 +107,7 @@ export function Boneco({ exercicioId, nome, primario, secundarios }: Props) {
           <button
             onClick={() => setLento(!lento)}
             aria-pressed={lento}
-            className={`min-h-[2.75rem] px-3 text-sm font-bold transition-transform duration-100 ease-out active:scale-[0.95] rounded-lg ${lento ? "bg-primario text-white" : "bg-fundo/85 text-tinta"}`}
+            className={`min-h-[2.75rem] px-3 text-sm font-semibold transition-transform duration-100 ease-out active:scale-[0.95] rounded-lg ${lento ? "bg-primario text-fundo" : "bg-fundo/85 text-tinta"}`}
           >
             Câmera lenta
           </button>

@@ -45,11 +45,11 @@ export function ListaAlunos() {
     <div>
       {(admin || papel === "gerente") && (
         <div className="mb-8 flex flex-wrap gap-x-8">
-          <Link href="/painel/equipe" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">
+          <Link href="/painel/equipe" className="inline-flex min-h-[3rem] items-center font-semibold underline underline-offset-4">
             Equipe e papéis →
           </Link>
           {admin && (
-            <Link href="/painel/unidades" className="inline-flex min-h-[3rem] items-center font-bold underline underline-offset-4">
+            <Link href="/painel/unidades" className="inline-flex min-h-[3rem] items-center font-semibold underline underline-offset-4">
               Unidades →
             </Link>
           )}
@@ -101,7 +101,7 @@ export function ListaAlunos() {
                     className="flex min-h-[4rem] items-center justify-between gap-4 py-3 transition-colors duration-100 hover:bg-superficie"
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-lg font-bold">{nomeOuEmail(a)}</span>
+                      <span className="block truncate text-lg font-semibold">{nomeOuEmail(a)}</span>
                       <span className="block truncate text-base text-suave">
                         {a.nome.trim() ? `${a.email} · ` : ""}
                         {nomeUnidade(a.unidade_id ? porId.get(a.unidade_id) : null)}

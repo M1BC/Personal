@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Icone, type NomeIcone } from "@/components/Icone";
-import { QuadroHorario, StatusAcademia } from "@/components/inicio/StatusAcademia";
-import { CAIXA, H1, MARCA } from "@/lib/layout";
+import { CAIXA, H1 } from "@/lib/layout";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +13,7 @@ const ATALHOS: { href: string; nome: string; texto: string; icone: NomeIcone }[]
 ];
 const PAINEL = { href: "/painel", nome: "Painel do treinador", texto: "Monte e ajuste a ficha dos seus alunos.", icone: "painel" as const };
 
-// Tela inicial: a marca em destaque, se a academia está aberta agora e os atalhos do app.
+// Tela inicial: saudação, a data de hoje, o atalho principal e as seções do app.
 export default async function Inicio() {
   const supabase = criarClienteServidor();
   const {
@@ -36,63 +35,50 @@ export default async function Inicio() {
   }
   const atalhos = equipe ? [...ATALHOS, PAINEL] : ATALHOS;
 
+  const data = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "long", day: "numeric", month: "long" }).format(new Date());
+  const hoje = data.charAt(0).toUpperCase() + data.slice(1);
+
   return (
-    <>
-      <section className="destaque-brasa overflow-hidden">
-        <div className={`${CAIXA} grid items-center gap-6 pb-12 pt-8 md:grid-cols-[minmax(0,1fr)_auto] md:gap-12 md:pb-20 md:pt-16`}>
-          <div className="logo-acesa w-28 sm:w-36 md:order-2 md:w-72 lg:w-[22rem]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/marca/bgs-logo-512.webp" alt={MARCA.nome} width={512} height={512} className="h-auto w-full" fetchPriority="high" />
-          </div>
-          <div className="md:order-1">
-            <h1 className={H1}>
-              <span className="titulo-metal">{nome ? `Bom treino, ${nome}.` : "Bom treino."}</span>
-            </h1>
-            <StatusAcademia />
-            <div className="mt-8">
-              <Link href="/treinos" className="btn w-full sm:w-auto">
-                {ficha ? "Abrir minha ficha" : "Montar meu treino"}
-              </Link>
-              {ficha && (
-                <p className="mt-3 text-base text-suave">
-                  Seu treinador montou {ficha.titulo ? <>“{ficha.titulo}”</> : "uma ficha"} para você.
-                </p>
-              )}
-            </div>
-          </div>
+    <div className={`${CAIXA} pb-24 pt-10 md:pt-16`}>
+      <section>
+        <p className="text-base text-suave">{hoje}</p>
+        <h1 className={`${H1} mt-1`}>{nome ? `Bom treino, ${nome}.` : "Bom treino."}</h1>
+        <div className="mt-8">
+          <Link href="/treinos" className="btn w-full sm:w-auto">
+            {ficha ? "Abrir minha ficha" : "Montar meu treino"}
+          </Link>
+          {ficha && (
+            <p className="mt-3 text-base text-suave">
+              Seu treinador montou {ficha.titulo ? <>“{ficha.titulo}”</> : "uma ficha"} para você.
+            </p>
+          )}
         </div>
       </section>
 
-      <div className={`${CAIXA} grid gap-12 pb-24 pt-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16 md:pt-14`}>
-        <section aria-labelledby="horario">
-          <h2 id="horario" className="text-3xl leading-none md:text-4xl">Horário de funcionamento</h2>
-          <div className="mt-5">
-            <QuadroHorario />
-          </div>
-        </section>
-
-        <section aria-labelledby="atalhos">
-          <h2 id="atalhos" className="text-3xl leading-none md:text-4xl">Atalhos</h2>
-          <ul className="mt-3 divide-y divide-linha">
-            {atalhos.map((a) => (
-              <li key={a.href}>
-                <Link href={a.href} className="group flex min-h-[5.25rem] items-center gap-4 py-3">
-                  <span className="placa flex h-12 w-12 shrink-0 items-center justify-center bg-corpo text-brasa transition-colors duration-100 group-hover:bg-primario group-hover:text-white">
-                    <Icone nome={a.icone} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-titulo text-[1.625rem] font-extrabold leading-tight">{a.nome}</span>
-                    <span className="block text-base text-suave">{a.texto}</span>
-                  </span>
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-suave transition-transform duration-100 group-hover:translate-x-0.5 group-hover:text-tinta" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="m9 6 6 6-6 6" />
-                  </svg>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-    </>
+      <section aria-labelledby="atalhos" className="mt-14 md:mt-20">
+        <h2 id="atalhos" className="text-sm font-medium text-suave">Seções</h2>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+          {atalhos.map((a) => (
+            <li key={a.href}>
+              <Link
+                href={a.href}
+                className="group flex h-full min-h-[5.25rem] items-center gap-4 rounded-xl border border-linha bg-superficie p-4 transition-colors duration-100 hover:border-suave/50 md:p-5"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-corpo text-primario">
+                  <Icone nome={a.icone} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-lg font-semibold leading-tight">{a.nome}</span>
+                  <span className="mt-0.5 block text-base text-suave">{a.texto}</span>
+                </span>
+                <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-suave transition-transform duration-100 group-hover:translate-x-0.5 group-hover:text-tinta" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
   );
 }
