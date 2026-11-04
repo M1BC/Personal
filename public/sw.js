@@ -1,6 +1,6 @@
 // Service worker do app: deixa abrir mais rápido e mostra a última versão vista quando a internet cai.
 // Páginas: rede primeiro (sempre a versão nova quando há conexão). Arquivos estáticos: cache primeiro.
-const CACHE = "mt-v2"; // trocar o nome apaga o cache antigo (ícones e fontes novos)
+const CACHE = "mt-v3"; // trocar o nome apaga o cache antigo (ícones e fontes novos)
 
 self.addEventListener("install", () => self.skipWaiting());
 

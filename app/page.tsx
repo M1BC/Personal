@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Anilhas } from "@/components/CabecalhoPagina";
 import { Icone, type NomeIcone } from "@/components/Icone";
 import { CAIXA, H1 } from "@/lib/layout";
 
@@ -14,9 +15,8 @@ export default function Inicio() {
       <section className="destaque-brasa overflow-hidden">
         <div className={`${CAIXA} grid items-center gap-6 pb-12 pt-8 md:pb-20 md:pt-16`}>
           <div>
-            <h1 className={H1}>
-              <span className="titulo-metal">Bom treino.</span>
-            </h1>
+            <h1 className={H1}>Bom treino.</h1>
+            <Anilhas />
             <div className="mt-8">
               <Link href="/treinos" className="btn w-full sm:w-auto">
                 Montar meu treino

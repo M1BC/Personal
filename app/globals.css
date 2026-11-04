@@ -99,19 +99,12 @@
       transition-[transform,border-color,color] duration-100 ease-out hover:border-brasa hover:text-brasa active:scale-[0.95];
   }
 
-  /* Título cromado (só nos destaques: abertura das páginas e início). */
-  .titulo-metal {
-    background-image: linear-gradient(180deg, #ffffff 0%, #ece7e2 42%, #a8a19b 54%, #f3efeb 78%, #d7d1cb 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: none;
-    /* A folga no recorte do degradê evita cortar acentos e o pé do "j" e do "g". */
-    padding-block: 0.06em 0.12em;
-    /* Usado num <span> dentro do título: cada linha ganha o próprio brilho de cromo. */
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-  }
+  /* Barrinha de anilhas embaixo dos títulos de abertura: fogo, brasa e chama. */
+  .anilhas { display: flex; gap: 0.25rem; margin-top: 0.875rem; }
+  .anilhas i { display: block; height: 6px; }
+  .anilhas i:nth-child(1) { width: 3.5rem; background: rgb(var(--primario)); }
+  .anilhas i:nth-child(2) { width: 1.25rem; background: rgb(var(--brasa)); }
+  .anilhas i:nth-child(3) { width: 0.5rem; background: rgb(var(--secundario)); }
 
   /* Abertura de página: carvão com textura, brilho de brasa vindo de baixo e um fio de fogo na borda. */
   .destaque-brasa {
