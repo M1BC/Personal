@@ -132,7 +132,6 @@ export const NOTAS_HIPER = {
   progressao: "Progressão (dupla progressão): use a mesma carga até fazer o topo da faixa de repetições em todas as séries; aí suba a carga (cerca de 2 a 5%) e volte ao início da faixa. Subir repetições ou carga funciona igual para crescer: o importante é anotar e progredir.",
   amplitude: "Amplitude: desça até o músculo ficar bem alongado (peito no fundo do supino, braços estendidos acima da cabeça no tríceps, quadril bem para trás no stiff). Controle 2 a 3 segundos na descida.",
   aquecimento: "Aquecimento: 2 a 3 séries leves no primeiro exercício (subindo a carga) e 1 nos seguintes do mesmo músculo. Elas não contam no volume.",
-  dor: "Se sentir dor (não o cansaço normal do músculo), pare o exercício.",
   deload: "A cada 5 a 6 semanas, faça uma semana mais leve (metade das séries, mesma carga, longe da falha). Ela ajuda articulações e recuperação e prepara a próxima fase.",
   recuperacao: "Recuperação: proteína ao longo do dia (cerca de 1,6 g por kg de peso) e 7 a 9 horas de sono. Sem isso, o treino rende menos.",
 };

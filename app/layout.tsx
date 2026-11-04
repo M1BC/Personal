@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Cabecalho } from "@/components/Cabecalho";
 import { RegistrarSW } from "@/components/RegistrarSW";
-import { CAIXA, MARCA } from "@/lib/layout";
+import { MARCA } from "@/lib/layout";
 
 export const metadata: Metadata = {
   title: { default: MARCA.nome, template: `%s | ${MARCA.nome}` },
@@ -38,14 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RegistrarSW />
         <Cabecalho />
         <main id="conteudo">{children}</main>
-        <footer className="border-t border-linha">
-          <div className={`${CAIXA} flex flex-col gap-4 py-8 text-[0.9375rem] text-suave pb-[calc(2rem+env(safe-area-inset-bottom,0px))] sm:flex-row sm:items-center sm:gap-6`}>
-            <span className="font-titulo text-lg font-bold text-tinta">{MARCA.nome}</span>
-            <p className="max-w-[60ch]">
-              Conteúdo educativo. Não substitui médico nem educador físico.
-            </p>
-          </div>
-        </footer>
       </body>
     </html>
   );

@@ -101,7 +101,6 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular, ciclo: Ciclo): Resultado {
 
   const notas: string[] = [];
   if (freq >= 4) notas.push(NOTA_FOCO_FREQ);
-  notas.push(NOTAS_HIPER.dor);
   return {
     ficha: {
       titulo: `Ponto fraco: ${nome} · ${dias.length}x por semana${variada ? " · Ficha variada" : ""}`,
@@ -208,7 +207,6 @@ function montarHipertrofia(freq: Freq, nivel: Nivel, ciclo: Ciclo): Resultado {
     ...(abaixo && freq <= 3 ? [`Com ${freq} treinos por semana, alguns músculos ficam abaixo do volume ideal para o nível ${nomeNivel.toLowerCase()}, porque cada sessão tem um limite de séries para não ficar longa demais. Se puder, treine 4 vezes.`] : []),
     ...(freq === 2 ? ["Com 2 treinos, panturrilha e abdômen ficam fora para manter 6 exercícios por dia. Se quiser, inclua 2 a 3 séries de cada no fim de um dos treinos."] : []),
     NOTAS_HIPER.recuperacao,
-    NOTAS_HIPER.dor,
   ];
   const r = reps;
   return {

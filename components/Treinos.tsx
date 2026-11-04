@@ -196,10 +196,6 @@ export function Treinos() {
       </div>
       )}
 
-      <p className="mt-8 max-w-[70ch] border-l-4 border-primario bg-superficie p-4 text-lg font-semibold" role="note">
-        Recomendações educacionais. Consulte um educador físico para a execução correta.
-      </p>
-
       <ModalExercicio id={aberto} onFechar={fechar} />
     </div>
   );

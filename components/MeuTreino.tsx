@@ -68,7 +68,7 @@ export function MeuTreino({ freq, som, timerAtivo, onIniciarTimer, onExplicar }:
     setFicha(limpa);
     setMudou(false);
     setEditando(false);
-    setAviso("Treino salvo na sua conta.");
+    setAviso("Treino salvo.");
   }
 
   function partirDe() {
