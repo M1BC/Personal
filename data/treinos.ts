@@ -83,14 +83,18 @@ export const VAGAS = {
 } satisfies Record<string, Vaga>;
 export type NomeVaga = keyof typeof VAGAS;
 
-export type SessaoHiper = "fullA" | "fullB" | "fullC" | "superior" | "inferior" | "empurrar" | "puxar" | "pernas";
-// Ordem dentro da sessão: multiarticulares pesados primeiro, isolados e "leves" no fim.
+export type SessaoHiper = "fullA" | "fullB" | "fullC" | "superiorA" | "superiorB" | "inferiorA" | "inferiorB" | "empurrar" | "puxar" | "pernas";
+// No máximo 6 exercícios por sessão. Multiarticulares todo treino; os músculos pequenos alternam entre os dias
+// (supinos já treinam tríceps e ombro da frente; remadas e puxadas já treinam bíceps e ombro posterior).
+// Ordem: multiarticulares pesados primeiro, isolados e "leves" no fim.
 export const SESSOES_HIPER: Record<SessaoHiper, { titulo: string; vagas: NomeVaga[] }> = {
-  fullA: { titulo: "Treino A · Corpo inteiro", vagas: ["quadPesado", "peitoPesado", "costasVertical", "posteriorJoelho", "ombroLateral", "triceps", "biceps", "abdomen"] },
-  fullB: { titulo: "Treino B · Corpo inteiro", vagas: ["posteriorQuadril", "costasHorizontal", "peitoInclinado", "quadUnilateral", "ombroLateral", "biceps", "triceps", "panturrilhaEmPe"] },
-  fullC: { titulo: "Treino C · Corpo inteiro", vagas: ["quadPesado", "costasVertical", "peitoAlongado", "gluteo", "ombroPosterior", "ombroLateral", "panturrilhaSentada", "abdomen"] },
-  superior: { titulo: "Superiores", vagas: ["peitoPesado", "costasVertical", "peitoInclinado", "costasHorizontal", "ombroLateral", "ombroPosterior", "triceps", "biceps"] },
-  inferior: { titulo: "Inferiores", vagas: ["quadPesado", "posteriorQuadril", "quadUnilateral", "posteriorJoelho", "gluteo", "panturrilhaEmPe", "abdomen"] },
+  fullA: { titulo: "Treino A · Corpo inteiro", vagas: ["quadPesado", "peitoPesado", "costasVertical", "posteriorJoelho", "ombroLateral", "triceps"] },
+  fullB: { titulo: "Treino B · Corpo inteiro", vagas: ["posteriorQuadril", "costasHorizontal", "peitoInclinado", "quadUnilateral", "ombroLateral", "biceps"] },
+  fullC: { titulo: "Treino C · Corpo inteiro", vagas: ["quadPesado", "costasVertical", "peitoAlongado", "gluteo", "panturrilhaSentada", "abdomen"] },
+  superiorA: { titulo: "Superiores A", vagas: ["peitoPesado", "costasVertical", "peitoInclinado", "costasHorizontal", "ombroLateral", "triceps"] },
+  superiorB: { titulo: "Superiores B", vagas: ["peitoInclinado", "costasHorizontal", "costasVertical", "ombroLateral", "ombroPosterior", "biceps"] },
+  inferiorA: { titulo: "Inferiores A", vagas: ["quadPesado", "posteriorQuadril", "quadUnilateral", "posteriorJoelho", "panturrilhaEmPe", "abdomen"] },
+  inferiorB: { titulo: "Inferiores B", vagas: ["quadPesado", "posteriorJoelho", "quadIsolado", "gluteo", "panturrilhaSentada", "abdomen"] },
   empurrar: { titulo: "Empurrar · Peito, ombros e tríceps", vagas: ["peitoInclinado", "ombroPress", "peitoAlongado", "ombroLateral", "triceps"] },
   puxar: { titulo: "Puxar · Costas e bíceps", vagas: ["costasHorizontal", "costasVertical", "costasIsolado", "ombroPosterior", "biceps"] },
   pernas: { titulo: "Pernas · Quadríceps, posterior e glúteos", vagas: ["quadPesado", "posteriorJoelho", "quadIsolado", "gluteo", "panturrilhaSentada", "abdomen"] },
@@ -101,8 +105,8 @@ export type PlanoHiper = { sessoes: SessaoHiper[]; dias: number[]; nome: string;
 export const PLANOS_HIPER: Record<Freq, PlanoHiper> = {
   2: { sessoes: ["fullA", "fullB"], dias: [0, 3], nome: "Corpo inteiro A/B", divisao: "Dois treinos de corpo inteiro (segunda e quinta). Cada músculo é treinado 2 vezes por semana, o mínimo que as pesquisas indicam para hipertrofia." },
   3: { sessoes: ["fullA", "fullB", "fullC"], dias: [0, 2, 4], nome: "Corpo inteiro A/B/C", divisao: "Três treinos de corpo inteiro diferentes (segunda, quarta e sexta), com 48 horas entre eles. Os músculos grandes são treinados 2 a 3 vezes por semana, por ângulos diferentes." },
-  4: { sessoes: ["superior", "inferior", "superior", "inferior"], dias: [0, 1, 3, 4], nome: "Superiores/Inferiores", divisao: "Superiores e Inferiores, duas vezes cada (segunda e quinta; terça e sexta), com 72 horas entre sessões do mesmo grupo. A segunda sessão de cada usa outras variações dos exercícios." },
-  5: { sessoes: ["superior", "inferior", "empurrar", "puxar", "pernas"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Empurrar/Puxar/Pernas", divisao: "Começa a semana com Superiores e Inferiores e termina com Empurrar, Puxar e Pernas. Cada músculo é treinado 2 vezes por semana, com pelo menos 48 horas entre as sessões." },
+  4: { sessoes: ["superiorA", "inferiorA", "superiorB", "inferiorB"], dias: [0, 1, 3, 4], nome: "Superiores/Inferiores", divisao: "Superiores e Inferiores, duas vezes cada (segunda e quinta; terça e sexta), com 72 horas entre sessões do mesmo grupo. A segunda sessão de cada grupo usa outros exercícios, e os músculos pequenos alternam entre os dias." },
+  5: { sessoes: ["superiorA", "inferiorA", "empurrar", "puxar", "pernas"], dias: [0, 1, 2, 3, 4], nome: "Superiores/Inferiores + Empurrar/Puxar/Pernas", divisao: "Começa a semana com Superiores e Inferiores e termina com Empurrar, Puxar e Pernas. Cada músculo é treinado 2 vezes por semana, com pelo menos 48 horas entre as sessões." },
 };
 
 export interface Presc { sets: number; reps: string; rest: string }
@@ -127,7 +131,8 @@ export const RESERVA_HIPER: Record<Nivel, string> = {
 export const NOTAS_HIPER = {
   progressao: "Progressão (dupla progressão): use a mesma carga até fazer o topo da faixa de repetições em todas as séries; aí suba a carga (cerca de 2 a 5%) e volte ao início da faixa. Subir repetições ou carga funciona igual para crescer: o importante é anotar e progredir.",
   amplitude: "Amplitude: desça até o músculo ficar bem alongado (peito no fundo do supino, braços estendidos acima da cabeça no tríceps, quadril bem para trás no stiff). Controle 2 a 3 segundos na descida.",
-  aquecimento: "Aquecimento: antes do primeiro exercício pesado, faça 2 a 3 séries leves e rápidas, subindo a carga, sem cansar.",
+  aquecimento: "Aquecimento: 2 a 3 séries leves no primeiro exercício (subindo a carga) e 1 nos seguintes do mesmo músculo. Elas não contam no volume.",
+  dor: "Se sentir dor (não o cansaço normal do músculo), pare o exercício.",
   deload: "A cada 5 a 6 semanas, faça uma semana mais leve (metade das séries, mesma carga, longe da falha). Ela ajuda articulações e recuperação e prepara a próxima fase.",
   recuperacao: "Recuperação: proteína ao longo do dia (cerca de 1,6 g por kg de peso) e 7 a 9 horas de sono. Sem isso, o treino rende menos.",
 };
@@ -247,8 +252,6 @@ export const DICAS = [
 
 // ---------- Cardio nas fichas ----------
 export const CARDIO = {
-  hipertrofia: { id: "eliptico", series: "5 a 8 min · aquecimento leve", onde: "inicio" },
-  hipertrofiaLeve: { id: "esteira-caminhada", series: "15 a 20 min · caminhada inclinada leve (opcional)", onde: "fim" },
   fraco: { id: "bicicleta", series: "5 a 8 min · aquecimento leve", onde: "inicio" },
 } as const;
 export const NOTA_CARDIO: Record<ObjetivoId, string> = {

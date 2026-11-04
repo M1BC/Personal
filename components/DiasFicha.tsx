@@ -4,7 +4,7 @@ import { segundosDoDescanso } from "@/lib/tempo";
 import { TimerDescanso } from "./TimerDescanso";
 
 export interface ItemDia { id: string; series: string; descanso: string; obs?: string }
-export interface Dia { dia: string; titulo: string; itens: ItemDia[] }
+export interface Dia { dia: string; titulo: string; nota?: string; itens: ItemDia[] }
 
 type Props = {
   dias: Dia[];
@@ -23,6 +23,7 @@ export function DiasFicha({ dias, prefixo, som, timerAtivo, onIniciarTimer, onEx
         <section key={i} className="bg-superficie p-4 sm:p-6">
           <h3 className="text-2xl font-extrabold leading-tight">{d.dia}</h3>
           <p className="text-lg text-suave">{d.titulo}</p>
+          {d.nota && <p className="mt-2 border-l-2 border-brasa pl-2 text-base">{d.nota}</p>}
           <ol className="mt-3 divide-y divide-linha border-y border-linha">
             {d.itens.map((it, n) => {
               const e = EXERCICIOS.find((x) => x.id === it.id);

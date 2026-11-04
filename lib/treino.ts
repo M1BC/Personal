@@ -9,7 +9,7 @@ import {
 import type { Exercicio, GrupoMuscular } from "./types";
 
 export interface ItemFicha { id: string; series: string; descanso: string; obs?: string }
-export interface DiaFicha { dia: string; titulo: string; leve?: boolean; itens: ItemFicha[] }
+export interface DiaFicha { dia: string; titulo: string; nota?: string; leve?: boolean; itens: ItemFicha[] }
 export interface Troca { dia: string; de: string; para: string }
 export interface Ficha {
   titulo: string;
@@ -201,10 +201,8 @@ function montarHipertrofia(freq: Freq, nivel: Nivel, ciclo: Ciclo): Resultado {
       if (ex.id === "cadeira-flexora") item.obs = "Sentado, o posterior trabalha alongado e cresce mais do que deitado";
       return item;
     });
-    // Aquecimento no começo; caminhada leve opcional só no fim dos treinos sem pernas.
-    const comAquecimento = comCardio(itens, "hipertrofia");
-    const semPernas = sessao === "superior" || sessao === "empurrar" || sessao === "puxar";
-    return { dia: NOMES_DIAS[dia], titulo: SESSOES_HIPER[sessao].titulo, itens: semPernas ? comCardio(comAquecimento, "hipertrofiaLeve") : comAquecimento };
+    // Sem cardio na lista: o aquecimento são séries leves do próprio exercício (aviso no topo do dia).
+    return { dia: NOMES_DIAS[dia], titulo: SESSOES_HIPER[sessao].titulo, nota: NOTAS_HIPER.aquecimento, itens };
   });
 
   const ordem = Object.keys(alvo) as Musculo[];
@@ -215,12 +213,11 @@ function montarHipertrofia(freq: Freq, nivel: Nivel, ciclo: Ciclo): Resultado {
     RESERVA_HIPER[nivel],
     NOTAS_HIPER.progressao,
     NOTAS_HIPER.amplitude,
-    NOTAS_HIPER.aquecimento,
     NOTAS_HIPER.deload,
     ...(abaixo && freq <= 3 ? [`Com ${freq} treinos por semana, alguns músculos ficam abaixo do volume ideal para o nível ${nomeNivel.toLowerCase()}, porque cada sessão tem um limite de séries para não ficar longa demais. Se puder, treine 4 vezes.`] : []),
-    NOTA_CARDIO.hipertrofia,
+    ...(freq === 2 ? ["Com 2 treinos, panturrilha e abdômen ficam fora para manter 6 exercícios por dia. Se quiser, inclua 2 a 3 séries de cada no fim de um dos treinos."] : []),
     NOTAS_HIPER.recuperacao,
-    ...DICAS,
+    NOTAS_HIPER.dor,
   ];
   const r = reps;
   return {
