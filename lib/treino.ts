@@ -1,10 +1,10 @@
 import { EXERCICIOS, categoriaDe } from "@/data/exercicios";
 import {
-  APOIOS, CARDIO, DICAS, FOCO_ORDEM, FOCO_POR_SESSAO, ISOMETRICOS, MENSAGEM_VARIADA, MIN_FOCO, MODELOS, NIVEIS, NOMES_DIAS,
-  NOTA_CARDIO, NOTA_CICLO_MEIO, NOTA_FOCO_FREQ, NOTA_PLIOMETRIA, ORDEM, PLANOS, PLANOS_HIPER, PLANO_FOCO, PLIOMETRICOS, POOL,
-  PONTOS_FRACOS, PRESC, PRESC_HIPER, PRESC_HIPER_VARIADA, PRESC_VARIADA, PRINCIPAIS, RESERVA_HIPER, SESSOES_HIPER, TITULOS,
-  UNIDADE_ESPECIAL, UNILATERAIS, mensagemPoucos,
-  type Cat, type Ciclo, type Freq, type Nivel, type ObjetivoId, type Presc, type Slot, type Tipo,
+  APOIOS, CARDIO, DICAS, FOCO_ORDEM, FOCO_POR_SESSAO, ISOMETRICOS, MENSAGEM_VARIADA, MIN_FOCO, NIVEIS, NOMES_DIAS, NOME_MUSCULO,
+  NOTAS_HIPER, NOTA_CARDIO, NOTA_CICLO_MEIO, NOTA_FOCO_FREQ, ORDEM_GERAL, PLANOS_HIPER, PLANO_FOCO, PLIOMETRICOS, PONTOS_FRACOS,
+  PRESC, PRESC_VARIADA, PRINCIPAIS, REPS_HIPER, REPS_HIPER_VARIADA, RESERVA_HIPER, SERIES_MAX_EXERCICIO, SERIES_MAX_SESSAO,
+  SESSOES_HIPER, UNILATERAIS, VAGAS, VOLUME_ALVO, mensagemPoucos,
+  type Ciclo, type Freq, type Musculo, type Nivel, type NomeVaga, type ObjetivoId, type Presc,
 } from "@/data/treinos";
 import type { Exercicio, GrupoMuscular } from "./types";
 
@@ -20,50 +20,21 @@ export interface Ficha {
   variada: boolean; // true na "Ficha Variada" (mais de 3 meses na mesma ficha)
   trocas: Troca[]; // exercícios trocados na variação
   avisoCiclo?: string; // mensagem exibida no topo da ficha
+  volume?: { musculo: string; series: number; alvo: number }[]; // séries diretas por semana (hipertrofia)
 }
 export type Resultado = { ficha: Ficha } | { erro: string };
 
-type Modelo = "saude" | "volei" | "futebol";
 const porId = Object.fromEntries(EXERCICIOS.map((e) => [e.id, e])) as Record<string, Exercicio>;
 
-function candidatos(slot: Slot, modelo: Modelo): Exercicio[] {
-  if (slot === "Salto") return PLIOMETRICOS.map((id) => porId[id]).filter(Boolean);
-  const todos = EXERCICIOS.filter((e) => !e.cardio && categoriaDe(e.grupo_primario) === slot && !PLIOMETRICOS.includes(e.id));
-  const ordem = ORDEM[modelo][slot as Cat] ?? ORDEM.saude[slot as Cat] ?? [];
-  const ordenados = ordem.map((id) => todos.find((e) => e.id === id)).filter((e): e is Exercicio => !!e);
-  return [...ordenados, ...todos.filter((e) => !ordem.includes(e.id))];
-}
-
-// Escolhe um exercício por vaga. A "variante" gira a escolha (Treino A pega o 1º, Treino B o 2º...).
-function escolher(slots: Slot[], variante: number, modelo: Modelo): Exercicio[] {
-  const usados = new Set<string>();
-  const contagem: Record<string, number> = {};
-  const saida: Exercicio[] = [];
-  for (const slot of slots) {
-    const lista = candidatos(slot, modelo);
-    if (!lista.length) continue;
-    const k = contagem[slot] ?? 0;
-    contagem[slot] = k + 1;
-    const vezes = slots.filter((s) => s === slot).length;
-    let idx = (variante * vezes + k) % lista.length;
-    for (let t = 0; t < lista.length && usados.has(lista[idx].id); t++) idx = (idx + 1) % lista.length;
-    if (usados.has(lista[idx].id)) continue;
-    usados.add(lista[idx].id);
-    saida.push(lista[idx]);
-  }
-  return saida;
-}
-
-function posicao(modelo: Modelo, e: Exercicio): number {
-  const cat = categoriaDe(e.grupo_primario);
-  const ordem = ORDEM[modelo][cat] ?? ORDEM.saude[cat] ?? [];
+function posicao(e: Exercicio): number {
+  const ordem = ORDEM_GERAL[categoriaDe(e.grupo_primario)] ?? [];
   const i = ordem.indexOf(e.id);
   return i >= 0 ? i : 100 + EXERCICIOS.indexOf(e);
 }
 
 // Troca até 2 exercícios principais por variações do MESMO grupo muscular (nunca saltos nem isométricos).
-function variar(exercicios: Exercicio[], modelo: Modelo): { lista: Exercicio[]; trocas: { de: Exercicio; para: Exercicio }[] } {
-  const usados = new Set(exercicios.map((e) => e.id));
+function variar(exercicios: Exercicio[], proibidos: Set<string> = new Set()): { lista: Exercicio[]; trocas: { de: Exercicio; para: Exercicio }[] } {
+  const usados = new Set([...exercicios.map((e) => e.id), ...proibidos]);
   const lista = [...exercicios];
   const trocas: { de: Exercicio; para: Exercicio }[] = [];
   for (let i = 0; i < lista.length && trocas.length < 2; i++) {
@@ -71,7 +42,7 @@ function variar(exercicios: Exercicio[], modelo: Modelo): { lista: Exercicio[]; 
     if (!PRINCIPAIS.has(atual.id)) continue;
     const alternativas = EXERCICIOS.filter(
       (x) => !x.cardio && x.grupo_primario === atual.grupo_primario && !PLIOMETRICOS.includes(x.id) && !usados.has(x.id)
-    ).sort((a, b) => Number(!PRINCIPAIS.has(a.id)) - Number(!PRINCIPAIS.has(b.id)) || posicao(modelo, a) - posicao(modelo, b));
+    ).sort((a, b) => Number(!PRINCIPAIS.has(a.id)) - Number(!PRINCIPAIS.has(b.id)) || posicao(a) - posicao(b));
     const novo = alternativas[0];
     if (!novo) continue;
     usados.add(novo.id);
@@ -86,19 +57,8 @@ const avisoDoCiclo = (ciclo: Ciclo): string | undefined =>
 
 function formatar(e: Exercicio, p: Presc, leve: boolean): ItemFicha {
   const sets = leve ? Math.min(2, p.sets) : p.sets;
-  const reps = ISOMETRICOS[e.id] ?? `${p.reps} ${UNIDADE_ESPECIAL[e.id] ?? "repetições"}${UNILATERAIS[e.id] ?? ""}`;
+  const reps = ISOMETRICOS[e.id] ?? `${p.reps} repetições${UNILATERAIS[e.id] ?? ""}`;
   return { id: e.id, series: `${sets} × ${reps}`, descanso: p.rest };
-}
-
-function justificativa(obj: "saude" | "volei" | "futebol"): string {
-  switch (obj) {
-    case "saude":
-      return "Para Saúde Geral, usamos exercícios multiarticulares (agachamento, supino, remada), que trabalham vários músculos de uma vez e ensinam o corpo a se mover em conjunto. Três séries de 10 a 12 repetições, com 60 segundos de descanso, desenvolvem força e resistência sem sobrecarregar as articulações.";
-    case "volei":
-      return "Para o Vôlei, o foco é a pliometria: exercícios explosivos que melhoram a impulsão e a rigidez do tornozelo, isto é, a capacidade do tornozelo e do tendão de Aquiles de funcionar como uma mola no salto e na aterrissagem. A força de pernas (agachamento) e a panturrilha em pé sustentam esse trabalho, com poucas repetições e velocidade alta. O descanso de 90 segundos é essencial para recuperar a força entre as séries.";
-    case "futebol":
-      return "Para o Futebol, o foco é a prevenção de lesões e a força da parte de trás da coxa (stiff, mesa flexora), que ajuda a estabilizar e proteger o joelho nas freadas e nas mudanças de direção. O afundo treina uma perna de cada vez, como no jogo, e o core estável mantém o tronco firme na hora de mudar de direção. O descanso de 90 segundos mantém a qualidade de cada série.";
-  }
 }
 
 // Cardio de cada objetivo: aquecimento no começo ou bloco no fim da sessão.
@@ -130,7 +90,7 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular, ciclo: Ciclo): Resultado {
     // Gira a lista do músculo entre as sessões, para treinar por ângulos diferentes.
     let alvo = Array.from({ length: Math.min(FOCO_POR_SESSAO, lista.length) }, (_, k) => lista[(i + k) % lista.length]);
     if (variada) {
-      const v = variar(alvo, "saude");
+      const v = variar(alvo);
       alvo = v.lista;
       trocas.push(...v.trocas.map((t) => ({ dia: `${NOMES_DIAS[dia]} (sessão ${i + 1})`, de: t.de.nome, para: t.para.nome })));
     }
@@ -165,135 +125,119 @@ function montarFoco(freq: Freq, grupo: GrupoMuscular, ciclo: Ciclo): Resultado {
   };
 }
 
-// Hipertrofia: divisão pela frequência e pelo nível, multiarticulares pesados primeiro e isolados depois.
+// Hipertrofia: divisão pela frequência; o nível define o volume semanal, as repetições e o esforço.
+// 1) Cada vaga da semana recebe séries = alvo semanal do músculo ÷ vezes que ele aparece (2 a 4 por exercício).
+// 2) Se a sessão passar do limite de séries, corta primeiro dos isolados com mais séries (nunca abaixo de 2).
 function montarHipertrofia(freq: Freq, nivel: Nivel, ciclo: Ciclo): Resultado {
-  const plano = PLANOS_HIPER[nivel][freq];
+  const plano = PLANOS_HIPER[freq];
   const variada = ciclo === "longo";
-  const presc = (variada ? PRESC_HIPER_VARIADA : PRESC_HIPER)[nivel];
+  const reps = (variada ? REPS_HIPER_VARIADA : REPS_HIPER)[nivel];
+  const alvo = VOLUME_ALVO[nivel];
+  const maxEx = SERIES_MAX_EXERCICIO[nivel];
   const trocas: Troca[] = [];
-  const vezes: Partial<Record<string, number>> = {};
-  const semana: Record<string, number> = {};
+
+  // Quantas vezes cada músculo aparece na semana.
+  const aparicoes: Partial<Record<Musculo, number>> = {};
+  for (const s of plano.sessoes) for (const n of SESSOES_HIPER[s].vagas) aparicoes[VAGAS[n].musculo] = (aparicoes[VAGAS[n].musculo] ?? 0) + 1;
+
+  // Séries planejadas por músculo na semana (antes dos cortes), para cortar de quem passou do alvo.
+  // Multiarticulares pesados: pelo menos 3 séries (2 para iniciante).
+  const minimo = (vaga: NomeVaga) => (VAGAS[vaga].peso === "pesado" && nivel !== "iniciante" ? 3 : 2);
+  const serieDe = (vaga: NomeVaga) => Math.max(minimo(vaga), Math.min(maxEx, Math.round(alvo[VAGAS[vaga].musculo] / (aparicoes[VAGAS[vaga].musculo] ?? 1))));
+  const planejado: Partial<Record<Musculo, number>> = {};
+  for (const s of plano.sessoes) for (const n of SESSOES_HIPER[s].vagas) planejado[VAGAS[n].musculo] = (planejado[VAGAS[n].musculo] ?? 0) + serieDe(n);
+
+  const usosDaVaga: Partial<Record<NomeVaga, number>> = {};
+  const semana: Partial<Record<Musculo, number>> = {};
 
   const dias: DiaFicha[] = plano.sessoes.map((sessao, i) => {
     const dia = plano.dias[i];
-    const oc = vezes[sessao] ?? 0;
-    vezes[sessao] = oc + 1;
+
+    // Escolhe o exercício de cada vaga. Cada vez que a mesma vaga volta na semana, pega o seguinte da lista (outro ângulo).
     const usados = new Set<string>();
-    const contagem: Record<string, number> = {};
-    let exercicios: Exercicio[] = [];
-    for (const vaga of SESSOES_HIPER[sessao].vagas) {
-      const pool = POOL[vaga];
-      const k = contagem[vaga] ?? 0;
-      contagem[vaga] = k + 1;
-      // A 2ª vez que a mesma sessão aparece na semana começa do exercício seguinte da lista.
+    const escolhas: { vaga: NomeVaga; ex: Exercicio }[] = [];
+    for (const nome of SESSOES_HIPER[sessao].vagas) {
+      const pool = VAGAS[nome].pool;
+      const uso = usosDaVaga[nome] ?? 0;
+      usosDaVaga[nome] = uso + 1;
       for (let t = 0; t < pool.length; t++) {
-        const id = pool[(oc + k + t) % pool.length];
-        if (!usados.has(id) && porId[id]) { usados.add(id); exercicios.push(porId[id]); break; }
+        const id = pool[(uso + t) % pool.length];
+        if (!usados.has(id) && porId[id]) { usados.add(id); escolhas.push({ vaga: nome, ex: porId[id] }); break; }
       }
     }
     if (variada) {
-      const v = variar(exercicios, "saude");
-      exercicios = v.lista;
+      const v = variar(escolhas.map((c) => c.ex));
+      v.lista.forEach((ex, k) => (escolhas[k].ex = ex));
       trocas.push(...v.trocas.map((t) => ({ dia: `${NOMES_DIAS[dia]} (${SESSOES_HIPER[sessao].titulo})`, de: t.de.nome, para: t.para.nome })));
     }
-    // Iniciante com 5 dias: a sessão extra de corpo inteiro é leve.
-    const leve = nivel === "iniciante" && freq === 5 && sessao === "fullA";
-    const itens = exercicios.map((e) => {
-      const p = ISOMETRICOS[e.id] ? PRESC.saude : PRINCIPAIS.has(e.id) ? presc.composto : presc.isolado;
-      const item = formatar(e, p, leve);
-      const cat = nomeDoGrupo(e.grupo_primario);
-      semana[cat] = (semana[cat] ?? 0) + (leve ? Math.min(2, p.sets) : p.sets);
+
+    // Séries por exercício.
+    const series = escolhas.map(({ vaga }) => serieDe(vaga));
+    // Sessão longa demais: corta 1 série por vez do músculo que mais passou do alvo semanal (nunca abaixo de 2).
+    const limite = SERIES_MAX_SESSAO[nivel];
+    const total = () => series.reduce((a, b) => a + b, 0);
+    while (total() > limite) {
+      let idx = -1, pior = -Infinity;
+      series.forEach((n, k) => {
+        const { musculo: m, peso } = VAGAS[escolhas[k].vaga];
+        if (n <= minimo(escolhas[k].vaga)) return;
+        // Quem mais passou do alvo perde primeiro; multiarticulares pesados um pouco depois.
+        const folga = (planejado[m] ?? 0) / alvo[m] - (peso === "pesado" ? 0.25 : 0) + n / 100;
+        if (folga > pior) { pior = folga; idx = k; }
+      });
+      if (idx < 0) break;
+      series[idx]--;
+      const m = VAGAS[escolhas[idx].vaga].musculo;
+      planejado[m] = (planejado[m] ?? 0) - 1;
+    }
+
+    const itens = escolhas.map(({ vaga, ex }, k) => {
+      const { musculo, peso } = VAGAS[vaga];
+      semana[musculo] = (semana[musculo] ?? 0) + series[k];
+      const r = reps[peso];
+      const p = ISOMETRICOS[ex.id] ? { ...PRESC.isometrico, sets: series[k] } : { sets: series[k], reps: r.reps, rest: r.rest };
+      const item = formatar(ex, p, false);
+      if (ex.id === "triceps-frances") item.obs = "Braços acima da cabeça: alonga a cabeça longa do tríceps, a que mais cresce assim";
+      if (ex.id === "cadeira-flexora") item.obs = "Sentado, o posterior trabalha alongado e cresce mais do que deitado";
       return item;
     });
-    // Cardio leve só nos dias de superiores (não atrapalha as pernas); nos outros, só o aquecimento.
+    // Aquecimento no começo; caminhada leve opcional só no fim dos treinos sem pernas.
     const comAquecimento = comCardio(itens, "hipertrofia");
-    const final = sessao === "superior" || sessao === "puxar" || sessao === "empurrar" ? comCardio(comAquecimento, "hipertrofiaLeve") : comAquecimento;
-    return { dia: NOMES_DIAS[dia], titulo: SESSOES_HIPER[sessao].titulo, leve, itens: final };
+    const semPernas = sessao === "superior" || sessao === "empurrar" || sessao === "puxar";
+    return { dia: NOMES_DIAS[dia], titulo: SESSOES_HIPER[sessao].titulo, itens: semPernas ? comCardio(comAquecimento, "hipertrofiaLeve") : comAquecimento };
   });
 
+  const ordem = Object.keys(alvo) as Musculo[];
+  const volume = ordem.filter((m) => semana[m]).map((m) => ({ musculo: NOME_MUSCULO[m], series: semana[m] ?? 0, alvo: alvo[m] }));
+  const abaixo = volume.filter((x) => x.series < x.alvo - 1).length > 2;
   const nomeNivel = NIVEIS.find((n) => n.id === nivel)?.nome ?? "";
-  const volume = Object.entries(semana).map(([cat, n]) => `${cat} ${n}`).join(" · ");
   const notas = [
-    `Séries por semana: ${volume}. Para hipertrofia, a faixa que mais funciona é de 10 a 20 séries por músculo por semana, divididas em pelo menos 2 sessões. Ombros, braços e panturrilha também trabalham nos multiarticulares (supinos, remadas, agachamentos), por isso precisam de menos séries diretas.`,
     RESERVA_HIPER[nivel],
-    "Progressão: anote cargas e repetições. Subir a carga ou uma repetição por semana é o que faz o músculo crescer.",
+    NOTAS_HIPER.progressao,
+    NOTAS_HIPER.amplitude,
+    NOTAS_HIPER.aquecimento,
+    NOTAS_HIPER.deload,
+    ...(abaixo && freq <= 3 ? [`Com ${freq} treinos por semana, alguns músculos ficam abaixo do volume ideal para o nível ${nomeNivel.toLowerCase()}, porque cada sessão tem um limite de séries para não ficar longa demais. Se puder, treine 4 vezes.`] : []),
     NOTA_CARDIO.hipertrofia,
-    "Proteína (cerca de 1,6 g por kg por dia) e sono de 7 a 9 horas fazem parte do treino: veja a aba Refeições.",
-    ...DICAS.slice(2),
+    NOTAS_HIPER.recuperacao,
+    ...DICAS,
   ];
+  const r = reps;
   return {
     ficha: {
       titulo: `Hipertrofia · ${nomeNivel} · ${freq}x por semana${variada ? " · Ficha variada" : ""}`,
       divisao: plano.divisao,
-      justificativa: `Para ganhar massa muscular, o treino combina multiarticulares pesados (${presc.composto.sets} × ${presc.composto.reps}, descanso de ${presc.composto.rest}), que dão a maior carga, com exercícios isolados (${presc.isolado.sets} × ${presc.isolado.reps}, descanso de ${presc.isolado.rest}), que completam o volume de cada músculo. ${plano.nome}.`,
+      justificativa: `Cada músculo é treinado pelo menos 2 vezes por semana, com o volume ajustado ao seu nível. Os multiarticulares vêm primeiro, mais pesados (${r.pesado.reps} repetições, descanso de ${r.pesado.rest}); depois os isolados (${r.medio.reps}, descanso de ${r.medio.rest}) e os exercícios menores, como elevação lateral, panturrilha e abdômen (${r.leve.reps}). Sempre que possível, a ficha usa variações que trabalham o músculo alongado, que nos estudos dão mais crescimento.`,
       notas,
       dias,
       variada,
       trocas,
       avisoCiclo: avisoDoCiclo(ciclo),
+      volume,
     },
   };
 }
 
 export function montarFicha(freq: Freq, obj: ObjetivoId, grupo: GrupoMuscular, ciclo: Ciclo = "novo", nivel: Nivel = "intermediario"): Resultado {
-  if (obj === "fraco") return montarFoco(freq, grupo, ciclo);
-  if (obj === "hipertrofia") return montarHipertrofia(freq, nivel, ciclo);
-
-  const plano = PLANOS[freq];
-  const modelo: Modelo = obj;
-  const variada = ciclo === "longo";
-  const base = variada ? PRESC_VARIADA[obj] : PRESC[obj];
-  const trocas: Troca[] = [];
-  const ocorrencias: Partial<Record<Tipo, number>> = {};
-  let saltos = 0, ultimoSalto = -9;
-
-  const dias: DiaFicha[] = plano.tipos.map((tipo, i) => {
-    const dia = plano.dias[i];
-    const oc = ocorrencias[tipo] ?? 0;
-    ocorrencias[tipo] = oc + 1;
-    const variante = tipo === "fullA" ? 0 : tipo === "fullB" ? 1 : oc % 2;
-    const leve = tipo === "fullLeve";
-    let slots = MODELOS[modelo][tipo];
-
-    if (slots.includes("Salto")) {
-      // No máximo 2 sessões com saltos por semana, com 48 h entre elas.
-      if (saltos < 2 && dia - ultimoSalto >= 2) { saltos++; ultimoSalto = dia; }
-      else slots = slots.filter((s) => s !== "Salto");
-    }
-
-    let exercicios = escolher(slots, variante, modelo);
-    if (variada) {
-      const v = variar(exercicios, modelo);
-      exercicios = v.lista;
-      trocas.push(...v.trocas.map((t) => ({ dia: `${NOMES_DIAS[dia]} (${TITULOS[tipo]})`, de: t.de.nome, para: t.para.nome })));
-    }
-    const itens = exercicios.map((e) => {
-      // Saltos e exercícios isométricos mantêm a prescrição original, mesmo na ficha variada.
-      const p = e.id === "saltos-tornozelo" ? PRESC.pogo : PLIOMETRICOS.includes(e.id) ? PRESC.salto : ISOMETRICOS[e.id] ? PRESC[obj] : base;
-      return formatar(e, p, leve);
-    });
-    // Cardio: caminhada no fim (saúde), aquecimento na bike (vôlei), intervalado nos dias sem pernas pesadas (futebol).
-    const intervalado = obj === "futebol" && (tipo === "upper" || tipo === "costasBiceps" || (freq <= 3 && i === 0));
-    const comCardioDoDia = obj === "saude" ? comCardio(itens, "saude") : obj === "volei" ? comCardio(itens, "volei") : intervalado ? comCardio(itens, "futebol") : itens;
-    return { dia: NOMES_DIAS[dia], titulo: TITULOS[tipo], leve, itens: comCardioDoDia };
-  });
-
-  const notas: string[] = [];
-  if (freq === 3) notas.push("Na semana seguinte, comece pelo Treino B (B, A, B), para alternar os estímulos.");
-  if (obj === "volei") notas.push(NOTA_PLIOMETRIA);
-  if (obj === "futebol") notas.push("Agilidade se treina em campo, com corridas e mudanças de direção. Esta ficha cobre a força de base.");
-  notas.push(NOTA_CARDIO[obj], ...DICAS);
-
-  return {
-    ficha: {
-      titulo: `${plano.nome} · ${freq}x por semana${variada ? " · Ficha variada" : ""}`,
-      divisao: plano.divisao,
-      justificativa: justificativa(obj),
-      notas,
-      dias,
-      variada,
-      trocas,
-      avisoCiclo: avisoDoCiclo(ciclo),
-    },
-  };
+  return obj === "fraco" ? montarFoco(freq, grupo, ciclo) : montarHipertrofia(freq, nivel, ciclo);
 }

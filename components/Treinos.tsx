@@ -13,8 +13,8 @@ const CHAVE_SOM = "treino:som";
 
 export function Treinos() {
   const [freq, setFreq] = useState<Freq>(3);
-  const [obj, setObj] = useState<ObjetivoTela>("saude");
-  const [nivel, setNivel] = useState<Nivel>("iniciante");
+  const [obj, setObj] = useState<ObjetivoTela>("hipertrofia");
+  const [nivel, setNivel] = useState<Nivel>("intermediario");
   const [grupo, setGrupo] = useState<GrupoMuscular>("ombros");
   const [ciclo, setCiclo] = useState<Ciclo>("novo");
   const [aberto, setAberto] = useState<string | null>(null);
@@ -163,6 +163,21 @@ export function Treinos() {
               </span>
               Som do timer de descanso: {som ? "ligado" : "desligado"}
             </button>
+
+            {r.ficha.volume && (
+              <div className="mt-6 max-w-3xl">
+                <p className="text-lg font-semibold">Séries diretas por semana</p>
+                <p className="text-base text-suave">Os supinos também treinam tríceps e ombros, e as remadas e puxadas também treinam bíceps.</p>
+                <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3">
+                  {r.ficha.volume.map((v) => (
+                    <div key={v.musculo} className="flex items-baseline justify-between gap-3 border-b border-linha py-1.5">
+                      <dt className="text-base">{v.musculo}</dt>
+                      <dd className="text-base font-bold tabular-nums">{v.series}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
 
             <DiasFicha
               dias={r.ficha.dias}
