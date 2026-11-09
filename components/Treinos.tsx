@@ -14,6 +14,7 @@ import { ModalExercicio } from "./ModalExercicio";
 const OPCAO = "min-h-[3.5rem] px-5 py-3 text-left";
 const CHAVE_SOM = "treino:som";
 const CHAVE_TROCAS = "treino:trocas";
+const CHAVE_ESCOLHAS = "treino:escolhas"; // frequência, objetivo, nível, ciclo e músculo do Ponto Fraco
 // Trocas de exercício por ficha: { "hipertrofia-4-intermediario-novo-": { "0-2": { de, para } } }
 type Trocas = Record<string, Record<string, { de: string; para: string }>>;
 const nomeDe = (id: string) => EXERCICIOS.find((e) => e.id === id)?.nome ?? id;
@@ -37,6 +38,7 @@ export function Treinos() {
   const [nivel, setNivel] = useState<Nivel>("intermediario");
   const [grupo, setGrupo] = useState<GrupoMuscular>("ombros");
   const [ciclo, setCiclo] = useState<Ciclo>("novo");
+  const [carregou, setCarregou] = useState(false);
   const [aberto, setAberto] = useState<string | null>(null);
   const [som, setSom] = useState(true);
   const [timerAtivo, setTimerAtivo] = useState<string | null>(null);
@@ -92,6 +94,31 @@ export function Treinos() {
     const ordenada = originalId !== atual.id ? [...lista.filter((e) => e.id === originalId), ...lista.filter((e) => e.id !== originalId)] : lista;
     return { atual, originalId, lista: ordenada };
   })();
+
+  // Abre com as últimas escolhas feitas neste aparelho (só valores que ainda existem no app).
+  useEffect(() => {
+    try {
+      const e = JSON.parse(localStorage.getItem(CHAVE_ESCOLHAS) ?? "{}");
+      if (FREQUENCIAS.some((f) => f === e.freq)) setFreq(e.freq);
+      if (OBJETIVOS.some((o) => o.id === e.obj)) setObj(e.obj);
+      if (NIVEIS.some((n) => n.id === e.nivel)) setNivel(e.nivel);
+      if (CICLOS.some((c) => c.id === e.ciclo)) setCiclo(e.ciclo);
+      if (PONTOS_FRACOS.some((p) => p.id === e.grupo)) setGrupo(e.grupo);
+    } catch {
+      // Sem armazenamento ou dado inválido: fica o padrão.
+    }
+    setCarregou(true);
+  }, []);
+
+  // Salva a cada mudança (depois de carregar, para não sobrescrever com o padrão).
+  useEffect(() => {
+    if (!carregou) return;
+    try {
+      localStorage.setItem(CHAVE_ESCOLHAS, JSON.stringify({ freq, obj, nivel, ciclo, grupo }));
+    } catch {
+      // Sem armazenamento: as escolhas valem só nesta sessão.
+    }
+  }, [carregou, freq, obj, nivel, ciclo, grupo]);
 
   // Lembra se o usuário silenciou o timer.
   useEffect(() => {
